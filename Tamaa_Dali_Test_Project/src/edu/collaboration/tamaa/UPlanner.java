@@ -8,6 +8,8 @@ import org.apache.thrift.server.TSimpleServer;
 
 import com.afarcloud.thrift.*;
 
+//try
+
 public class UPlanner {
 	public static void StartServer(PlannerService.Processor<PlannerServiceHandler> processor) {
 		  try {  

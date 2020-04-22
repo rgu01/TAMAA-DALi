@@ -16,14 +16,11 @@ import quadTree.QuadNode;
 import quadTree.QuadTree;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
-//change ffff
-
 public class PlannerServiceHandler implements PlannerService.Iface {
-
+ 	Mission corePlan = null;
 	@Override
 	public void computePlan(int requestId, Mission plan) throws TException {
 		try {
@@ -36,17 +33,22 @@ public class PlannerServiceHandler implements PlannerService.Iface {
 			System.out.println("msg from MMT: " + client.ping());
 
 			//System.out.println(plan);
+			//forbidden.area.set( index, positionOnMap);
+			//allforbiddenAreas.add(forbidden);
 			//Getting forbidden areas
 //			List<Region> allforbiddenAreas = new ArrayList<Region>();
-//			for (Region forbidden : plan.getForbiddenArea()) {
-//				int index = 0;
-//				for (Position positionOnMap : forbidden.area){
-//					forbidden.area.set( index, positionOnMap);
-//					index++;
-//				}
-//				allforbiddenAreas.add(forbidden);
-//			}
+			System.out.println("OLD- "+plan.tasks.size());
+			//Delete all transit tasks
+			List<Task> found = new ArrayList<Task>();
+			for (Task t: plan.getTasks()){
+				if(t.taskTemplate.taskType == TaskType.TRANSIT){
+					found.add(t);
+				}
+			}
+			plan.tasks.removeAll(found);
+			System.out.println("NEW- "+plan.tasks.size());
 			SphericalMercator sphericalMercator = new SphericalMercator();
+
 			// Region
 			double top_right_x = sphericalMercator.xAxisProjection(plan.getNavigationArea().area.get(2).longitude);
 			double top_right_y = sphericalMercator.yAxisProjection(plan.getNavigationArea().area.get(2).latitude);
@@ -56,13 +58,26 @@ public class PlannerServiceHandler implements PlannerService.Iface {
 			Point bot_left = new Point(bot_left_x,bot_left_y);
 			// Obstacles
 			ArrayList<Obstacle> obstacles = new ArrayList<Obstacle>();
-			double top_obstacle_x = sphericalMercator.xAxisProjection(plan.getForbiddenArea().get(0).getArea().get(2).longitude);
-			double top_obstacle_y = sphericalMercator.yAxisProjection(plan.getForbiddenArea().get(0).getArea().get(2).latitude);
-			double bot_obstacle_x = sphericalMercator.xAxisProjection(plan.getForbiddenArea().get(0).getArea().get(0).longitude);
-			double bot_obstacle_y = sphericalMercator.yAxisProjection(plan.getForbiddenArea().get(0).getArea().get(0).latitude);
-			obstacles.add(new Obstacle( new Point(bot_obstacle_x,bot_obstacle_y),new Point(top_obstacle_x,top_obstacle_y)));
+			for (Region forbidden : plan.getForbiddenArea()) {
+				int index = 0;
+				double top_obstacle_x = 0;
+				double top_obstacle_y = 0;
+				double bot_obstacle_x = 0;
+				double bot_obstacle_y = 0;
+				for (Position positionOnMap : forbidden.area){
+					top_obstacle_x = sphericalMercator.xAxisProjection(plan.getForbiddenArea().get(0).getArea().get(2).longitude);
+					top_obstacle_y = sphericalMercator.yAxisProjection(plan.getForbiddenArea().get(0).getArea().get(2).latitude);
+					bot_obstacle_x = sphericalMercator.xAxisProjection(plan.getForbiddenArea().get(0).getArea().get(0).longitude);
+					bot_obstacle_y = sphericalMercator.yAxisProjection(plan.getForbiddenArea().get(0).getArea().get(0).latitude);
+					index++;
+				}
+				obstacles.add(new Obstacle( new Point(bot_obstacle_x,bot_obstacle_y),new Point(top_obstacle_x,top_obstacle_y)));
+			}
+			System.out.println(obstacles.size());
+
 			// Quad Tree
-			QuadTree quadtree = new QuadTree(obstacles, 15, bot_left, top_right, 6);
+			QuadTree quadtree = new QuadTree(obstacles, 15, bot_left, top_right, 4);
+
 			double vehicle_x = sphericalMercator.xAxisProjection( plan.getVehicles().get(0).stateVector.getPosition().longitude);
 			double vehicle_y = sphericalMercator.yAxisProjection( plan.getVehicles().get(0).stateVector.getPosition().latitude);
 
@@ -75,12 +90,6 @@ public class PlannerServiceHandler implements PlannerService.Iface {
 			ThetaStar thetaStar = new ThetaStar(quadtree);
 			List<QuadNode> q = thetaStar.findPath(q00,q10);
 
-			for (QuadNode quad: q) {
-				Point origine = quad.origine();
-				System.out.print(""+sphericalMercator.x2lon(quad.getBottom_left().x)+" ," + sphericalMercator.y2lat(quad.getBottom_left().y) +"\n");
-//            System.out.print("[("+sphericalMercator.x2lon(quad.getBottom_left().x)+" ," + sphericalMercator.y2lat(quad.getBottom_left().y) +") \t"+ "("+sphericalMercator.x2lon(quad.getTop_right().x)+" ," + sphericalMercator.y2lat(quad.getTop_right().y) +")]\n");
-			}
-//			Position p = new Position(longitude, latitude, altitude:0.0)
 			Position positon1 = plan.getVehicles().get(0).stateVector.getPosition();
 			int indexId = 21;
 			Collections.reverse(q);
@@ -108,6 +117,8 @@ public class PlannerServiceHandler implements PlannerService.Iface {
 //			Position task2Position = plan.getTasks().get(1).area.area.get(0);
 			// check the output - System.out.println("Position1:"+task1StartPosition.toString()+", Position2:"+task2Position.toString());
 //			plan.tasks.add(newTransitAction(plan.getTasks().get(plan.getTasks().size()-1).parentTaskId+1, task1StartPosition, task2Position, plan.vehicles.get(0), 0));
+
+			
 			client.sendPlan(requestId, plan);
 			transport.close();
 		} catch (TTransportException e) {
@@ -163,7 +174,7 @@ public class PlannerServiceHandler implements PlannerService.Iface {
 		transit.timeLapse = 0;
 		transit.speed = vehicleUsed.maxSpeed;
 		transit.taskStatus = TaskCommandStatus.NotStarted;
-		System.out.println("New Sample - " + transit);
+
 		return transit;
 	}
 

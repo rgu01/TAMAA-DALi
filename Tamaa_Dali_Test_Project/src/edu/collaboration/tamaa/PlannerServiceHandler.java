@@ -32,12 +32,6 @@ public class PlannerServiceHandler implements PlannerService.Iface {
 			MmtService.Client client = new MmtService.Client(protocol);
 			System.out.println("msg from MMT: " + client.ping());
 
-			//System.out.println(plan);
-			//forbidden.area.set( index, positionOnMap);
-			//allforbiddenAreas.add(forbidden);
-			//Getting forbidden areas
-//			List<Region> allforbiddenAreas = new ArrayList<Region>();
-			System.out.println("OLD- "+plan.tasks.size());
 			//Delete all transit tasks
 			List<Task> found = new ArrayList<Task>();
 			for (Task t: plan.getTasks()){
@@ -46,9 +40,8 @@ public class PlannerServiceHandler implements PlannerService.Iface {
 				}
 			}
 			plan.tasks.removeAll(found);
-			System.out.println("NEW- "+plan.tasks.size());
+			
 			SphericalMercator sphericalMercator = new SphericalMercator();
-
 			// Region
 			double top_right_x = sphericalMercator.xAxisProjection(plan.getNavigationArea().area.get(2).longitude);
 			double top_right_y = sphericalMercator.yAxisProjection(plan.getNavigationArea().area.get(2).latitude);
@@ -56,24 +49,21 @@ public class PlannerServiceHandler implements PlannerService.Iface {
 			double bot_left_y = sphericalMercator.yAxisProjection(plan.getNavigationArea().area.get(0).latitude);
 			Point top_right  = new Point(top_right_x,top_right_y);
 			Point bot_left = new Point(bot_left_x,bot_left_y);
+			double top_obstacle_x = 0;
+			double top_obstacle_y = 0;
+			double bot_obstacle_x = 0;
+			double bot_obstacle_y = 0;
 			// Obstacles
 			ArrayList<Obstacle> obstacles = new ArrayList<Obstacle>();
-			for (Region forbidden : plan.getForbiddenArea()) {
-				int index = 0;
-				double top_obstacle_x = 0;
-				double top_obstacle_y = 0;
-				double bot_obstacle_x = 0;
-				double bot_obstacle_y = 0;
-				for (Position positionOnMap : forbidden.area){
-					top_obstacle_x = sphericalMercator.xAxisProjection(plan.getForbiddenArea().get(0).getArea().get(2).longitude);
-					top_obstacle_y = sphericalMercator.yAxisProjection(plan.getForbiddenArea().get(0).getArea().get(2).latitude);
-					bot_obstacle_x = sphericalMercator.xAxisProjection(plan.getForbiddenArea().get(0).getArea().get(0).longitude);
-					bot_obstacle_y = sphericalMercator.yAxisProjection(plan.getForbiddenArea().get(0).getArea().get(0).latitude);
-					index++;
-				}
+			for (Region forbidden : plan.getForbiddenArea()) 
+			{
+				top_obstacle_x = sphericalMercator.xAxisProjection(forbidden.getArea().get(2).longitude);
+				top_obstacle_y = sphericalMercator.yAxisProjection(forbidden.getArea().get(2).latitude);
+				bot_obstacle_x = sphericalMercator.xAxisProjection(forbidden.getArea().get(0).longitude);
+				bot_obstacle_y = sphericalMercator.yAxisProjection(forbidden.getArea().get(0).latitude);
+				
 				obstacles.add(new Obstacle( new Point(bot_obstacle_x,bot_obstacle_y),new Point(top_obstacle_x,top_obstacle_y)));
 			}
-			System.out.println(obstacles.size());
 
 			// Quad Tree
 			QuadTree quadtree = new QuadTree(obstacles, 15, bot_left, top_right, 4);
@@ -90,33 +80,23 @@ public class PlannerServiceHandler implements PlannerService.Iface {
 			ThetaStar thetaStar = new ThetaStar(quadtree);
 			List<QuadNode> q = thetaStar.findPath(q00,q10);
 
-			Position positon1 = plan.getVehicles().get(0).stateVector.getPosition();
-			int indexId = 21;
+			Position origin = plan.getVehicles().get(0).stateVector.getPosition();
+			Position goal = null;
 			Collections.reverse(q);
+			int taskID = 21;
+			
 			for (int i = 1; i < q.size()-1; i++) {
-				Point origine = q.get(i).origine();
-				Position position2 = new Position(sphericalMercator.x2lon(q.get(i).getBottom_left().x),sphericalMercator.y2lat(q.get(i).getBottom_left().y), 0.0);
-				plan.tasks.add(newTransitAction(indexId, positon1, position2, plan.vehicles.get(0), 0));
-				positon1 = position2;
-				indexId++;
+				goal = new Position(sphericalMercator.x2lon(q.get(i).getBottom_left().x),sphericalMercator.y2lat(q.get(i).getBottom_left().y), 0.0);
+				plan.tasks.add(newTransitAction(i, origin, goal, plan.vehicles.get(0), 0));
+				origin = goal;
+				taskID++;
 			}
 			Position task1Position = plan.getTasks().get(0).area.area.get(0);
-			plan.tasks.add(newTransitAction(indexId, positon1, task1Position, plan.vehicles.get(0), 0));
+			plan.tasks.add(newTransitAction(taskID, origin, task1Position, plan.vehicles.get(0), 0));
 
-			// Static layer
-			UppaalMapGenerator mapGenerator = new UppaalMapGenerator(3);
-			mapGenerator.creteSampleMap();
-
-			//Sample for task transition.
-			// From current vehicle position to first task.
-//			Position vehicleStartPosition = plan.getVehicles().get(0).stateVector.getPosition();
-//			Position task1Position = plan.getTasks().get(0).area.area.get(0);
-			//plan.tasks.add(newTransitAction(plan.vehicles.get(plan.getVehicles().size()-1).id+3, vehicleStartPosition, task1Position, plan.vehicles.get(0), 0));
-			// From first task position to second task.
-//			Position task1StartPosition = plan.getTasks().get(0).area.area.get(0);
-//			Position task2Position = plan.getTasks().get(1).area.area.get(0);
-			// check the output - System.out.println("Position1:"+task1StartPosition.toString()+", Position2:"+task2Position.toString());
-//			plan.tasks.add(newTransitAction(plan.getTasks().get(plan.getTasks().size()-1).parentTaskId+1, task1StartPosition, task2Position, plan.vehicles.get(0), 0));
+			// Task Scheduling
+			//UppaalMapGenerator mapGenerator = new UppaalMapGenerator(3);
+			//mapGenerator.creteSampleMap();
 
 			
 			client.sendPlan(requestId, plan);
@@ -168,12 +148,15 @@ public class PlannerServiceHandler implements PlannerService.Iface {
 		transit.id = actionID;
 
 		List<EquipmentType> requiredTypes = new java.util.ArrayList<EquipmentType>();
-		requiredTypes.add(EquipmentType.COLLISION_AVOIDANCE); // we have to fix this;
-		transit.setTaskTemplate(new TaskTemplate(TaskType.TRANSIT, "Transit", TaskRegionType.Column,requiredTypes));
+		//requiredTypes.add(EquipmentType.COLLISION_AVOIDANCE); // we have to fix this;
+		requiredTypes.add(EquipmentType.WIFI); // we have to fix this;
+		transit.setTaskTemplate(new TaskTemplate(TaskType.TRANSIT, "", TaskRegionType.Column,requiredTypes));
 
 		transit.timeLapse = 0;
 		transit.speed = vehicleUsed.maxSpeed;
 		transit.taskStatus = TaskCommandStatus.NotStarted;
+		
+		transit.taskTemplate.description = "";
 
 		return transit;
 	}

@@ -1,19 +1,32 @@
 package edu.collaboration.pathplanning;
 
 public class PathSegment {
-	public Coordinates origin;
-	public Coordinates end;
+	public double weight;
+	public Node origin;
+	public Node end;
 	
 	public PathSegment(double x1, double y1, double x2, double y2)
 	{
-		this.origin = new Coordinates(x1,y1);
-		this.end = new Coordinates(x2,y2);
+		this.weight = 1.0;
+		this.origin = new Node(x1,y1);
+		this.end = new Node(x2,y2);
 	}
 	
-	public PathSegment(Coordinates o, Coordinates e)
+	public PathSegment(Node o, Node e)
 	{
+		this.weight = 1.0;
 		this.origin = o;
 		this.end = e;
+	}
+	
+	public double cost()
+	{
+		double c = 0;
+		
+		c = Math.pow(origin.lon - end.lon, 2) + Math.pow(origin.lat - end.lat, 2);
+		c = this.weight * Math.sqrt(c);
+		
+		return c;
 	}
 	
 	public boolean isIntersect(PathSegment ps)

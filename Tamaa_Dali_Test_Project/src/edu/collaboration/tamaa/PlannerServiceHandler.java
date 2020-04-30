@@ -53,10 +53,6 @@ public class PlannerServiceHandler implements PlannerService.Iface {
 			Node bot_left = new Node(bot_left_x,bot_left_y);
 			Node top_left  = new Node(top_left_x,top_left_y);
 			Node bot_right = new Node(bot_right_x,bot_right_y);
-			double top_obstacle_x = 0;
-			double top_obstacle_y = 0;
-			double bot_obstacle_x = 0;
-			double bot_obstacle_y = 0;
 			//Nevigation Area
 			NavigationArea nArea = new NavigationArea();
 			nArea.boundry.add(top_left);
@@ -68,13 +64,30 @@ public class PlannerServiceHandler implements PlannerService.Iface {
 			{
 				Obstacle obs = new Obstacle();
 				
-				top_obstacle_x = sphericalMercator.xAxisProjection(forbidden.getArea().get(2).longitude);
-				top_obstacle_y = sphericalMercator.yAxisProjection(forbidden.getArea().get(2).latitude);
-				bot_obstacle_x = sphericalMercator.xAxisProjection(forbidden.getArea().get(0).longitude);
-				bot_obstacle_y = sphericalMercator.yAxisProjection(forbidden.getArea().get(0).latitude);
+				top_left_x = sphericalMercator.xAxisProjection(forbidden.getArea().get(1).longitude);
+				top_left_y = sphericalMercator.yAxisProjection(forbidden.getArea().get(1).latitude);
+				top_right_x = sphericalMercator.xAxisProjection(forbidden.getArea().get(2).longitude);
+				top_right_y = sphericalMercator.yAxisProjection(forbidden.getArea().get(2).latitude);
+				bot_right_x = sphericalMercator.xAxisProjection(forbidden.getArea().get(3).longitude);
+				bot_right_y = sphericalMercator.yAxisProjection(forbidden.getArea().get(3).latitude);
+				bot_left_x = sphericalMercator.xAxisProjection(forbidden.getArea().get(0).longitude);
+				bot_left_y = sphericalMercator.yAxisProjection(forbidden.getArea().get(0).latitude);
+				top_right  = new Node(top_right_x,top_right_y);
+				bot_left = new Node(bot_left_x,bot_left_y);
+				top_left  = new Node(top_left_x,top_left_y);
+				bot_right = new Node(bot_right_x,bot_right_y);
+				obs.vertices.add(top_left);
+				obs.vertices.add(bot_left);
+				obs.vertices.add(bot_right);
+				obs.vertices.add(top_right);
 				
-				obs.vertices.add(new Node(top_obstacle_x, top_obstacle_y));
-				obs.vertices.add(new Node(bot_obstacle_x, bot_obstacle_y));
+				//top_obstacle_x = sphericalMercator.xAxisProjection(forbidden.getArea().get(2).longitude);
+				//top_obstacle_y = sphericalMercator.yAxisProjection(forbidden.getArea().get(2).latitude);
+				//bot_obstacle_x = sphericalMercator.xAxisProjection(forbidden.getArea().get(0).longitude);
+				//bot_obstacle_y = sphericalMercator.yAxisProjection(forbidden.getArea().get(0).latitude);
+				
+				//obs.vertices.add(new Node(top_obstacle_x, top_obstacle_y));
+				//obs.vertices.add(new Node(bot_obstacle_x, bot_obstacle_y));
 				
 				nArea.obstacles.add(obs);
 			}

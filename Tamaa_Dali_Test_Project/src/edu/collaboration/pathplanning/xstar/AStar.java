@@ -43,7 +43,7 @@ public class AStar implements PathPlanningAlgorithm {
 			closed.add(temp);
 			for(Node nb : temp.neighbors())
 			{
-				if(map.contains(nb) && this.lineOfSight(temp, nb))
+				if(map.contains(nb))
 				{
 					if(!closed.contains(nb))
 					{
@@ -102,10 +102,21 @@ public class AStar implements PathPlanningAlgorithm {
 		PathSegment ps = new PathSegment(s, sp);
 		double c = ps.cost();
 		
-		if(s.gValue + c < sp.gValue)
+		if(this.lineOfSight(s, sp))
 		{
-			sp.parent = s;
-			sp.gValue = s.gValue + c;
+			if(s.gValue + c < sp.gValue)
+			{
+				sp.parent = s;
+				sp.gValue = s.gValue + c;
+			}
+			else
+			{
+				// no code
+			}
+		}
+		else
+		{
+			//no code
 		}
 	}
 	

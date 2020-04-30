@@ -22,6 +22,7 @@ public class PlannerServiceHandler implements PlannerService.Iface {
 	@Override
 	public void computePlan(int requestId, Mission plan) throws TException {
 		try {
+			//Communication with MMT
 			TTransport transport;
 			transport = new TSocket("127.0.0.1", 9096);
 			transport.open();
@@ -30,7 +31,7 @@ public class PlannerServiceHandler implements PlannerService.Iface {
 			MmtService.Client client = new MmtService.Client(protocol);
 			System.out.println("msg from MMT: " + client.ping());
 
-			//Delete all transit tasks
+			//Delete all current transit tasks in the map
 			List<Task> found = new ArrayList<Task>();
 			for (Task t: plan.getTasks()){
 				if(t.taskTemplate.taskType == TaskType.TRANSIT){
@@ -40,7 +41,7 @@ public class PlannerServiceHandler implements PlannerService.Iface {
 			plan.tasks.removeAll(found);
 			
 			SphericalMercator sphericalMercator = new SphericalMercator();
-			// Region
+			//Navigation Area
 			double top_left_x = sphericalMercator.xAxisProjection(plan.getNavigationArea().area.get(1).longitude);
 			double top_left_y = sphericalMercator.yAxisProjection(plan.getNavigationArea().area.get(1).latitude);
 			double top_right_x = sphericalMercator.xAxisProjection(plan.getNavigationArea().area.get(2).longitude);
@@ -53,7 +54,6 @@ public class PlannerServiceHandler implements PlannerService.Iface {
 			Node bot_left = new Node(bot_left_x,bot_left_y);
 			Node top_left  = new Node(top_left_x,top_left_y);
 			Node bot_right = new Node(bot_right_x,bot_right_y);
-			//Nevigation Area
 			NavigationArea nArea = new NavigationArea();
 			nArea.boundry.add(top_left);
 			nArea.boundry.add(bot_left);
@@ -81,14 +81,6 @@ public class PlannerServiceHandler implements PlannerService.Iface {
 				obs.vertices.add(bot_right);
 				obs.vertices.add(top_right);
 				
-				//top_obstacle_x = sphericalMercator.xAxisProjection(forbidden.getArea().get(2).longitude);
-				//top_obstacle_y = sphericalMercator.yAxisProjection(forbidden.getArea().get(2).latitude);
-				//bot_obstacle_x = sphericalMercator.xAxisProjection(forbidden.getArea().get(0).longitude);
-				//bot_obstacle_y = sphericalMercator.yAxisProjection(forbidden.getArea().get(0).latitude);
-				
-				//obs.vertices.add(new Node(top_obstacle_x, top_obstacle_y));
-				//obs.vertices.add(new Node(bot_obstacle_x, bot_obstacle_y));
-				
 				nArea.obstacles.add(obs);
 			}
 			
@@ -97,12 +89,13 @@ public class PlannerServiceHandler implements PlannerService.Iface {
 			double vehicle_y = sphericalMercator.yAxisProjection( plan.getVehicles().get(0).stateVector.getPosition().latitude);
 			double task_x = sphericalMercator.xAxisProjection(plan.getTasks().get(0).area.area.get(0).longitude);
 			double task_y = sphericalMercator.yAxisProjection(plan.getTasks().get(0).area.area.get(0).latitude);
+			//calculate path
 			List<Node> path = as.calculate(new Node(vehicle_x, vehicle_y), new Node(task_x, task_y));
 			Position origin = plan.getVehicles().get(0).stateVector.getPosition();
 			Position goal = null;
 			Collections.reverse(path);
+			//create transits in MMT
 			int taskID = 21;
-			
 			for (int i = 1; i < path.size()-1; i++) {
 				goal = new Position(sphericalMercator.x2lon(path.get(i).lat),sphericalMercator.y2lat(path.get(i).lon), 0.0);
 				plan.tasks.add(newTransitAction(i, origin, goal, plan.vehicles.get(0), 0));
@@ -111,40 +104,6 @@ public class PlannerServiceHandler implements PlannerService.Iface {
 			}
 			Position task1Position = plan.getTasks().get(0).area.area.get(0);
 			plan.tasks.add(newTransitAction(taskID, origin, task1Position, plan.vehicles.get(0), 0));
-
-			// Quad Tree
-			/*QuadTree quadtree = new QuadTree(obstacles, 15, bot_left, top_right, 4);
-
-			double vehicle_x = sphericalMercator.xAxisProjection( plan.getVehicles().get(0).stateVector.getPosition().longitude);
-			double vehicle_y = sphericalMercator.yAxisProjection( plan.getVehicles().get(0).stateVector.getPosition().latitude);
-
-			double task_x = sphericalMercator.xAxisProjection(plan.getTasks().get(0).area.area.get(0).longitude);
-			double task_y = sphericalMercator.yAxisProjection(plan.getTasks().get(0).area.area.get(0).latitude);
-
-			QuadNode q00 = quadtree.find_node(new Point(vehicle_x,vehicle_y));
-			QuadNode q10 = quadtree.find_node(new Point(task_x,task_y));
-
-			ThetaStar thetaStar = new ThetaStar(quadtree);
-			List<QuadNode> q = thetaStar.findPath(q00,q10);
-
-			Position origin = plan.getVehicles().get(0).stateVector.getPosition();
-			Position goal = null;
-			Collections.reverse(q);
-			int taskID = 21;
-			
-			for (int i = 1; i < q.size()-1; i++) {
-				goal = new Position(sphericalMercator.x2lon(q.get(i).getBottom_left().x),sphericalMercator.y2lat(q.get(i).getBottom_left().y), 0.0);
-				plan.tasks.add(newTransitAction(i, origin, goal, plan.vehicles.get(0), 0));
-				origin = goal;
-				taskID++;
-			}
-			Position task1Position = plan.getTasks().get(0).area.area.get(0);
-			plan.tasks.add(newTransitAction(taskID, origin, task1Position, plan.vehicles.get(0), 0));*/
-
-			// Task Scheduling
-			//UppaalMapGenerator mapGenerator = new UppaalMapGenerator(3);
-			//mapGenerator.creteSampleMap();
-
 			
 			client.sendPlan(requestId, plan);
 			transport.close();

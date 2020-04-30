@@ -9,7 +9,7 @@ import edu.collaboration.pathplanning.PathSegment;
 public class ThetaStar implements PathPlanningAlgorithm {
 
 	@Override
-	public List<PathSegment> calculate(Node start, Node destination) {
+	public List<Node> calculate(Node start, Node destination) {
 		// TODO Auto-generated method stub
 		return null;
 	}

@@ -1,7 +1,7 @@
 package edu.collaboration.pathplanning;
 
 public class PathSegment {
-	public double weight;
+	private double weight;
 	public Node origin;
 	public Node end;
 	

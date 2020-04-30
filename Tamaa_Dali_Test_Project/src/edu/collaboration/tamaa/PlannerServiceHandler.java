@@ -41,18 +41,29 @@ public class PlannerServiceHandler implements PlannerService.Iface {
 			
 			SphericalMercator sphericalMercator = new SphericalMercator();
 			// Region
+			double top_left_x = sphericalMercator.xAxisProjection(plan.getNavigationArea().area.get(1).longitude);
+			double top_left_y = sphericalMercator.yAxisProjection(plan.getNavigationArea().area.get(1).latitude);
 			double top_right_x = sphericalMercator.xAxisProjection(plan.getNavigationArea().area.get(2).longitude);
 			double top_right_y = sphericalMercator.yAxisProjection(plan.getNavigationArea().area.get(2).latitude);
+			double bot_right_x = sphericalMercator.xAxisProjection(plan.getNavigationArea().area.get(3).longitude);
+			double bot_right_y = sphericalMercator.yAxisProjection(plan.getNavigationArea().area.get(3).latitude);
 			double bot_left_x = sphericalMercator.xAxisProjection(plan.getNavigationArea().area.get(0).longitude);
 			double bot_left_y = sphericalMercator.yAxisProjection(plan.getNavigationArea().area.get(0).latitude);
 			Node top_right  = new Node(top_right_x,top_right_y);
 			Node bot_left = new Node(bot_left_x,bot_left_y);
+			Node top_left  = new Node(top_left_x,top_left_y);
+			Node bot_right = new Node(bot_right_x,bot_right_y);
 			double top_obstacle_x = 0;
 			double top_obstacle_y = 0;
 			double bot_obstacle_x = 0;
 			double bot_obstacle_y = 0;
+			//Nevigation Area
+			NavigationArea nArea = new NavigationArea();
+			nArea.boundry.add(top_left);
+			nArea.boundry.add(bot_left);
+			nArea.boundry.add(bot_right);
+			nArea.boundry.add(top_right);
 			// Obstacles
-			ArrayList<Obstacle> obstacles = new ArrayList<Obstacle>();
 			for (Region forbidden : plan.getForbiddenArea()) 
 			{
 				Obstacle obs = new Obstacle();
@@ -65,22 +76,22 @@ public class PlannerServiceHandler implements PlannerService.Iface {
 				obs.vertices.add(new Node(top_obstacle_x, top_obstacle_y));
 				obs.vertices.add(new Node(bot_obstacle_x, bot_obstacle_y));
 				
-				obstacles.add(obs);
+				nArea.obstacles.add(obs);
 			}
 			
-			AStar as = new AStar(obstacles);
+			AStar as = new AStar(nArea);
 			double vehicle_x = sphericalMercator.xAxisProjection( plan.getVehicles().get(0).stateVector.getPosition().longitude);
 			double vehicle_y = sphericalMercator.yAxisProjection( plan.getVehicles().get(0).stateVector.getPosition().latitude);
 			double task_x = sphericalMercator.xAxisProjection(plan.getTasks().get(0).area.area.get(0).longitude);
 			double task_y = sphericalMercator.yAxisProjection(plan.getTasks().get(0).area.area.get(0).latitude);
-			List<PathSegment> path = as.calculate(new Node(vehicle_x,vehicle_y), new Node(task_x,task_y));
+			List<Node> path = as.calculate(new Node(vehicle_x, vehicle_y), new Node(task_x, task_y));
 			Position origin = plan.getVehicles().get(0).stateVector.getPosition();
 			Position goal = null;
 			Collections.reverse(path);
 			int taskID = 21;
 			
 			for (int i = 1; i < path.size()-1; i++) {
-				goal = new Position(sphericalMercator.x2lon(path.get(i).end.lat),sphericalMercator.y2lat(path.get(i).end.lon), 0.0);
+				goal = new Position(sphericalMercator.x2lon(path.get(i).lat),sphericalMercator.y2lat(path.get(i).lon), 0.0);
 				plan.tasks.add(newTransitAction(i, origin, goal, plan.vehicles.get(0), 0));
 				origin = goal;
 				taskID++;
@@ -172,8 +183,8 @@ public class PlannerServiceHandler implements PlannerService.Iface {
 
 		List<EquipmentType> requiredTypes = new java.util.ArrayList<EquipmentType>();
 		//requiredTypes.add(EquipmentType.COLLISION_AVOIDANCE); // we have to fix this;
-		requiredTypes.add(EquipmentType.WIFI); // we have to fix this;
-		transit.setTaskTemplate(new TaskTemplate(TaskType.TRANSIT, "", TaskRegionType.Column,requiredTypes));
+		//requiredTypes.add(EquipmentType.WIFI); // we have to fix this;
+		transit.setTaskTemplate(new TaskTemplate(TaskType.INSPECT, "", TaskRegionType.Column, requiredTypes));
 
 		transit.timeLapse = 0;
 		transit.speed = vehicleUsed.maxSpeed;

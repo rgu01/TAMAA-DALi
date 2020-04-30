@@ -3,6 +3,7 @@ package edu.collaboration.pathplanning.xstar;
 import java.util.ArrayList;
 import java.util.List;
 
+import edu.collaboration.pathplanning.NavigationArea;
 import edu.collaboration.pathplanning.Node;
 import edu.collaboration.pathplanning.Obstacle;
 import edu.collaboration.pathplanning.PathPlanningAlgorithm;
@@ -11,19 +12,20 @@ import edu.collaboration.pathplanning.PathSegment;
 public class AStar implements PathPlanningAlgorithm {
 	protected List<ANode> open;
 	protected List<ANode> closed;
-	protected List<Obstacle> obstacles;
+	protected NavigationArea map;
 	
 	
-	public AStar(List<Obstacle> obs)
+	public AStar(NavigationArea na)
 	{
 		this.open = new ArrayList<ANode>();
 		this.closed = new ArrayList<ANode>();
-		this.obstacles = obs;
+		this.map = na;
 	}
 
 	@Override
-	public List<PathSegment> calculate(Node start, Node destination) {
-		ANode temp, aStart, aDestination;
+	public List<Node> calculate(Node start, Node destination) {
+		ANode temp = null, aStart = null, aDestination = null;
+		List<Node> result = new ArrayList<Node>();
 		
 		aStart = new ANode(start.lat, start.lon, destination);
 		aDestination = new ANode(destination.lat, destination.lon, destination);
@@ -34,14 +36,14 @@ public class AStar implements PathPlanningAlgorithm {
 		while(open.size() != 0)
 		{
 			temp = this.pop(this.open);
-			if(temp.near(aDestination))
+			if(temp == null || temp.near(aDestination))
 			{
 				break;
 			}
 			closed.add(temp);
 			for(Node nb : temp.neighbors())
 			{
-				if(this.lineOfSight(temp, nb))
+				if(map.contains(nb) && this.lineOfSight(temp, nb))
 				{
 					if(!closed.contains(nb))
 					{
@@ -56,12 +58,18 @@ public class AStar implements PathPlanningAlgorithm {
 			}
 		}
 		
-		return null;
+		while(temp != null && !temp.equals(start))
+		{
+			result.add(temp);
+			temp = (ANode)temp.parent;
+		}
+		
+		return result;
 	}
 	
 	protected boolean lineOfSight(Node start, Node goal)
 	{
-		for(Obstacle obs : this.obstacles)
+		for(Obstacle obs : this.map.obstacles)
 		{
 			if(obs.block(start, goal))
 			{
@@ -103,16 +111,21 @@ public class AStar implements PathPlanningAlgorithm {
 	
 	protected ANode pop(List<ANode> set)
 	{
-		double max = 0;
+		double min = Double.MAX_VALUE;
 		ANode result = null;
 		
 		for(int i = 0; i < set.size(); i++)
 		{
-			if(max <= set.get(i).openValue())
+			if(min >= set.get(i).openValue())
 			{
 				result = set.get(i);
-				max = result.openValue();
+				min = result.openValue();
 			}
+		}
+		
+		if(result != null)
+		{
+			set.remove(result);
 		}
 		
 		return result;

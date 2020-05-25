@@ -1,4 +1,4 @@
-package edu.collaboration.pathplanning.xstar;
+package edu.collaboration.pathplanning.dali;
 
 import java.util.HashMap;
 import java.util.Map.Entry;

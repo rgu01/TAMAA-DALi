@@ -1,4 +1,4 @@
-package edu.collaboration.pathplanning.xstar;
+package edu.collaboration.pathplanning.dali;
 
 import java.util.ArrayList;
 import java.util.List;

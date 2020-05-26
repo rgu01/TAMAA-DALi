@@ -11,8 +11,8 @@ public class Node {
 	//
 	public Node(double x, double y)
 	{
-		this.lat = x;
-		this.lon = y;
+		this.lon = x;
+		this.lat = y;
 		this.parent = null;
 	}
 	

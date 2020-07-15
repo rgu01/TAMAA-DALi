@@ -13,6 +13,7 @@ import edu.collaboration.pathplanning.PathPlanningAlgorithm;
 public class Dali implements PathPlanningAlgorithm {
 
 	HashMap<Integer, DaliNode> nodes;
+	HashMap<CoordinatesTuple, DaliNode> loc2node;
 	HashMap<Integer, DaliEdge> edges;
 	
 	HashMap<Integer, DaliAnomaly> anomalies;
@@ -26,7 +27,9 @@ public class Dali implements PathPlanningAlgorithm {
 	public Dali(NavigationArea nArea, List<DaliConstraint> constraints) {
 		generateGraph(nArea);
 		for (DaliConstraint c : constraints) {
-			c.addConstaint(nodes);
+			DaliNode center = findNearestNode(c.lat, c.lon);
+			if (center != null) 
+				c.addConstaint(center);
 		}
 	}
 	
@@ -62,8 +65,9 @@ public class Dali implements PathPlanningAlgorithm {
 			newNode = new DaliNode(nid, x, y);
 			nid++;
 			processing.add(newNode);
+			nodes.put(nid, newNode);
+			loc2node.put(new CoordinatesTuple(x, y), newNode);
 		}
-		nodes.put(nid, newNode);
 		DaliEdge e1 = prev.createEdge(newNode, eid);
 		DaliEdge e2 = newNode.createEdge(prev, eid+1);
 		edges.put(eid, e1);
@@ -72,7 +76,12 @@ public class Dali implements PathPlanningAlgorithm {
 	}
 	
 	DaliNode findNode(double x, double y) {
-		return nodes.values().stream().filter(n -> n.lat == x && n.lon == y).findAny().orElse(null);
+		return loc2node.getOrDefault(new CoordinatesTuple(x, y), null);
+		//return nodes.values().stream().filter(n -> n.lat == x && n.lon == y).findAny().orElse(null);
+	}
+	
+	DaliNode findNearestNode(double x, double y) {
+		return nodes.values().stream().filter(n -> Math.abs(n.lat-x)< Node.threshold / 2 && Math.abs(n.lon-y)< Node.threshold / 2).findAny().orElse(null);
 	}
 	
 	void generateGraph(NavigationArea nArea) {
@@ -80,32 +89,23 @@ public class Dali implements PathPlanningAlgorithm {
 		DaliNode topLeft = new DaliNode(0, nArea.boundry.get(0).lat, nArea.boundry.get(0).lon);
 		processing.add(topLeft);
 		nodes.put(0, topLeft);
+		loc2node.put(new CoordinatesTuple(nArea.boundry.get(0).lat, nArea.boundry.get(0).lon), topLeft);
 		nid =1;
 		eid = 0;
 		
 		while (!processing.isEmpty()) {
 			DaliNode currentDaliNode = processing.remove(0);
-			if (isInArea(nArea, currentDaliNode.lat + Node.threshould, currentDaliNode.lon)) {
-				addNode(currentDaliNode.lat + Node.threshould, currentDaliNode.lon, currentDaliNode);
+			if (isInArea(nArea, currentDaliNode.lat + Node.threshold, currentDaliNode.lon)) {
+				addNode(currentDaliNode.lat + Node.threshold, currentDaliNode.lon, currentDaliNode);
 			}
-			if (isInArea(nArea, currentDaliNode.lat, currentDaliNode.lon + Node.threshould)) {
-				addNode(currentDaliNode.lat, currentDaliNode.lon + Node.threshould, currentDaliNode);
+			if (isInArea(nArea, currentDaliNode.lat, currentDaliNode.lon + Node.threshold)) {
+				addNode(currentDaliNode.lat, currentDaliNode.lon + Node.threshold, currentDaliNode);
 			}
-			if (isInArea(nArea, currentDaliNode.lat + Node.threshould, currentDaliNode.lon - Node.threshould)) {
-				addNode(currentDaliNode.lat + Node.threshould, currentDaliNode.lon + Node.threshould, currentDaliNode);
+			if (isInArea(nArea, currentDaliNode.lat + Node.threshold, currentDaliNode.lon - Node.threshold)) {
+				addNode(currentDaliNode.lat + Node.threshold, currentDaliNode.lon + Node.threshold, currentDaliNode);
 			}
-			if (isInArea(nArea, currentDaliNode.lat + Node.threshould, currentDaliNode.lon - Node.threshould)) {
-				addNode(currentDaliNode.lat + Node.threshould, currentDaliNode.lon + Node.threshould, currentDaliNode);
-			}
-		}
-		
-		int i = 0;
-		for (DaliNode node : nodes.values()) {
-			for (Node node2 : node.neighbors()) {  //TODO
-				DaliEdge edge = new DaliEdge(i, node, (DaliNode)node2);
-				edges.put(edge.id, edge);
-				node.edges.add(edge);
-				i++;
+			if (isInArea(nArea, currentDaliNode.lat + Node.threshold, currentDaliNode.lon - Node.threshold)) {
+				addNode(currentDaliNode.lat + Node.threshold, currentDaliNode.lon + Node.threshold, currentDaliNode);
 			}
 		}
 	}

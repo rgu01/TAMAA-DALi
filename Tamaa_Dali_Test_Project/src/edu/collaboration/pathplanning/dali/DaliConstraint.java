@@ -22,21 +22,7 @@ public class DaliConstraint {
 		isDesirable = (intensity > 0);
 	}
 	
-	DaliNode findNode(HashMap<Integer,DaliNode> nodes, double x, double y) {
-		double dist = Node.threshould * 2;
-		DaliNode nearest = null;
-		for (DaliNode n : nodes.values()) {
-			double newDist = n.distanceToPoint(x, y);
-			if (newDist < dist) {
-				dist = newDist;
-				nearest = n;
-			}
-		}
-		return nearest;
-	}
-	
-	public void addConstaint(HashMap<Integer,DaliNode> nodes) {
-		DaliNode center = findNode(nodes, lon, lat);
+	public void addConstaint(DaliNode center) {
 		HashMap<DaliNode, Double> processing = new HashMap<DaliNode, Double>();
 		HashMap<DaliNode, Double> distances = new HashMap<DaliNode, Double>();
 		processing.put(center,0.0);

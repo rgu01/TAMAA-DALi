@@ -33,14 +33,14 @@ public class ANode extends Node {
 	{
 		List<Node> ns = new ArrayList<Node>();
 		
-		ns.add(new ANode(this.lat + Node.threshould, this.lon, this.destination));
-		ns.add(new ANode(this.lat + Node.threshould, this.lon - Node.threshould, this.destination));
-		ns.add(new ANode(this.lat, this.lon - Node.threshould, this.destination));
-		ns.add(new ANode(this.lat - Node.threshould, this.lon - Node.threshould, this.destination));
-		ns.add(new ANode(this.lat - Node.threshould, this.lon, this.destination));
-		ns.add(new ANode(this.lat - Node.threshould, this.lon + Node.threshould, this.destination));
-		ns.add(new ANode(this.lat, this.lon + Node.threshould, this.destination));
-		ns.add(new ANode(this.lat + Node.threshould, this.lon + Node.threshould, this.destination));
+		ns.add(new ANode(this.lat + Node.threshold, this.lon, this.destination));
+		ns.add(new ANode(this.lat + Node.threshold, this.lon - Node.threshold, this.destination));
+		ns.add(new ANode(this.lat, this.lon - Node.threshold, this.destination));
+		ns.add(new ANode(this.lat - Node.threshold, this.lon - Node.threshold, this.destination));
+		ns.add(new ANode(this.lat - Node.threshold, this.lon, this.destination));
+		ns.add(new ANode(this.lat - Node.threshold, this.lon + Node.threshold, this.destination));
+		ns.add(new ANode(this.lat, this.lon + Node.threshold, this.destination));
+		ns.add(new ANode(this.lat + Node.threshold, this.lon + Node.threshold, this.destination));
 		
 		return ns;
 	}

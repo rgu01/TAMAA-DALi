@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Node {
-	public static double threshould = 1;
+	public static double threshold = 1;
 	public double lat;
 	public double lon;
 	public Node parent;
@@ -20,14 +20,14 @@ public class Node {
 	{
 		List<Node> ns = new ArrayList<Node>();
 		
-		ns.add(new Node(this.lat + Node.threshould, this.lon));
-		ns.add(new Node(this.lat + Node.threshould, this.lon - Node.threshould));
-		ns.add(new Node(this.lat, this.lon - Node.threshould));
-		ns.add(new Node(this.lat - Node.threshould, this.lon - Node.threshould));
-		ns.add(new Node(this.lat - Node.threshould, this.lon));
-		ns.add(new Node(this.lat - Node.threshould, this.lon + Node.threshould));
-		ns.add(new Node(this.lat, this.lon + Node.threshould));
-		ns.add(new Node(this.lat + Node.threshould, this.lon + Node.threshould));
+		ns.add(new Node(this.lat + Node.threshold, this.lon));
+		ns.add(new Node(this.lat + Node.threshold, this.lon - Node.threshold));
+		ns.add(new Node(this.lat, this.lon - Node.threshold));
+		ns.add(new Node(this.lat - Node.threshold, this.lon - Node.threshold));
+		ns.add(new Node(this.lat - Node.threshold, this.lon));
+		ns.add(new Node(this.lat - Node.threshold, this.lon + Node.threshold));
+		ns.add(new Node(this.lat, this.lon + Node.threshold));
+		ns.add(new Node(this.lat + Node.threshold, this.lon + Node.threshold));
 		
 		return ns;
 	}
@@ -61,6 +61,6 @@ public class Node {
 	{
 		PathSegment ps = new PathSegment(this, ns);
 		
-		return ps.cost() <= 2*Node.threshould;
+		return ps.cost() <= 2*Node.threshold;
 	}
 }

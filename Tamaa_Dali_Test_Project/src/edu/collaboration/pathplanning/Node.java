@@ -9,10 +9,10 @@ public class Node {
 	public double lon;
 	public Node parent;
 	//
-	public Node(double x, double y)
+	public Node(double lat, double lon)
 	{
-		this.lon = x;
-		this.lat = y;
+		this.lon = lon;
+		this.lat = lat;
 		this.parent = null;
 	}
 	
@@ -50,6 +50,11 @@ public class Node {
         Node ns = (Node) o; 
 		
 		return this.lat == ns.lat && this.lon == ns.lon;
+	}
+	
+	public String toString()
+	{
+		return "(" + this.lat + ", " + this.lon + ")";
 	}
 	
 	public boolean near(Node ns)

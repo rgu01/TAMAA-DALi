@@ -26,6 +26,7 @@ public class AStar implements PathPlanningAlgorithm {
 	public List<Node> calculate(Node start, Node destination) {
 		ANode temp = null, aStart = null, aDestination = null;
 		List<Node> result = new ArrayList<Node>();
+		List<Node> neighbors = new ArrayList<Node>();
 		
 		aStart = new ANode(start.lat, start.lon, destination);
 		aDestination = new ANode(destination.lat, destination.lon, destination);
@@ -41,7 +42,8 @@ public class AStar implements PathPlanningAlgorithm {
 				break;
 			}
 			closed.add(temp);
-			for(Node nb : temp.neighbors())
+			neighbors = temp.neighbors();
+			for(Node nb : neighbors)
 			{
 				if(map.contains(nb))
 				{

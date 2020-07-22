@@ -10,9 +10,9 @@ public class ANode extends Node {
 	private double hValue;
 	private Node destination;
 	
-	public ANode(double x, double y, Node destination)
+	public ANode(double lat, double lon, Node destination)
 	{
-		super(x, y);
+		super(lat, lon);
 		this.gValue = 0;
 		this.hValue = this.estimatedCost(destination);
 		this.destination = destination;

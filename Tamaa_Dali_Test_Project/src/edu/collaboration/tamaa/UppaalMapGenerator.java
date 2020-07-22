@@ -13,7 +13,7 @@ public class UppaalMapGenerator {
         this.scale = scale;
     }
 
-    public void creteSampleMap() {
+    public void createSampleMap() {
         int[][] map = new int[scale][scale];
         int ran = 0, i = 0, j = 0;
 

@@ -109,7 +109,7 @@ public class PlannerServiceHandler implements PlannerService.Iface {
 
 			// Static layer
 			UppaalMapGenerator mapGenerator = new UppaalMapGenerator(3);
-			mapGenerator.creteSampleMap();
+			mapGenerator.createSampleMap();
 
 			//Sample for task transition.
 			// From current vehicle position to first task.

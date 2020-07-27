@@ -48,6 +48,28 @@ public class Path {
 		return len;
 	}
 	
+	/**
+	 * 
+	 * @param n1 One end of the path
+	 * @param n2 Another end of the path
+	 * @return if the path is connecting this two points
+	 */
+	public boolean isThePath(Node n1, Node n2)
+	{
+		boolean result = false;
+		
+		if(this.start.equals(n1) && this.end.equals(n2))
+        {
+        	result = true;
+        }
+        else if(this.start.equals(n2) && this.end.equals(n1))
+        {
+        	result = true;
+        }
+		
+		return result;
+	}
+	
 	@Override
 	public boolean equals(Object o)
 	{

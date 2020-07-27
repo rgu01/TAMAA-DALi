@@ -1,0 +1,934 @@
+<nta >
+<declaration >// Place global declarations here.
+const int AgentNum = 4;
+typedef int[0,AgentNum-1] AgentScale;
+const int TaskNum = 4;
+const int EventNum = 0;
+const int MilestoneNum = 3;
+const int MaxIteration = 2;
+
+bool position[AgentNum][MilestoneNum]={{false,false,false},{false,false,false},{false,false,false},{false,false,false}};
+
+const int BCET[AgentNum][TaskNum]={{0,20,15,10},{0,20,15,10},{0,20,15,10},{0,20,15,10}};
+const int WCET[AgentNum][TaskNum]={{0,25,18,15},{0,25,18,15},{0,25,18,15},{0,25,18,15}};
+const int RegularTaskNum[AgentNum] = {3,3,3,3};
+chan move[AgentNum], initialize;
+
+int iteration[AgentNum] = {0,0,0,0};
+
+clock globalTime;
+
+</declaration>
+<template >
+<name >Movement0</name>
+<parameter >const AgentScale id</parameter>
+<declaration >clock t;
+</declaration>
+<location id ="initial" x ="-500" y ="-300">
+<name >initial</name>
+<urgent  />
+</location>
+<location id ="P0" x ="-400" y ="-200">
+<name >P0</name>
+</location>
+<location id ="F0T1" x ="-150" y ="-100">
+<name >F0T1</name>
+<label kind ="invariant">t&lt;=1002</label>
+</location>
+<location id ="F0T2" x ="0" y ="-100">
+<name >F0T2</name>
+<label kind ="invariant">t&lt;=726</label>
+</location>
+<location id ="P1" x ="-250" y ="-50">
+<name >P1</name>
+</location>
+<location id ="F1T0" x ="-300" y ="50">
+<name >F1T0</name>
+<label kind ="invariant">t&lt;=1002</label>
+</location>
+<location id ="F1T2" x ="0" y ="50">
+<name >F1T2</name>
+<label kind ="invariant">t&lt;=595</label>
+</location>
+<location id ="P2" x ="-100" y ="100">
+<name >P2</name>
+</location>
+<location id ="F2T0" x ="-300" y ="200">
+<name >F2T0</name>
+<label kind ="invariant">t&lt;=726</label>
+</location>
+<location id ="F2T1" x ="-150" y ="200">
+<name >F2T1</name>
+<label kind ="invariant">t&lt;=595</label>
+</location>
+<init ref ="initial" />
+<transition >
+<source ref ="initial" />
+<target ref ="P0" />
+<label kind ="assignment">position[id][0]=true</label>
+</transition>
+<transition >
+<source ref ="P0" />
+<target ref ="F0T1" />
+<label kind ="assignment">t=0,position[id][0]=false</label>
+<label kind ="synchronisation">move[id]?</label>
+</transition>
+<transition >
+<source ref ="F0T1" />
+<target ref ="P1" />
+<label kind ="assignment">t=0,position[id][1]=true</label>
+<label kind ="guard">t&gt;=1002</label>
+</transition>
+<transition >
+<source ref ="P0" />
+<target ref ="F0T2" />
+<label kind ="assignment">t=0,position[id][0]=false</label>
+<label kind ="synchronisation">move[id]?</label>
+</transition>
+<transition >
+<source ref ="F0T2" />
+<target ref ="P2" />
+<label kind ="assignment">t=0,position[id][2]=true</label>
+<label kind ="guard">t&gt;=726</label>
+</transition>
+<transition >
+<source ref ="P1" />
+<target ref ="F1T0" />
+<label kind ="assignment">t=0,position[id][1]=false</label>
+<label kind ="synchronisation">move[id]?</label>
+</transition>
+<transition >
+<source ref ="F1T0" />
+<target ref ="P0" />
+<label kind ="assignment">t=0,position[id][0]=true</label>
+<label kind ="guard">t&gt;=1002</label>
+</transition>
+<transition >
+<source ref ="P1" />
+<target ref ="F1T2" />
+<label kind ="assignment">t=0,position[id][1]=false</label>
+<label kind ="synchronisation">move[id]?</label>
+</transition>
+<transition >
+<source ref ="F1T2" />
+<target ref ="P2" />
+<label kind ="assignment">t=0,position[id][2]=true</label>
+<label kind ="guard">t&gt;=595</label>
+</transition>
+<transition >
+<source ref ="P2" />
+<target ref ="F2T0" />
+<label kind ="assignment">t=0,position[id][2]=false</label>
+<label kind ="synchronisation">move[id]?</label>
+</transition>
+<transition >
+<source ref ="F2T0" />
+<target ref ="P0" />
+<label kind ="assignment">t=0,position[id][0]=true</label>
+<label kind ="guard">t&gt;=726</label>
+</transition>
+<transition >
+<source ref ="P2" />
+<target ref ="F2T1" />
+<label kind ="assignment">t=0,position[id][2]=false</label>
+<label kind ="synchronisation">move[id]?</label>
+</transition>
+<transition >
+<source ref ="F2T1" />
+<target ref ="P1" />
+<label kind ="assignment">t=0,position[id][1]=true</label>
+<label kind ="guard">t&gt;=595</label>
+</transition>
+</template>
+<template >
+<name >TaskExecution0</name>
+<parameter >const AgentScale id</parameter>
+<declaration >clock t;
+bool tf[TaskNum]={true,false,false,false};
+bool ts[TaskNum]={true,false,false,false};
+
+void updateIteration()
+{
+	int i=0;
+	bool finish = true;
+	for(i=1;i&lt;=RegularTaskNum[id];i++)
+	{
+		finish &amp;= tf[i];
+	}
+	if(finish)
+	{
+		for(i=1;i&lt;=RegularTaskNum[id];i++)
+		{
+			tf[i]=false;
+		}
+		
+		iteration[id]+=1;
+		if(iteration[id]==MaxIteration)
+		{
+			iteration[id]=0;
+		}
+	}
+	else
+	{
+    	finish = true;
+	}
+}
+
+</declaration>
+<location id ="T0" x ="-400" y ="-200">
+<name >T0</name>
+</location>
+<location id ="T1" x ="-700" y ="-200">
+<name >T1</name>
+<label kind ="invariant">t&lt;=WCET[id][1]</label>
+</location>
+<location id ="T2" x ="-400" y ="-500">
+<name >T2</name>
+<label kind ="invariant">t&lt;=WCET[id][2]</label>
+</location>
+<location id ="T3" x ="-100" y ="-200">
+<name >T3</name>
+<label kind ="invariant">t&lt;=WCET[id][3]</label>
+</location>
+<init ref ="T0" />
+<transition >
+<source ref ="T0" />
+<target ref ="T0" />
+<label kind ="synchronisation">move[id]!</label>
+<label kind ="assignment">t=0</label>
+</transition>
+<transition >
+<source ref ="T0" />
+<target ref ="T1" />
+<label kind ="assignment">t=0,ts[1]=true,tf[1]=false</label>
+<label kind ="guard">position[id][0]</label>
+</transition>
+<transition >
+<source ref ="T1" />
+<target ref ="T0" />
+<label kind ="assignment" x ="-520" y ="30">t=0,ts[1]=false,tf[1]=true,
+updateIteration()</label>
+<label kind ="guard" x ="-550" y ="0">t&gt;=BCET[id][1]</label>
+<nail x ="-550" y ="0" />
+</transition>
+<transition >
+<source ref ="T0" />
+<target ref ="T2" />
+<label kind ="assignment">t=0,ts[2]=true,tf[2]=false</label>
+<label kind ="guard">position[id][1]&amp;&amp;(tf[1])</label>
+</transition>
+<transition >
+<source ref ="T2" />
+<target ref ="T0" />
+<label kind ="assignment" x ="-520" y ="-320">t=0,ts[2]=false,tf[2]=true,
+updateIteration()</label>
+<label kind ="guard" x ="-550" y ="-350">t&gt;=BCET[id][2]</label>
+<nail x ="-550" y ="-350" />
+</transition>
+<transition >
+<source ref ="T0" />
+<target ref ="T3" />
+<label kind ="assignment">t=0,ts[3]=true,tf[3]=false</label>
+<label kind ="guard">position[id][2]&amp;&amp;(tf[2])</label>
+</transition>
+<transition >
+<source ref ="T3" />
+<target ref ="T0" />
+<label kind ="assignment" x ="-220" y ="-320">t=0,ts[3]=false,tf[3]=true,
+updateIteration()</label>
+<label kind ="guard" x ="-250" y ="-350">t&gt;=BCET[id][3]</label>
+<nail x ="-250" y ="-350" />
+</transition>
+</template>
+<template >
+<name >Movement1</name>
+<parameter >const AgentScale id</parameter>
+<declaration >clock t;
+</declaration>
+<location id ="initial" x ="-500" y ="-300">
+<name >initial</name>
+<urgent  />
+</location>
+<location id ="P0" x ="-400" y ="-200">
+<name >P0</name>
+</location>
+<location id ="F0T1" x ="-150" y ="-100">
+<name >F0T1</name>
+<label kind ="invariant">t&lt;=1002</label>
+</location>
+<location id ="F0T2" x ="0" y ="-100">
+<name >F0T2</name>
+<label kind ="invariant">t&lt;=726</label>
+</location>
+<location id ="P1" x ="-250" y ="-50">
+<name >P1</name>
+</location>
+<location id ="F1T0" x ="-300" y ="50">
+<name >F1T0</name>
+<label kind ="invariant">t&lt;=1002</label>
+</location>
+<location id ="F1T2" x ="0" y ="50">
+<name >F1T2</name>
+<label kind ="invariant">t&lt;=595</label>
+</location>
+<location id ="P2" x ="-100" y ="100">
+<name >P2</name>
+</location>
+<location id ="F2T0" x ="-300" y ="200">
+<name >F2T0</name>
+<label kind ="invariant">t&lt;=726</label>
+</location>
+<location id ="F2T1" x ="-150" y ="200">
+<name >F2T1</name>
+<label kind ="invariant">t&lt;=595</label>
+</location>
+<init ref ="initial" />
+<transition >
+<source ref ="initial" />
+<target ref ="P0" />
+<label kind ="assignment">position[id][0]=true</label>
+</transition>
+<transition >
+<source ref ="P0" />
+<target ref ="F0T1" />
+<label kind ="assignment">t=0,position[id][0]=false</label>
+<label kind ="synchronisation">move[id]?</label>
+</transition>
+<transition >
+<source ref ="F0T1" />
+<target ref ="P1" />
+<label kind ="assignment">t=0,position[id][1]=true</label>
+<label kind ="guard">t&gt;=1002</label>
+</transition>
+<transition >
+<source ref ="P0" />
+<target ref ="F0T2" />
+<label kind ="assignment">t=0,position[id][0]=false</label>
+<label kind ="synchronisation">move[id]?</label>
+</transition>
+<transition >
+<source ref ="F0T2" />
+<target ref ="P2" />
+<label kind ="assignment">t=0,position[id][2]=true</label>
+<label kind ="guard">t&gt;=726</label>
+</transition>
+<transition >
+<source ref ="P1" />
+<target ref ="F1T0" />
+<label kind ="assignment">t=0,position[id][1]=false</label>
+<label kind ="synchronisation">move[id]?</label>
+</transition>
+<transition >
+<source ref ="F1T0" />
+<target ref ="P0" />
+<label kind ="assignment">t=0,position[id][0]=true</label>
+<label kind ="guard">t&gt;=1002</label>
+</transition>
+<transition >
+<source ref ="P1" />
+<target ref ="F1T2" />
+<label kind ="assignment">t=0,position[id][1]=false</label>
+<label kind ="synchronisation">move[id]?</label>
+</transition>
+<transition >
+<source ref ="F1T2" />
+<target ref ="P2" />
+<label kind ="assignment">t=0,position[id][2]=true</label>
+<label kind ="guard">t&gt;=595</label>
+</transition>
+<transition >
+<source ref ="P2" />
+<target ref ="F2T0" />
+<label kind ="assignment">t=0,position[id][2]=false</label>
+<label kind ="synchronisation">move[id]?</label>
+</transition>
+<transition >
+<source ref ="F2T0" />
+<target ref ="P0" />
+<label kind ="assignment">t=0,position[id][0]=true</label>
+<label kind ="guard">t&gt;=726</label>
+</transition>
+<transition >
+<source ref ="P2" />
+<target ref ="F2T1" />
+<label kind ="assignment">t=0,position[id][2]=false</label>
+<label kind ="synchronisation">move[id]?</label>
+</transition>
+<transition >
+<source ref ="F2T1" />
+<target ref ="P1" />
+<label kind ="assignment">t=0,position[id][1]=true</label>
+<label kind ="guard">t&gt;=595</label>
+</transition>
+</template>
+<template >
+<name >TaskExecution1</name>
+<parameter >const AgentScale id</parameter>
+<declaration >clock t;
+bool tf[TaskNum]={true,false,false,false};
+bool ts[TaskNum]={true,false,false,false};
+
+void updateIteration()
+{
+	int i=0;
+	bool finish = true;
+	for(i=1;i&lt;=RegularTaskNum[id];i++)
+	{
+		finish &amp;= tf[i];
+	}
+	if(finish)
+	{
+		for(i=1;i&lt;=RegularTaskNum[id];i++)
+		{
+			tf[i]=false;
+		}
+		
+		iteration[id]+=1;
+		if(iteration[id]==MaxIteration)
+		{
+			iteration[id]=0;
+		}
+	}
+	else
+	{
+    	finish = true;
+	}
+}
+
+</declaration>
+<location id ="T0" x ="-400" y ="-200">
+<name >T0</name>
+</location>
+<location id ="T1" x ="-700" y ="-200">
+<name >T1</name>
+<label kind ="invariant">t&lt;=WCET[id][1]</label>
+</location>
+<location id ="T2" x ="-400" y ="-500">
+<name >T2</name>
+<label kind ="invariant">t&lt;=WCET[id][2]</label>
+</location>
+<location id ="T3" x ="-100" y ="-200">
+<name >T3</name>
+<label kind ="invariant">t&lt;=WCET[id][3]</label>
+</location>
+<init ref ="T0" />
+<transition >
+<source ref ="T0" />
+<target ref ="T0" />
+<label kind ="synchronisation">move[id]!</label>
+<label kind ="assignment">t=0</label>
+</transition>
+<transition >
+<source ref ="T0" />
+<target ref ="T1" />
+<label kind ="assignment">t=0,ts[1]=true,tf[1]=false</label>
+<label kind ="guard">position[id][0]</label>
+</transition>
+<transition >
+<source ref ="T1" />
+<target ref ="T0" />
+<label kind ="assignment" x ="-520" y ="30">t=0,ts[1]=false,tf[1]=true,
+updateIteration()</label>
+<label kind ="guard" x ="-550" y ="0">t&gt;=BCET[id][1]</label>
+<nail x ="-550" y ="0" />
+</transition>
+<transition >
+<source ref ="T0" />
+<target ref ="T2" />
+<label kind ="assignment">t=0,ts[2]=true,tf[2]=false</label>
+<label kind ="guard">position[id][1]&amp;&amp;(tf[1])</label>
+</transition>
+<transition >
+<source ref ="T2" />
+<target ref ="T0" />
+<label kind ="assignment" x ="-520" y ="-320">t=0,ts[2]=false,tf[2]=true,
+updateIteration()</label>
+<label kind ="guard" x ="-550" y ="-350">t&gt;=BCET[id][2]</label>
+<nail x ="-550" y ="-350" />
+</transition>
+<transition >
+<source ref ="T0" />
+<target ref ="T3" />
+<label kind ="assignment">t=0,ts[3]=true,tf[3]=false</label>
+<label kind ="guard">position[id][2]&amp;&amp;(tf[2])</label>
+</transition>
+<transition >
+<source ref ="T3" />
+<target ref ="T0" />
+<label kind ="assignment" x ="-220" y ="-320">t=0,ts[3]=false,tf[3]=true,
+updateIteration()</label>
+<label kind ="guard" x ="-250" y ="-350">t&gt;=BCET[id][3]</label>
+<nail x ="-250" y ="-350" />
+</transition>
+</template>
+<template >
+<name >Movement2</name>
+<parameter >const AgentScale id</parameter>
+<declaration >clock t;
+</declaration>
+<location id ="initial" x ="-500" y ="-300">
+<name >initial</name>
+<urgent  />
+</location>
+<location id ="P0" x ="-400" y ="-200">
+<name >P0</name>
+</location>
+<location id ="F0T1" x ="-150" y ="-100">
+<name >F0T1</name>
+<label kind ="invariant">t&lt;=1002</label>
+</location>
+<location id ="F0T2" x ="0" y ="-100">
+<name >F0T2</name>
+<label kind ="invariant">t&lt;=726</label>
+</location>
+<location id ="P1" x ="-250" y ="-50">
+<name >P1</name>
+</location>
+<location id ="F1T0" x ="-300" y ="50">
+<name >F1T0</name>
+<label kind ="invariant">t&lt;=1002</label>
+</location>
+<location id ="F1T2" x ="0" y ="50">
+<name >F1T2</name>
+<label kind ="invariant">t&lt;=595</label>
+</location>
+<location id ="P2" x ="-100" y ="100">
+<name >P2</name>
+</location>
+<location id ="F2T0" x ="-300" y ="200">
+<name >F2T0</name>
+<label kind ="invariant">t&lt;=726</label>
+</location>
+<location id ="F2T1" x ="-150" y ="200">
+<name >F2T1</name>
+<label kind ="invariant">t&lt;=595</label>
+</location>
+<init ref ="initial" />
+<transition >
+<source ref ="initial" />
+<target ref ="P0" />
+<label kind ="assignment">position[id][0]=true</label>
+</transition>
+<transition >
+<source ref ="P0" />
+<target ref ="F0T1" />
+<label kind ="assignment">t=0,position[id][0]=false</label>
+<label kind ="synchronisation">move[id]?</label>
+</transition>
+<transition >
+<source ref ="F0T1" />
+<target ref ="P1" />
+<label kind ="assignment">t=0,position[id][1]=true</label>
+<label kind ="guard">t&gt;=1002</label>
+</transition>
+<transition >
+<source ref ="P0" />
+<target ref ="F0T2" />
+<label kind ="assignment">t=0,position[id][0]=false</label>
+<label kind ="synchronisation">move[id]?</label>
+</transition>
+<transition >
+<source ref ="F0T2" />
+<target ref ="P2" />
+<label kind ="assignment">t=0,position[id][2]=true</label>
+<label kind ="guard">t&gt;=726</label>
+</transition>
+<transition >
+<source ref ="P1" />
+<target ref ="F1T0" />
+<label kind ="assignment">t=0,position[id][1]=false</label>
+<label kind ="synchronisation">move[id]?</label>
+</transition>
+<transition >
+<source ref ="F1T0" />
+<target ref ="P0" />
+<label kind ="assignment">t=0,position[id][0]=true</label>
+<label kind ="guard">t&gt;=1002</label>
+</transition>
+<transition >
+<source ref ="P1" />
+<target ref ="F1T2" />
+<label kind ="assignment">t=0,position[id][1]=false</label>
+<label kind ="synchronisation">move[id]?</label>
+</transition>
+<transition >
+<source ref ="F1T2" />
+<target ref ="P2" />
+<label kind ="assignment">t=0,position[id][2]=true</label>
+<label kind ="guard">t&gt;=595</label>
+</transition>
+<transition >
+<source ref ="P2" />
+<target ref ="F2T0" />
+<label kind ="assignment">t=0,position[id][2]=false</label>
+<label kind ="synchronisation">move[id]?</label>
+</transition>
+<transition >
+<source ref ="F2T0" />
+<target ref ="P0" />
+<label kind ="assignment">t=0,position[id][0]=true</label>
+<label kind ="guard">t&gt;=726</label>
+</transition>
+<transition >
+<source ref ="P2" />
+<target ref ="F2T1" />
+<label kind ="assignment">t=0,position[id][2]=false</label>
+<label kind ="synchronisation">move[id]?</label>
+</transition>
+<transition >
+<source ref ="F2T1" />
+<target ref ="P1" />
+<label kind ="assignment">t=0,position[id][1]=true</label>
+<label kind ="guard">t&gt;=595</label>
+</transition>
+</template>
+<template >
+<name >TaskExecution2</name>
+<parameter >const AgentScale id</parameter>
+<declaration >clock t;
+bool tf[TaskNum]={true,false,false,false};
+bool ts[TaskNum]={true,false,false,false};
+
+void updateIteration()
+{
+	int i=0;
+	bool finish = true;
+	for(i=1;i&lt;=RegularTaskNum[id];i++)
+	{
+		finish &amp;= tf[i];
+	}
+	if(finish)
+	{
+		for(i=1;i&lt;=RegularTaskNum[id];i++)
+		{
+			tf[i]=false;
+		}
+		
+		iteration[id]+=1;
+		if(iteration[id]==MaxIteration)
+		{
+			iteration[id]=0;
+		}
+	}
+	else
+	{
+    	finish = true;
+	}
+}
+
+</declaration>
+<location id ="T0" x ="-400" y ="-200">
+<name >T0</name>
+</location>
+<location id ="T1" x ="-700" y ="-200">
+<name >T1</name>
+<label kind ="invariant">t&lt;=WCET[id][1]</label>
+</location>
+<location id ="T2" x ="-400" y ="-500">
+<name >T2</name>
+<label kind ="invariant">t&lt;=WCET[id][2]</label>
+</location>
+<location id ="T3" x ="-100" y ="-200">
+<name >T3</name>
+<label kind ="invariant">t&lt;=WCET[id][3]</label>
+</location>
+<init ref ="T0" />
+<transition >
+<source ref ="T0" />
+<target ref ="T0" />
+<label kind ="synchronisation">move[id]!</label>
+<label kind ="assignment">t=0</label>
+</transition>
+<transition >
+<source ref ="T0" />
+<target ref ="T1" />
+<label kind ="assignment">t=0,ts[1]=true,tf[1]=false</label>
+<label kind ="guard">position[id][0]</label>
+</transition>
+<transition >
+<source ref ="T1" />
+<target ref ="T0" />
+<label kind ="assignment" x ="-520" y ="30">t=0,ts[1]=false,tf[1]=true,
+updateIteration()</label>
+<label kind ="guard" x ="-550" y ="0">t&gt;=BCET[id][1]</label>
+<nail x ="-550" y ="0" />
+</transition>
+<transition >
+<source ref ="T0" />
+<target ref ="T2" />
+<label kind ="assignment">t=0,ts[2]=true,tf[2]=false</label>
+<label kind ="guard">position[id][1]&amp;&amp;(tf[1])</label>
+</transition>
+<transition >
+<source ref ="T2" />
+<target ref ="T0" />
+<label kind ="assignment" x ="-520" y ="-320">t=0,ts[2]=false,tf[2]=true,
+updateIteration()</label>
+<label kind ="guard" x ="-550" y ="-350">t&gt;=BCET[id][2]</label>
+<nail x ="-550" y ="-350" />
+</transition>
+<transition >
+<source ref ="T0" />
+<target ref ="T3" />
+<label kind ="assignment">t=0,ts[3]=true,tf[3]=false</label>
+<label kind ="guard">position[id][2]&amp;&amp;(tf[2])</label>
+</transition>
+<transition >
+<source ref ="T3" />
+<target ref ="T0" />
+<label kind ="assignment" x ="-220" y ="-320">t=0,ts[3]=false,tf[3]=true,
+updateIteration()</label>
+<label kind ="guard" x ="-250" y ="-350">t&gt;=BCET[id][3]</label>
+<nail x ="-250" y ="-350" />
+</transition>
+</template>
+<template >
+<name >Movement3</name>
+<parameter >const AgentScale id</parameter>
+<declaration >clock t;
+</declaration>
+<location id ="initial" x ="-500" y ="-300">
+<name >initial</name>
+<urgent  />
+</location>
+<location id ="P0" x ="-400" y ="-200">
+<name >P0</name>
+</location>
+<location id ="F0T1" x ="-150" y ="-100">
+<name >F0T1</name>
+<label kind ="invariant">t&lt;=1002</label>
+</location>
+<location id ="F0T2" x ="0" y ="-100">
+<name >F0T2</name>
+<label kind ="invariant">t&lt;=726</label>
+</location>
+<location id ="P1" x ="-250" y ="-50">
+<name >P1</name>
+</location>
+<location id ="F1T0" x ="-300" y ="50">
+<name >F1T0</name>
+<label kind ="invariant">t&lt;=1002</label>
+</location>
+<location id ="F1T2" x ="0" y ="50">
+<name >F1T2</name>
+<label kind ="invariant">t&lt;=595</label>
+</location>
+<location id ="P2" x ="-100" y ="100">
+<name >P2</name>
+</location>
+<location id ="F2T0" x ="-300" y ="200">
+<name >F2T0</name>
+<label kind ="invariant">t&lt;=726</label>
+</location>
+<location id ="F2T1" x ="-150" y ="200">
+<name >F2T1</name>
+<label kind ="invariant">t&lt;=595</label>
+</location>
+<init ref ="initial" />
+<transition >
+<source ref ="initial" />
+<target ref ="P0" />
+<label kind ="assignment">position[id][0]=true</label>
+</transition>
+<transition >
+<source ref ="P0" />
+<target ref ="F0T1" />
+<label kind ="assignment">t=0,position[id][0]=false</label>
+<label kind ="synchronisation">move[id]?</label>
+</transition>
+<transition >
+<source ref ="F0T1" />
+<target ref ="P1" />
+<label kind ="assignment">t=0,position[id][1]=true</label>
+<label kind ="guard">t&gt;=1002</label>
+</transition>
+<transition >
+<source ref ="P0" />
+<target ref ="F0T2" />
+<label kind ="assignment">t=0,position[id][0]=false</label>
+<label kind ="synchronisation">move[id]?</label>
+</transition>
+<transition >
+<source ref ="F0T2" />
+<target ref ="P2" />
+<label kind ="assignment">t=0,position[id][2]=true</label>
+<label kind ="guard">t&gt;=726</label>
+</transition>
+<transition >
+<source ref ="P1" />
+<target ref ="F1T0" />
+<label kind ="assignment">t=0,position[id][1]=false</label>
+<label kind ="synchronisation">move[id]?</label>
+</transition>
+<transition >
+<source ref ="F1T0" />
+<target ref ="P0" />
+<label kind ="assignment">t=0,position[id][0]=true</label>
+<label kind ="guard">t&gt;=1002</label>
+</transition>
+<transition >
+<source ref ="P1" />
+<target ref ="F1T2" />
+<label kind ="assignment">t=0,position[id][1]=false</label>
+<label kind ="synchronisation">move[id]?</label>
+</transition>
+<transition >
+<source ref ="F1T2" />
+<target ref ="P2" />
+<label kind ="assignment">t=0,position[id][2]=true</label>
+<label kind ="guard">t&gt;=595</label>
+</transition>
+<transition >
+<source ref ="P2" />
+<target ref ="F2T0" />
+<label kind ="assignment">t=0,position[id][2]=false</label>
+<label kind ="synchronisation">move[id]?</label>
+</transition>
+<transition >
+<source ref ="F2T0" />
+<target ref ="P0" />
+<label kind ="assignment">t=0,position[id][0]=true</label>
+<label kind ="guard">t&gt;=726</label>
+</transition>
+<transition >
+<source ref ="P2" />
+<target ref ="F2T1" />
+<label kind ="assignment">t=0,position[id][2]=false</label>
+<label kind ="synchronisation">move[id]?</label>
+</transition>
+<transition >
+<source ref ="F2T1" />
+<target ref ="P1" />
+<label kind ="assignment">t=0,position[id][1]=true</label>
+<label kind ="guard">t&gt;=595</label>
+</transition>
+</template>
+<template >
+<name >TaskExecution3</name>
+<parameter >const AgentScale id</parameter>
+<declaration >clock t;
+bool tf[TaskNum]={true,false,false,false};
+bool ts[TaskNum]={true,false,false,false};
+
+void updateIteration()
+{
+	int i=0;
+	bool finish = true;
+	for(i=1;i&lt;=RegularTaskNum[id];i++)
+	{
+		finish &amp;= tf[i];
+	}
+	if(finish)
+	{
+		for(i=1;i&lt;=RegularTaskNum[id];i++)
+		{
+			tf[i]=false;
+		}
+		
+		iteration[id]+=1;
+		if(iteration[id]==MaxIteration)
+		{
+			iteration[id]=0;
+		}
+	}
+	else
+	{
+    	finish = true;
+	}
+}
+
+</declaration>
+<location id ="T0" x ="-400" y ="-200">
+<name >T0</name>
+</location>
+<location id ="T1" x ="-700" y ="-200">
+<name >T1</name>
+<label kind ="invariant">t&lt;=WCET[id][1]</label>
+</location>
+<location id ="T2" x ="-400" y ="-500">
+<name >T2</name>
+<label kind ="invariant">t&lt;=WCET[id][2]</label>
+</location>
+<location id ="T3" x ="-100" y ="-200">
+<name >T3</name>
+<label kind ="invariant">t&lt;=WCET[id][3]</label>
+</location>
+<init ref ="T0" />
+<transition >
+<source ref ="T0" />
+<target ref ="T0" />
+<label kind ="synchronisation">move[id]!</label>
+<label kind ="assignment">t=0</label>
+</transition>
+<transition >
+<source ref ="T0" />
+<target ref ="T1" />
+<label kind ="assignment">t=0,ts[1]=true,tf[1]=false</label>
+<label kind ="guard">position[id][0]</label>
+</transition>
+<transition >
+<source ref ="T1" />
+<target ref ="T0" />
+<label kind ="assignment" x ="-520" y ="30">t=0,ts[1]=false,tf[1]=true,
+updateIteration()</label>
+<label kind ="guard" x ="-550" y ="0">t&gt;=BCET[id][1]</label>
+<nail x ="-550" y ="0" />
+</transition>
+<transition >
+<source ref ="T0" />
+<target ref ="T2" />
+<label kind ="assignment">t=0,ts[2]=true,tf[2]=false</label>
+<label kind ="guard">position[id][1]&amp;&amp;(tf[1])</label>
+</transition>
+<transition >
+<source ref ="T2" />
+<target ref ="T0" />
+<label kind ="assignment" x ="-520" y ="-320">t=0,ts[2]=false,tf[2]=true,
+updateIteration()</label>
+<label kind ="guard" x ="-550" y ="-350">t&gt;=BCET[id][2]</label>
+<nail x ="-550" y ="-350" />
+</transition>
+<transition >
+<source ref ="T0" />
+<target ref ="T3" />
+<label kind ="assignment">t=0,ts[3]=true,tf[3]=false</label>
+<label kind ="guard">position[id][2]&amp;&amp;(tf[2])</label>
+</transition>
+<transition >
+<source ref ="T3" />
+<target ref ="T0" />
+<label kind ="assignment" x ="-220" y ="-320">t=0,ts[3]=false,tf[3]=true,
+updateIteration()</label>
+<label kind ="guard" x ="-250" y ="-350">t&gt;=BCET[id][3]</label>
+<nail x ="-250" y ="-350" />
+</transition>
+</template>
+<system >movement0 = Movement0(0);
+taskExe0 = TaskExecution0(0);
+movement1 = Movement1(1);
+taskExe1 = TaskExecution1(1);
+movement2 = Movement2(2);
+taskExe2 = TaskExecution2(2);
+movement3 = Movement3(3);
+taskExe3 = TaskExecution3(3);
+
+system movement0, taskExe0, movement1, taskExe1, movement2, taskExe2, movement3, taskExe3;</system>
+<queries >
+<query >
+<formula >E&lt;&gt;  iteration[0]&gt;=1</formula>
+<comment >Task Coverage</comment>
+</query>
+<query >
+<formula >E&lt;&gt;  iteration[1]&gt;=1</formula>
+<comment >Task Coverage</comment>
+</query>
+<query >
+<formula >E&lt;&gt;  iteration[2]&gt;=1</formula>
+<comment >Task Coverage</comment>
+</query>
+<query >
+<formula >E&lt;&gt;  iteration[3]&gt;=1</formula>
+<comment >Task Coverage</comment>
+</query>
+</queries>
+</nta>

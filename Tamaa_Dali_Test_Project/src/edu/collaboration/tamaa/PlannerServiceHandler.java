@@ -18,6 +18,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import edu.collaboration.model.generation.MapTxtGenerator;
+import edu.collaboration.model.generation.UPPAgentGenerator;
 import edu.collaboration.pathplanning.*;
 import edu.collaboration.pathplanning.xstar.*;
 
@@ -35,6 +37,7 @@ public class PlannerServiceHandler implements PlannerService.Iface {
 		double task_lat, task_lon;
 		Node start = null, end = null;
 		List<Position> milestones = new ArrayList<Position>();
+		List<Node> nodes = new ArrayList<Node>();
 		Position origin = null, goal = null;
 		//Map<List<Node>, List<Node>> paths = new HashMap<List<Node>, List<Node>>();
 		List<Path> paths = new ArrayList<Path>();
@@ -119,6 +122,10 @@ public class PlannerServiceHandler implements PlannerService.Iface {
 				task_lon = sphericalMercator.xAxisProjection(p_origin.longitude);
 				task_lat = sphericalMercator.yAxisProjection(p_origin.latitude);
 				start = new Node(task_lat, task_lon);
+				if(!nodes.contains(start))
+				{
+					nodes.add(start);
+				}
 				for(Position p_target:milestones)
 				{
 					task_lon = sphericalMercator.xAxisProjection(p_target.longitude);
@@ -145,6 +152,9 @@ public class PlannerServiceHandler implements PlannerService.Iface {
 					}
 				}
 			}
+			MapTxtGenerator mapGen = new MapTxtGenerator(nodes, paths);
+			mapGen.creteSampleMap();
+			UPPAgentGenerator.run();
 			//draw the paths in MMT
 			//Iterator<Entry<List<Node>, List<Node>>> iter = paths.entrySet().iterator();
 			Iterator<Path> iter_paths = paths.iterator();

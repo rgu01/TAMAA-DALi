@@ -1,11 +1,13 @@
 package edu.collaboration.pathplanning.xstar;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import edu.collaboration.pathplanning.NavigationArea;
 import edu.collaboration.pathplanning.Node;
 import edu.collaboration.pathplanning.Obstacle;
+import edu.collaboration.pathplanning.Path;
 import edu.collaboration.pathplanning.PathPlanningAlgorithm;
 import edu.collaboration.pathplanning.PathSegment;
 
@@ -23,9 +25,10 @@ public class AStar implements PathPlanningAlgorithm {
 	}
 
 	@Override
-	public List<Node> calculate(Node start, Node destination) {
+	public Path calculate(Node start, Node destination) {
 		ANode temp = null, aStart = null, aDestination = null;
-		List<Node> result = new ArrayList<Node>();
+		Path p_result = new Path(start, destination);
+		List<Node> path = new ArrayList<Node>();
 		List<Node> neighbors = new ArrayList<Node>();
 		
 		aStart = new ANode(start.lat, start.lon, destination);
@@ -62,11 +65,13 @@ public class AStar implements PathPlanningAlgorithm {
 		
 		while(temp != null && !temp.equals(start))
 		{
-			result.add(temp);
+			path.add(temp);
 			temp = (ANode)temp.parent;
 		}
+		Collections.reverse(path);
+		p_result.segments = path;
 		
-		return result;
+		return p_result;
 	}
 	
 	protected boolean lineOfSight(Node start, Node goal)
@@ -102,7 +107,7 @@ public class AStar implements PathPlanningAlgorithm {
 	{
 		//Path 1
 		PathSegment ps = new PathSegment(s, sp);
-		double c = ps.cost();
+		double c = ps.directLength();
 		
 		if(this.lineOfSight(s, sp))
 		{

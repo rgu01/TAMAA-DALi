@@ -35,6 +35,16 @@ public class Node {
 		return ns;
 	}
 	
+
+@Override
+	public int hashCode() {
+		int result = 17;
+		result = (int) (result * 31 + this.lat);
+		result = (int) (result * 31 + this.lon);
+		
+		return result;
+	}
+	
 	@Override
 	public boolean equals(Object o)
 	{
@@ -43,13 +53,13 @@ public class Node {
             return true; 
         } 
   
-        /* Check if o is an instance of Complex or not 
+        /* Check if o is an instance of Node or not 
           "null instanceof [type]" also returns false */
         if (!(o instanceof Node)) { 
             return false; 
         } 
           
-        // typecast o to Complex so that we can compare data members  
+        // typecast o to Node so that we can compare data members  
         Node ns = (Node) o; 
 		
 		return this.lat == ns.lat && this.lon == ns.lon;
@@ -64,6 +74,6 @@ public class Node {
 	{
 		PathSegment ps = new PathSegment(this, ns);
 		
-		return ps.cost() <= 2*NavigationArea.threshold;
+		return ps.directLength() <= 2*NavigationArea.threshold;
 	}
 }

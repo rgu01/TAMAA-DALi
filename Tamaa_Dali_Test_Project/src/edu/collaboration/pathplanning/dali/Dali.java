@@ -8,6 +8,7 @@ import java.util.Map.Entry;
 import edu.collaboration.pathplanning.NavigationArea;
 import edu.collaboration.pathplanning.Node;
 import edu.collaboration.pathplanning.Obstacle;
+import edu.collaboration.pathplanning.Path;
 import edu.collaboration.pathplanning.PathPlanningAlgorithm;
 
 public class Dali implements PathPlanningAlgorithm {
@@ -130,10 +131,11 @@ public class Dali implements PathPlanningAlgorithm {
 ///////////////////////////////////////////	
 	
 	@Override
-	public List<Node> calculate(Node start, Node destination) {
+	public Path calculate(Node start, Node destination) {
 		DaliNode target = (DaliNode)destination;
 		HashMap<DaliNode, Double> processing = new HashMap<DaliNode, Double>();
 		HashMap<DaliNode, Double> distances = new HashMap<DaliNode, Double>();
+		Path p_result = new Path(start, destination);
 		processing.put((DaliNode)start, 0.0);
 		while(!processing.isEmpty() || !distances.containsKey(target)) {
 			DaliNode current = processing.entrySet().stream().min(Entry.comparingByValue()).get().getKey();
@@ -151,14 +153,15 @@ public class Dali implements PathPlanningAlgorithm {
 			distances.put(current, currentDistance);
 		}
 		if (distances.containsKey(target)) {
-			List<Node> result = new ArrayList<Node>();
+			List<Node> path = new ArrayList<Node>();
 			DaliNode current = target;
-			result.add(target);
+			path.add(target);
 			while (current.previous != null) {
 				current = current.previous;
-				result.add(0, current);
+				path.add(0, current);
 			}			
-			return result;
+			p_result.segments = path;
+			return p_result;
 		}
 		else
 		{

@@ -32,11 +32,12 @@ public class PlannerServiceHandler implements PlannerService.Iface {
 		MmtService.Client client = null;
 		AStar as = null;
 		//List<Node> milestones = new ArrayList<Node>();
-		double vehicle_lat, vehicle_lon, task_lat, task_lon;
+		double task_lat, task_lon;
 		Node start = null, end = null;
 		List<Position> milestones = new ArrayList<Position>();
-		Position origin = null, goal = null, taskPosition = null;
-		Map<List<Node>, List<Node>> paths = new HashMap<List<Node>, List<Node>>();
+		Position origin = null, goal = null;
+		//Map<List<Node>, List<Node>> paths = new HashMap<List<Node>, List<Node>>();
+		List<Path> paths = new ArrayList<Path>();
 		int taskID = 21;
 		double top_left_lon = 0, top_left_lat = 0, top_right_lon = 0, top_right_lat = 0, bot_right_lon = 0, 
 				bot_right_lat = 0, bot_left_lon = 0, bot_left_lat = 0;
@@ -105,9 +106,8 @@ public class PlannerServiceHandler implements PlannerService.Iface {
 			}
 			
 			as = new AStar(nArea);
-			vehicle_lon = sphericalMercator.xAxisProjection(plan.getVehicles().get(0).stateVector.getPosition().longitude);
-			vehicle_lat = sphericalMercator.yAxisProjection(plan.getVehicles().get(0).stateVector.getPosition().latitude);
-			start = new Node(vehicle_lat, vehicle_lon);
+			//vehicle_lon = sphericalMercator.xAxisProjection(plan.getVehicles().get(0).stateVector.getPosition().longitude);
+			//vehicle_lat = sphericalMercator.yAxisProjection(plan.getVehicles().get(0).stateVector.getPosition().latitude);
 			origin = plan.getVehicles().get(0).stateVector.getPosition();
 			milestones.add(origin);
 			for(int i = 0; i < plan.tasks.size(); i++)
@@ -116,42 +116,58 @@ public class PlannerServiceHandler implements PlannerService.Iface {
 			}
 			for(Position p_origin:milestones)
 			{
+				task_lon = sphericalMercator.xAxisProjection(p_origin.longitude);
+				task_lat = sphericalMercator.yAxisProjection(p_origin.latitude);
+				start = new Node(task_lat, task_lon);
 				for(Position p_target:milestones)
 				{
-					if(!p_origin.equals(p_target))
+					task_lon = sphericalMercator.xAxisProjection(p_target.longitude);
+					task_lat = sphericalMercator.yAxisProjection(p_target.latitude);
+					end = new Node(task_lat, task_lon);
+					if(!start.equals(end))
 					{
-						task_lon = sphericalMercator.xAxisProjection(p_target.longitude);
-						task_lat = sphericalMercator.yAxisProjection(p_target.latitude);
-						end = new Node(task_lat, task_lon);
-						List<Node> path = as.calculate(start, end);
+						Path path = as.calculate(start, end);
 						List<Node> key = new ArrayList<Node>();
 						List<Node> key_temp = new ArrayList<Node>();
 						key.add(start);
 						key.add(end);
 						key_temp.add(end);
 						key_temp.add(start);
-						if(!paths.containsKey(key) && !paths.containsKey(key_temp))
+						if(!paths.contains(path))
+						{
+							paths.add(path);
+						}
+						/*if(!paths.containsKey(key) && !paths.containsKey(key_temp))
 						{
 							Collections.reverse(path);
 							paths.put(key, path);
-						}
+						}*/
 					}
 				}
 			}
 			//draw the paths in MMT
-			Iterator<Entry<List<Node>, List<Node>>> iter = paths.entrySet().iterator();
-			while (iter.hasNext()) {
-			    Map.Entry<List<Node>, List<Node>> entry = (Map.Entry<List<Node>, List<Node>>) iter.next();
-			    List<Node> key = (List<Node>)entry.getKey();
-			    List<Node> val = (List<Node>)entry.getValue();
-			    origin = new Position(sphericalMercator.x2lon(val.get(0).lon),sphericalMercator.y2lat(val.get(0).lat), 0.0);
-				for (int i = 1; i < val.size()-1; i++) {
-					goal = new Position(sphericalMercator.x2lon(val.get(i).lon),sphericalMercator.y2lat(val.get(i).lat), 0.0);
+			//Iterator<Entry<List<Node>, List<Node>>> iter = paths.entrySet().iterator();
+			Iterator<Path> iter_paths = paths.iterator();
+			Iterator<Node> iter_path = null;
+			Path a_path;
+			Node a_node;
+			while (iter_paths.hasNext()) {
+			    //Map.Entry<List<Node>, List<Node>> entry = (Map.Entry<List<Node>, List<Node>>) iter.next();
+			    //List<Node> val = (List<Node>)entry.getValue();
+				a_path = iter_paths.next();
+				iter_path = a_path.segments.iterator();
+				a_node = iter_path.next();
+				origin = new Position(sphericalMercator.x2lon(a_node.lon),sphericalMercator.y2lat(a_node.lat), 0.0);
+				while(iter_path.hasNext())
+				{
+					a_node = iter_path.next();
+					goal = new Position(sphericalMercator.x2lon(a_node.lon),sphericalMercator.y2lat(a_node.lat), 0.0);
 					plan.tasks.add(newTransitAction(taskID, origin, goal, plan.vehicles.get(0), 0));
 					origin = goal;
 					taskID++;
 				}
 			}
+			
 			/*taskID = 21;
 			for(Task task:tasks)
 			{

@@ -1,7 +1,10 @@
 package edu.collaboration.pathplanning;
 
-import java.util.List;
-
+/**
+ * 
+ * @author rgu01
+ * The result of path should be a sequence of nodes starting from the start, and ending at the destination
+ */
 public interface PathPlanningAlgorithm {
-	public List<Node> calculate(Node start, Node destination);
+	public Path calculate(Node start, Node destination);
 }

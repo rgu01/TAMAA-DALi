@@ -1,5 +1,11 @@
 package edu.collaboration.pathplanning;
 
+/**
+ * 
+ * @author rgu01
+ * A path segment is a straight line connecting two nodes
+ * It should not go through any obstacles in the environment
+ */
 public class PathSegment {
 	private double weight;
 	public Node origin;
@@ -19,7 +25,7 @@ public class PathSegment {
 		this.end = e;
 	}
 	
-	public double cost()
+	public double directLength()
 	{
 		double c = 0;
 		

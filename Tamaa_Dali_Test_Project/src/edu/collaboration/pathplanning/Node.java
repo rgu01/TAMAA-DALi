@@ -4,7 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Node {
-	public static double threshold = 1;
+	private static int ID = 0;
+	public int id;
 	public double lat;
 	public double lon;
 	public Node parent;
@@ -14,20 +15,22 @@ public class Node {
 		this.lon = lon;
 		this.lat = lat;
 		this.parent = null;
+		id = Node.ID;
+		Node.ID = Node.ID + 1;
 	}
 	
 	public List<Node> neighbors()
 	{
 		List<Node> ns = new ArrayList<Node>();
 		
-		ns.add(new Node(this.lat + Node.threshold, this.lon));
-		ns.add(new Node(this.lat + Node.threshold, this.lon - Node.threshold));
-		ns.add(new Node(this.lat, this.lon - Node.threshold));
-		ns.add(new Node(this.lat - Node.threshold, this.lon - Node.threshold));
-		ns.add(new Node(this.lat - Node.threshold, this.lon));
-		ns.add(new Node(this.lat - Node.threshold, this.lon + Node.threshold));
-		ns.add(new Node(this.lat, this.lon + Node.threshold));
-		ns.add(new Node(this.lat + Node.threshold, this.lon + Node.threshold));
+		ns.add(new Node(this.lat + NavigationArea.threshold, this.lon));
+		ns.add(new Node(this.lat + NavigationArea.threshold, this.lon - NavigationArea.threshold));
+		ns.add(new Node(this.lat, this.lon - NavigationArea.threshold));
+		ns.add(new Node(this.lat - NavigationArea.threshold, this.lon - NavigationArea.threshold));
+		ns.add(new Node(this.lat - NavigationArea.threshold, this.lon));
+		ns.add(new Node(this.lat - NavigationArea.threshold, this.lon + NavigationArea.threshold));
+		ns.add(new Node(this.lat, this.lon + NavigationArea.threshold));
+		ns.add(new Node(this.lat + NavigationArea.threshold, this.lon + NavigationArea.threshold));
 		
 		return ns;
 	}
@@ -54,13 +57,13 @@ public class Node {
 	
 	public String toString()
 	{
-		return "(" + this.lat + ", " + this.lon + ")";
+		return "Node "+ this.id +":(" + this.lat + ", " + this.lon + ")";
 	}
 	
 	public boolean near(Node ns)
 	{
 		PathSegment ps = new PathSegment(this, ns);
 		
-		return ps.cost() <= 2*Node.threshold;
+		return ps.cost() <= 2*NavigationArea.threshold;
 	}
 }

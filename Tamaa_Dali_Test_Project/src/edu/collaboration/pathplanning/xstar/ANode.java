@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import edu.collaboration.pathplanning.Node;
+import edu.collaboration.pathplanning.NavigationArea;
 
 public class ANode extends Node {
 	public double gValue;
@@ -33,14 +34,14 @@ public class ANode extends Node {
 	{
 		List<Node> ns = new ArrayList<Node>();
 		
-		ns.add(new ANode(this.lat + Node.threshold, this.lon, this.destination));
-		ns.add(new ANode(this.lat + Node.threshold, this.lon - Node.threshold, this.destination));
-		ns.add(new ANode(this.lat, this.lon - Node.threshold, this.destination));
-		ns.add(new ANode(this.lat - Node.threshold, this.lon - Node.threshold, this.destination));
-		ns.add(new ANode(this.lat - Node.threshold, this.lon, this.destination));
-		ns.add(new ANode(this.lat - Node.threshold, this.lon + Node.threshold, this.destination));
-		ns.add(new ANode(this.lat, this.lon + Node.threshold, this.destination));
-		ns.add(new ANode(this.lat + Node.threshold, this.lon + Node.threshold, this.destination));
+		ns.add(new ANode(this.lat + NavigationArea.threshold, this.lon, this.destination));
+		ns.add(new ANode(this.lat + NavigationArea.threshold, this.lon - NavigationArea.threshold, this.destination));
+		ns.add(new ANode(this.lat, this.lon - NavigationArea.threshold, this.destination));
+		ns.add(new ANode(this.lat - NavigationArea.threshold, this.lon - NavigationArea.threshold, this.destination));
+		ns.add(new ANode(this.lat - NavigationArea.threshold, this.lon, this.destination));
+		ns.add(new ANode(this.lat - NavigationArea.threshold, this.lon + NavigationArea.threshold, this.destination));
+		ns.add(new ANode(this.lat, this.lon + NavigationArea.threshold, this.destination));
+		ns.add(new ANode(this.lat + NavigationArea.threshold, this.lon + NavigationArea.threshold, this.destination));
 		
 		return ns;
 	}

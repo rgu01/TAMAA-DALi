@@ -81,7 +81,7 @@ public class Dali implements PathPlanningAlgorithm {
 	}
 	
 	DaliNode findNearestNode(double x, double y) {
-		return nodes.values().stream().filter(n -> Math.abs(n.lat-x)< Node.threshold / 2 && Math.abs(n.lon-y)< Node.threshold / 2).findAny().orElse(null);
+		return nodes.values().stream().filter(n -> Math.abs(n.lat-x)< NavigationArea.threshold / 2 && Math.abs(n.lon-y)< NavigationArea.threshold / 2).findAny().orElse(null);
 	}
 	
 	void generateGraph(NavigationArea nArea) {
@@ -95,17 +95,17 @@ public class Dali implements PathPlanningAlgorithm {
 		
 		while (!processing.isEmpty()) {
 			DaliNode currentDaliNode = processing.remove(0);
-			if (isInArea(nArea, currentDaliNode.lat + Node.threshold, currentDaliNode.lon)) {
-				addNode(currentDaliNode.lat + Node.threshold, currentDaliNode.lon, currentDaliNode);
+			if (isInArea(nArea, currentDaliNode.lat + NavigationArea.threshold, currentDaliNode.lon)) {
+				addNode(currentDaliNode.lat + NavigationArea.threshold, currentDaliNode.lon, currentDaliNode);
 			}
-			if (isInArea(nArea, currentDaliNode.lat, currentDaliNode.lon + Node.threshold)) {
-				addNode(currentDaliNode.lat, currentDaliNode.lon + Node.threshold, currentDaliNode);
+			if (isInArea(nArea, currentDaliNode.lat, currentDaliNode.lon + NavigationArea.threshold)) {
+				addNode(currentDaliNode.lat, currentDaliNode.lon + NavigationArea.threshold, currentDaliNode);
 			}
-			if (isInArea(nArea, currentDaliNode.lat + Node.threshold, currentDaliNode.lon - Node.threshold)) {
-				addNode(currentDaliNode.lat + Node.threshold, currentDaliNode.lon + Node.threshold, currentDaliNode);
+			if (isInArea(nArea, currentDaliNode.lat + NavigationArea.threshold, currentDaliNode.lon - NavigationArea.threshold)) {
+				addNode(currentDaliNode.lat + NavigationArea.threshold, currentDaliNode.lon + NavigationArea.threshold, currentDaliNode);
 			}
-			if (isInArea(nArea, currentDaliNode.lat + Node.threshold, currentDaliNode.lon - Node.threshold)) {
-				addNode(currentDaliNode.lat + Node.threshold, currentDaliNode.lon + Node.threshold, currentDaliNode);
+			if (isInArea(nArea, currentDaliNode.lat + NavigationArea.threshold, currentDaliNode.lon - NavigationArea.threshold)) {
+				addNode(currentDaliNode.lat + NavigationArea.threshold, currentDaliNode.lon + NavigationArea.threshold, currentDaliNode);
 			}
 		}
 	}

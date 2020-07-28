@@ -149,6 +149,7 @@ public class UPPAgentMissionPlan extends UppaalAutomaton {
 		
 		for(int i=0, id=1; i<missions.size();i++,id++)
 		{
+			um = missions.get(i);
 			k=i%4;
 			switch (k)
 			{
@@ -177,7 +178,8 @@ public class UPPAgentMissionPlan extends UppaalAutomaton {
 			setLocationCorrdinates(m, tx, ty);
 			label = new UppaalLabel();
 			label.setKind("invariant");
-			label.setValue("t<=" + "WCET[id]["+id+"]");
+			//label.setValue("t<=" + "WCET[id]["+id+"]");
+			label.setValue("t<=" + um.wcet);
 			m.addOrReplaceLabel(label);
 			this.addOrReplaceLocation(m);
 		}
@@ -282,7 +284,8 @@ public class UPPAgentMissionPlan extends UppaalAutomaton {
 			transition.addOrReplaceLabel(label);
 			label = new UppaalLabel();
 			label.setKind("guard");
-			label.setValue("t>=" + "BCET[id]["+id+"]");
+			//label.setValue("t>=" + "BCET[id]["+id+"]");
+			label.setValue("t>=" + um.bcet);
 			label.setCoordinate("x", nx+"");
 			label.setCoordinate("y", ny+"");
 			transition.addOrReplaceLabel(label);

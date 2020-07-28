@@ -180,15 +180,15 @@ void updateIteration()
 </location>
 <location id ="T1" x ="-700" y ="-200">
 <name >T1</name>
-<label kind ="invariant">t&lt;=WCET[id][1]</label>
+<label kind ="invariant">t&lt;=25</label>
 </location>
 <location id ="T2" x ="-400" y ="-500">
 <name >T2</name>
-<label kind ="invariant">t&lt;=WCET[id][2]</label>
+<label kind ="invariant">t&lt;=18</label>
 </location>
 <location id ="T3" x ="-100" y ="-200">
 <name >T3</name>
-<label kind ="invariant">t&lt;=WCET[id][3]</label>
+<label kind ="invariant">t&lt;=15</label>
 </location>
 <init ref ="T0" />
 <transition >
@@ -208,7 +208,7 @@ void updateIteration()
 <target ref ="T0" />
 <label kind ="assignment" x ="-520" y ="30">t=0,ts[1]=false,tf[1]=true,
 updateIteration()</label>
-<label kind ="guard" x ="-550" y ="0">t&gt;=BCET[id][1]</label>
+<label kind ="guard" x ="-550" y ="0">t&gt;=20</label>
 <nail x ="-550" y ="0" />
 </transition>
 <transition >
@@ -222,7 +222,7 @@ updateIteration()</label>
 <target ref ="T0" />
 <label kind ="assignment" x ="-520" y ="-320">t=0,ts[2]=false,tf[2]=true,
 updateIteration()</label>
-<label kind ="guard" x ="-550" y ="-350">t&gt;=BCET[id][2]</label>
+<label kind ="guard" x ="-550" y ="-350">t&gt;=15</label>
 <nail x ="-550" y ="-350" />
 </transition>
 <transition >
@@ -236,7 +236,7 @@ updateIteration()</label>
 <target ref ="T0" />
 <label kind ="assignment" x ="-220" y ="-320">t=0,ts[3]=false,tf[3]=true,
 updateIteration()</label>
-<label kind ="guard" x ="-250" y ="-350">t&gt;=BCET[id][3]</label>
+<label kind ="guard" x ="-250" y ="-350">t&gt;=10</label>
 <nail x ="-250" y ="-350" />
 </transition>
 </template>
@@ -401,15 +401,15 @@ void updateIteration()
 </location>
 <location id ="T1" x ="-700" y ="-200">
 <name >T1</name>
-<label kind ="invariant">t&lt;=WCET[id][1]</label>
+<label kind ="invariant">t&lt;=25</label>
 </location>
 <location id ="T2" x ="-400" y ="-500">
 <name >T2</name>
-<label kind ="invariant">t&lt;=WCET[id][2]</label>
+<label kind ="invariant">t&lt;=18</label>
 </location>
 <location id ="T3" x ="-100" y ="-200">
 <name >T3</name>
-<label kind ="invariant">t&lt;=WCET[id][3]</label>
+<label kind ="invariant">t&lt;=15</label>
 </location>
 <init ref ="T0" />
 <transition >
@@ -429,7 +429,7 @@ void updateIteration()
 <target ref ="T0" />
 <label kind ="assignment" x ="-520" y ="30">t=0,ts[1]=false,tf[1]=true,
 updateIteration()</label>
-<label kind ="guard" x ="-550" y ="0">t&gt;=BCET[id][1]</label>
+<label kind ="guard" x ="-550" y ="0">t&gt;=20</label>
 <nail x ="-550" y ="0" />
 </transition>
 <transition >
@@ -443,7 +443,7 @@ updateIteration()</label>
 <target ref ="T0" />
 <label kind ="assignment" x ="-520" y ="-320">t=0,ts[2]=false,tf[2]=true,
 updateIteration()</label>
-<label kind ="guard" x ="-550" y ="-350">t&gt;=BCET[id][2]</label>
+<label kind ="guard" x ="-550" y ="-350">t&gt;=15</label>
 <nail x ="-550" y ="-350" />
 </transition>
 <transition >
@@ -457,7 +457,7 @@ updateIteration()</label>
 <target ref ="T0" />
 <label kind ="assignment" x ="-220" y ="-320">t=0,ts[3]=false,tf[3]=true,
 updateIteration()</label>
-<label kind ="guard" x ="-250" y ="-350">t&gt;=BCET[id][3]</label>
+<label kind ="guard" x ="-250" y ="-350">t&gt;=10</label>
 <nail x ="-250" y ="-350" />
 </transition>
 </template>
@@ -622,15 +622,15 @@ void updateIteration()
 </location>
 <location id ="T1" x ="-700" y ="-200">
 <name >T1</name>
-<label kind ="invariant">t&lt;=WCET[id][1]</label>
+<label kind ="invariant">t&lt;=25</label>
 </location>
 <location id ="T2" x ="-400" y ="-500">
 <name >T2</name>
-<label kind ="invariant">t&lt;=WCET[id][2]</label>
+<label kind ="invariant">t&lt;=18</label>
 </location>
 <location id ="T3" x ="-100" y ="-200">
 <name >T3</name>
-<label kind ="invariant">t&lt;=WCET[id][3]</label>
+<label kind ="invariant">t&lt;=15</label>
 </location>
 <init ref ="T0" />
 <transition >
@@ -650,7 +650,7 @@ void updateIteration()
 <target ref ="T0" />
 <label kind ="assignment" x ="-520" y ="30">t=0,ts[1]=false,tf[1]=true,
 updateIteration()</label>
-<label kind ="guard" x ="-550" y ="0">t&gt;=BCET[id][1]</label>
+<label kind ="guard" x ="-550" y ="0">t&gt;=20</label>
 <nail x ="-550" y ="0" />
 </transition>
 <transition >
@@ -664,7 +664,7 @@ updateIteration()</label>
 <target ref ="T0" />
 <label kind ="assignment" x ="-520" y ="-320">t=0,ts[2]=false,tf[2]=true,
 updateIteration()</label>
-<label kind ="guard" x ="-550" y ="-350">t&gt;=BCET[id][2]</label>
+<label kind ="guard" x ="-550" y ="-350">t&gt;=15</label>
 <nail x ="-550" y ="-350" />
 </transition>
 <transition >
@@ -678,7 +678,7 @@ updateIteration()</label>
 <target ref ="T0" />
 <label kind ="assignment" x ="-220" y ="-320">t=0,ts[3]=false,tf[3]=true,
 updateIteration()</label>
-<label kind ="guard" x ="-250" y ="-350">t&gt;=BCET[id][3]</label>
+<label kind ="guard" x ="-250" y ="-350">t&gt;=10</label>
 <nail x ="-250" y ="-350" />
 </transition>
 </template>
@@ -843,15 +843,15 @@ void updateIteration()
 </location>
 <location id ="T1" x ="-700" y ="-200">
 <name >T1</name>
-<label kind ="invariant">t&lt;=WCET[id][1]</label>
+<label kind ="invariant">t&lt;=25</label>
 </location>
 <location id ="T2" x ="-400" y ="-500">
 <name >T2</name>
-<label kind ="invariant">t&lt;=WCET[id][2]</label>
+<label kind ="invariant">t&lt;=18</label>
 </location>
 <location id ="T3" x ="-100" y ="-200">
 <name >T3</name>
-<label kind ="invariant">t&lt;=WCET[id][3]</label>
+<label kind ="invariant">t&lt;=15</label>
 </location>
 <init ref ="T0" />
 <transition >
@@ -871,7 +871,7 @@ void updateIteration()
 <target ref ="T0" />
 <label kind ="assignment" x ="-520" y ="30">t=0,ts[1]=false,tf[1]=true,
 updateIteration()</label>
-<label kind ="guard" x ="-550" y ="0">t&gt;=BCET[id][1]</label>
+<label kind ="guard" x ="-550" y ="0">t&gt;=20</label>
 <nail x ="-550" y ="0" />
 </transition>
 <transition >
@@ -885,7 +885,7 @@ updateIteration()</label>
 <target ref ="T0" />
 <label kind ="assignment" x ="-520" y ="-320">t=0,ts[2]=false,tf[2]=true,
 updateIteration()</label>
-<label kind ="guard" x ="-550" y ="-350">t&gt;=BCET[id][2]</label>
+<label kind ="guard" x ="-550" y ="-350">t&gt;=15</label>
 <nail x ="-550" y ="-350" />
 </transition>
 <transition >
@@ -899,7 +899,7 @@ updateIteration()</label>
 <target ref ="T0" />
 <label kind ="assignment" x ="-220" y ="-320">t=0,ts[3]=false,tf[3]=true,
 updateIteration()</label>
-<label kind ="guard" x ="-250" y ="-350">t&gt;=BCET[id][3]</label>
+<label kind ="guard" x ="-250" y ="-350">t&gt;=10</label>
 <nail x ="-250" y ="-350" />
 </transition>
 </template>

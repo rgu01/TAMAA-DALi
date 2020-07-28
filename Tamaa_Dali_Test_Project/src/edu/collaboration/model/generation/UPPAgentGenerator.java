@@ -16,7 +16,8 @@ import edu.collaboration.model.structure.*;
 
 
 public class UPPAgentGenerator {
-	
+
+	public static String outputXML = "./model/local.xml";
 	private static String templateXML = "empty_template.xml"; //under the bin folder
 	private static String gResetString = "int steps = 0;\r\nvoid gReset()\r\n" +
     		"{\r\n" +
@@ -43,7 +44,6 @@ public class UPPAgentGenerator {
 	private static String updateIterationString="\r\n";
 	
 	public static void run() {
-		String output = "./model/local.xml";
 	    String show = "";
 		UppaalDocument doc = null;
 		DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
@@ -218,7 +218,7 @@ public class UPPAgentGenerator {
 	    doc.setDeclaration(global_declaration);
 	    doc.setSystem(system_declaration);    
 		doc.addOrReplaceChildElement(queries);    
-	    doc.saveToFile(output);
+	    doc.saveToFile(outputXML);
 	
 	    show = "Model for " + fleet.agents.size() + " agents has built! MapScale: " + 
 	    	    mapScale + ", taskNum: " + taskNum + ", eventNum: " + eventNum + ".";

@@ -13,6 +13,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+import edu.collaboration.communication.TransferFile;
 import edu.collaboration.model.generation.MapTxtGenerator;
 import edu.collaboration.model.generation.UPPAgentGenerator;
 import edu.collaboration.pathplanning.*;
@@ -20,6 +21,9 @@ import edu.collaboration.pathplanning.xstar.*;
 
 public class PlannerServiceHandler implements PlannerService.Iface {
 	Mission corePlan = null;
+	public static final String SERVER_IP = "192.168.0.109"; 
+    public static final int SERVER_PORT = 9779; 
+    
 	@Override
 	public void computePlan(int requestId, Mission plan) throws TException 
 	{
@@ -150,6 +154,11 @@ public class PlannerServiceHandler implements PlannerService.Iface {
 			MapTxtGenerator mapGen = new MapTxtGenerator(nodes, paths);
 			mapGen.createSampleMap();
 			UPPAgentGenerator.run();
+			
+			//call UPPAAL in the server side to synthesize a mission plan
+			TransferFile trans = new TransferFile(PlannerServiceHandler.SERVER_IP, PlannerServiceHandler.SERVER_PORT);
+			trans.sendFile(UPPAgentGenerator.outputXML);
+			
 			//draw the paths in MMT
 			//Iterator<Entry<List<Node>, List<Node>>> iter = paths.entrySet().iterator();
 			Iterator<Path> iter_paths = paths.iterator();

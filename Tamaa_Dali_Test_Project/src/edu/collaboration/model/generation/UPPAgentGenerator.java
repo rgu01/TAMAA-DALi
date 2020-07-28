@@ -1,33 +1,23 @@
 package edu.collaboration.model.generation;
 
+
 import java.io.IOException;
 import javax.swing.JOptionPane;
 import java.io.InputStream;
-
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
-
 import org.fmaes.j2uppaal.datastructures.uppaalstructures.UppaalDocument;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.xml.sax.SAXException;
+import edu.collaboration.model.queries.*;
+import edu.collaboration.model.structure.*;
 
-//import mdh.se.dpac.uppawl.queries.UPPAWLMilestonesCoverage;
-import mdh.se.dpac.uppawl.queries.UPPAWLTaskCoverage;
-//import mdh.se.dpac.uppawl.queries.UPPAWLTaskIteration;
-//import mdh.se.dpac.uppawl.queries.UPPAWLTaskMatching;
-import mdh.se.dpac.uppawl.queries.UPPAWLUppaalQueries;
-import mdh.se.dpac.uppawl.structure.UPPAWLEvent;
-import mdh.se.dpac.uppawl.structure.UPPAWLFleet;
-import mdh.se.dpac.uppawl.structure.UPPAWLMission;
-import mdh.se.dpac.uppawl.structure.UPPAWLMissionPlan;
-import mdh.se.dpac.uppawl.structure.UPPAWLMonitor;
-import mdh.se.dpac.uppawl.structure.UPPAWLStaticMap;
 
 public class UPPAgentGenerator {
 	
-	private static String templateXML = "empty_template.xml"; 
+	private static String templateXML = "empty_template.xml"; //bin
 	private static String gResetString = "int steps = 0;\r\nvoid gReset()\r\n" +
     		"{\r\n" +
     		"   int i,j,k;\r\n" +
@@ -59,12 +49,19 @@ public class UPPAgentGenerator {
 		DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
 	    try {
 			DocumentBuilder builder = factory.newDocumentBuilder();
-			InputStream is = UPPAgentGenerator.class.getClassLoader().getResourceAsStream(templateXML);
-			Document templatedoc =  builder.parse(is);
-			templatedoc.getDocumentElement().normalize();
+			InputStream is = UPPAgentGenerator.class.getClassLoader().getResourceAsStream(templateXML); 
+			if(is != null)
+			{
+				Document templatedoc =  builder.parse(is);
+				templatedoc.getDocumentElement().normalize();
 
-		    Element root = templatedoc.getDocumentElement();
-		    doc = new UppaalDocument(root);
+				Element root = templatedoc.getDocumentElement();
+				doc = new UppaalDocument(root);
+			}
+			else
+			{
+				JOptionPane.showMessageDialog(null, "Template is missing.", "Error", JOptionPane.PLAIN_MESSAGE);
+			}
 		} catch (ParserConfigurationException ex) {
 
 	    	show = ex.getMessage();
@@ -78,19 +75,11 @@ public class UPPAgentGenerator {
 	    	show = ex.getMessage();
 	    	JOptionPane.showMessageDialog(null, show, "Error", JOptionPane.PLAIN_MESSAGE);
 		}
-
-		/*int number=1,result = 2;
-		boolean tt = (result&2)==2;
-		for(int i=1;i<5;i++)
-		{
-			number = number * 2;
-	        result = result + number;
-		}*/
 	    
 	    int mapScale = 0, taskNum = 0, eventNum = 0, agentNum = 0;
-	    UPPAWLFleet fleet = new UPPAWLFleet();
-	    UPPAWLMission m = null;
-    	UPPAWLUppaalQueries queries = new UPPAWLUppaalQueries();
+	    UPPAgentFleet fleet = new UPPAgentFleet();
+	    UPPAgentMission m = null;
+    	UPPAgentUppaalQueries queries = new UPPAgentUppaalQueries();
 	    String system_declaration = "";
 	    String global_declaration = "// Place global declarations here.\r\n";
 	    String constBcet = "const int BCET[AgentNum][TaskNum]={";
@@ -100,12 +89,12 @@ public class UPPAgentGenerator {
     	String channelString = "chan move[AgentNum], initialize;\r\n";
 	    
 	    agentNum = fleet.agents.size();
-	    UPPAWLMonitor monitor=null;
+	    UPPAgentEventMonitor monitor=null;
 	    
 	    for(int agentID:fleet.agents)
 	    {
-	    	monitor = new UPPAWLMonitor(agentID,0);
-	    	UPPAWLMissionPlan missionPlan = new UPPAWLMissionPlan(agentID, monitor,taskNum);
+	    	monitor = new UPPAgentEventMonitor(agentID,0);
+	    	UPPAgentMissionPlan missionPlan = new UPPAgentMissionPlan(agentID, monitor,taskNum);
 		    if(taskNum < missionPlan.missions.size())
 		    {
 		    	taskNum = missionPlan.missions.size();
@@ -118,17 +107,12 @@ public class UPPAgentGenerator {
 	    
 	    for(int agentID:fleet.agents)
 	    {
-	    	UPPAWLStaticMap map = new UPPAWLStaticMap(agentID);
-	    	//UPPAWLMilestonesCoverage mcq = new UPPAWLMilestonesCoverage(agentID, map.Scale);
-	    	UPPAWLTaskCoverage tcq = new UPPAWLTaskCoverage(agentID);
-	    	//UPPAWLTaskIteration tiq = new UPPAWLTaskIteration(agentID);
-	    	monitor = new UPPAWLMonitor(agentID, eventNum);
-	    	UPPAWLMissionPlan missionPlan = new UPPAWLMissionPlan(agentID, monitor,taskNum);
+	    	UPPAgentStaticMap map = new UPPAgentStaticMap(agentID);
+	    	UPPAgentTaskCoverage tcq = new UPPAgentTaskCoverage(agentID);
+	    	monitor = new UPPAgentEventMonitor(agentID, eventNum);
+	    	UPPAgentMissionPlan missionPlan = new UPPAgentMissionPlan(agentID, monitor,taskNum);
 	    
-		    //queries.addQuery(mcq);
-		    queries.addQuery(tcq);
-		    //queries.addQuery(tiq);
-		    //UPPAWLTaskMatching.addQueries(missionPlan,queries,agentID);	    
+		    queries.addQuery(tcq);  
 		    
 		    monitor.setDeclaration();
 		    mapScale = map.Scale;
@@ -184,12 +168,12 @@ public class UPPAgentGenerator {
 	    		constWcet += "};\r\n";
 		    }
 		    
-		    for(UPPAWLEvent e:monitor.events)
+		    for(UPPAgentEvent e:monitor.events)
 		    {
-		    	system_declaration += UPPAWLMonitor.InstanceName + agentID + e.id + " = " + UPPAWLMonitor.SystemName + "(" + agentID + "," + e.id + ");\r\n";
+		    	system_declaration += UPPAgentEventMonitor.InstanceName + agentID + e.id + " = " + UPPAgentEventMonitor.SystemName + "(" + agentID + "," + e.id + ");\r\n";
 		    }
-		    system_declaration += UPPAWLStaticMap.InstanceName + agentID + " = " + UPPAWLStaticMap.SystemName + agentID + "(" + agentID + ");\r\n";
-		    system_declaration += UPPAWLMissionPlan.InstanceName + agentID + " = " + UPPAWLMissionPlan.SystemName + agentID + "(" + agentID + ");\r\n";
+		    system_declaration += UPPAgentStaticMap.InstanceName + agentID + " = " + UPPAgentStaticMap.SystemName + agentID + "(" + agentID + ");\r\n";
+		    system_declaration += UPPAgentMissionPlan.InstanceName + agentID + " = " + UPPAgentMissionPlan.SystemName + agentID + "(" + agentID + ");\r\n";
 		    
 		    doc.addAutomaton(map);
 		    doc.addAutomaton(missionPlan);
@@ -206,12 +190,12 @@ public class UPPAgentGenerator {
 	    system_declaration += "\r\nsystem ";
 	    for(int agentID:fleet.agents)
 	    {
-	    	monitor = new UPPAWLMonitor(agentID,eventNum);
-		    system_declaration += UPPAWLStaticMap.InstanceName + agentID + ", " + UPPAWLMissionPlan.InstanceName + agentID + ", ";	
+	    	monitor = new UPPAgentEventMonitor(agentID,eventNum);
+		    system_declaration += UPPAgentStaticMap.InstanceName + agentID + ", " + UPPAgentMissionPlan.InstanceName + agentID + ", ";	
 		    
-		    for(UPPAWLEvent e:monitor.events)
+		    for(UPPAgentEvent e:monitor.events)
 		    {
-		    	system_declaration += UPPAWLMonitor.InstanceName + agentID + e.id + ", ";
+		    	system_declaration += UPPAgentEventMonitor.InstanceName + agentID + e.id + ", ";
 		    }
 	    }
 	    system_declaration = system_declaration.substring(0, system_declaration.lastIndexOf(",")) + ";";
@@ -251,15 +235,15 @@ public class UPPAgentGenerator {
 	    "const int EventNum = " + eventNum + ";\r\n";
 	    String constMax = "const int MaxIteration = 2;";
 	    
-	    String finish = "",start = "",visit = "";
+	    //String finish = "",start = "",visit = "";
 	    String events = "",position = "",declaration = "";
 	    
 	    if(agentNum != 0)
 	    {
 	    	if(taskNum != 0)
 	    	{
-	    	    finish = "bool tf[AgentNum][TaskNum]={";
-	    	    start = "bool ts[AgentNum][TaskNum]={";
+	    	    //finish = "bool tf[AgentNum][TaskNum]={";
+	    	    //start = "bool ts[AgentNum][TaskNum]={";
 	    	}
 	    	else
 	    	{
@@ -272,7 +256,7 @@ public class UPPAgentGenerator {
 	    	if(mapScale != 0)
 	    	{
 	    	    position = "bool position[AgentNum][MilestoneNum]={";
-	    	    visit = "bool visited[AgentNum][MilestoneNum]={";
+	    	    //visit = "bool visited[AgentNum][MilestoneNum]={";
 	    	}
 	    	else
 	    	{
@@ -292,39 +276,39 @@ public class UPPAgentGenerator {
 		    	if(m == 0)
 		    	{
 	    			position += "{";
-	    			visit += "{";
+	    			//visit += "{";
 		    	}
     			position += "false";
-    			visit += "false";
+    			//visit += "false";
 	    		if(m != mapScale-1)
 	    		{
 	    			position += ",";
-	    			visit += ",";
+	    			//visit += ",";
 	    		}
 	    		else
 	    		{
 	    			position += "}";
-	    			visit += "}";
+	    			//visit += "}";
 	    		}
 		    }
 	    	for(int j = 0; j < taskNum; j++)
 	    	{
 	    		if(j == 0)
 	    		{
-	    			finish += "{true,";
-	    			start += "{true,";
+	    			//finish += "{true,";
+	    			//start += "{true,";
 	    		}
-    			finish += "false";
-    			start += "false";
+    			//finish += "false";
+    			//start += "false";
     			if(j != taskNum-1)
 	    		{
-	    			finish += ",";
-	    			start += ",";
+	    			//finish += ",";
+	    			//start += ",";
 	    		}
 	    		else
 	    		{
-	    			finish += "}";
-	    			start += "}";
+	    			//finish += "}";
+	    			//start += "}";
 	    		}
 	    	}
 	    	for(int k = 0; k < eventNum; k++)
@@ -346,9 +330,9 @@ public class UPPAgentGenerator {
 	    	if(i == agentNum-1)
 	    	{
 	    		position += "};\r\n";
-	    		visit += "};\r\n";
-	    		finish += "};\r\n";
-	    		start += "};\r\n";
+	    		//visit += "};\r\n";
+	    		//finish += "};\r\n";
+	    		//start += "};\r\n";
 	    		if(events != "")
 	    		{
 	    			events += "};\r\n";
@@ -357,9 +341,9 @@ public class UPPAgentGenerator {
 	    	else
 	    	{
 	    		position += ",";
-	    		visit += ",";
-	    		finish += ",";
-	    		start += ",";
+	    		//visit += ",";
+	    		//finish += ",";
+	    		//start += ",";
 	    		if(events != "")
 	    		{
 	    			events += ",";

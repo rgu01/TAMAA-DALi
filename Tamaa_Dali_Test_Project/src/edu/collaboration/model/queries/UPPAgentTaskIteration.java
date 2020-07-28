@@ -1,6 +1,6 @@
 package edu.collaboration.model.queries;
 
-public class UPPAgentTaskIteration extends UPPAWLUppaalQuery {
+public class UPPAgentTaskIteration extends UPPAgentUppaalQuery {
 	private int agent;
 	
 	public UPPAgentTaskIteration(int agentID)

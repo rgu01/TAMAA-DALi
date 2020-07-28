@@ -20,10 +20,10 @@ public class MapTxtGenerator {
         this.milestones = milestones;
     }
 
-    public void creteSampleMap() {
+    public void createSampleMap() {
     	int numOfNodes = this.milestones.size();
         int[][] map = new int[numOfNodes][numOfNodes];
-        int ran = 0, i = 0, j = 0;
+        int i = 0, j = 0;
         Node origin = null, target = null;
         Path thePath = null;
 

@@ -1,7 +1,6 @@
 package edu.collaboration.tamaa;
 
 import MercatoerProjection.SphericalMercator;
-//import edu.collaboration.tamaa.UppaalMapGenerator;
 import org.apache.thrift.TException;
 import org.apache.thrift.protocol.TBinaryProtocol;  
 import org.apache.thrift.protocol.TProtocol;  
@@ -11,12 +10,8 @@ import org.apache.thrift.transport.TTransportException;
 import com.afarcloud.thrift.*;
 
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
 
 import edu.collaboration.model.generation.MapTxtGenerator;
 import edu.collaboration.model.generation.UPPAgentGenerator;
@@ -153,7 +148,7 @@ public class PlannerServiceHandler implements PlannerService.Iface {
 				}
 			}
 			MapTxtGenerator mapGen = new MapTxtGenerator(nodes, paths);
-			mapGen.creteSampleMap();
+			mapGen.createSampleMap();
 			UPPAgentGenerator.run();
 			//draw the paths in MMT
 			//Iterator<Entry<List<Node>, List<Node>>> iter = paths.entrySet().iterator();
@@ -177,7 +172,9 @@ public class PlannerServiceHandler implements PlannerService.Iface {
 					taskID++;
 				}
 			}
-			
+
+			client.sendPlan(requestId, plan);
+			System.out.println("Mission Plan Sent!");
 			/*taskID = 21;
 			for(Task task:tasks)
 			{
@@ -211,11 +208,15 @@ public class PlannerServiceHandler implements PlannerService.Iface {
 			System.out.println(x.getMessage());
 			x.printStackTrace();
 		}
+		catch(Exception ex)
+		{
+			System.out.println("final xerror");
+			System.out.println(ex.getMessage());
+			ex.printStackTrace();
+		}
 		finally
 		{
-			client.sendPlan(requestId, plan);
 			transport.close();
-			System.out.println("Mission Plan Sent!");
 		}
 	}
 

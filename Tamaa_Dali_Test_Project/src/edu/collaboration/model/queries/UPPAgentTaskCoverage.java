@@ -1,6 +1,6 @@
 package edu.collaboration.model.queries;
 
-public class UPPAgentTaskCoverage extends UPPAWLUppaalQuery {
+public class UPPAgentTaskCoverage extends UPPAgentUppaalQuery {
 	private int agent;
 	
 	public UPPAgentTaskCoverage(int agentID)

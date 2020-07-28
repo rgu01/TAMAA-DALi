@@ -2,10 +2,10 @@ package edu.collaboration.tamaa;
 
 import org.apache.thrift.transport.TServerSocket;  
 import org.apache.thrift.transport.TServerTransport;
+import javax.swing.JOptionPane;
 import org.apache.thrift.server.TServer;  
 import org.apache.thrift.server.TServer.Args;  
 import org.apache.thrift.server.TSimpleServer; 
-
 import com.afarcloud.thrift.*;
 
 //try
@@ -19,13 +19,17 @@ public class UPlanner {
 			  // Use this for a multithreaded server  
 			  // TServer server = new TThreadPoolServer(new  
 			  // TThreadPoolServer.Args(serverTransport).processor(processor));  
-		  
+
+			  //System.out.println(UPPAgentGenerator.class.getClassLoader().getResource("empty_template.xml").getPath());
+			  //JOptionPane.showMessageDialog(null, UPPAgentGenerator.class.getClassLoader().getResource("empty_template.xml").getPath(), "DEBUG", JOptionPane.PLAIN_MESSAGE);
+			  //InputStream is = new InputStream("resources/empty_template.xml"); 
 			  System.out.println("Starting the simple server...");  
 			  server.serve();
 			  System.out.println("Server started...");
 		  } catch (Exception e) {
 		  	System.out.println(e.getMessage());
 			  e.printStackTrace();  
+			  JOptionPane.showMessageDialog(null, e.getMessage(), "ERROR", JOptionPane.PLAIN_MESSAGE);
 		  }  
 	}  
 		   

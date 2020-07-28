@@ -36,7 +36,7 @@ public class UPPAgentStaticMap extends UppaalAutomaton {
 		Initialize();
 	}
 	
-	private void randomMap()
+	/*private void randomMap()
 	{
 		int ran = 0, i = 0, j = 0;
 		map = new int[Scale][Scale];
@@ -68,7 +68,7 @@ public class UPPAgentStaticMap extends UppaalAutomaton {
 				}
 			}
 		}
-	}
+	}*/
 
 	
 	private void createMap()

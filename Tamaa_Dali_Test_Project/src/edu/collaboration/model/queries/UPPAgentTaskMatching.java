@@ -1,47 +1,44 @@
 package edu.collaboration.model.queries;
 
-
-import mdh.se.dpac.uppawl.structure.UPPAWLMission;
-import mdh.se.dpac.uppawl.structure.UPPAWLMissionPlan;
-import mdh.se.dpac.uppawl.structure.UPPAWLStaticMap;
+import edu.collaboration.model.structure.*;
 
 public class UPPAgentTaskMatching {
 	
-	public static void addQueries(UPPAWLMissionPlan plan, UPPAgentUppaalQueries queries, int agentID)
+	public static void addQueries(UPPAgentMissionPlan plan, UPPAgentUppaalQueries queries, int agentID)
 	{
 		String sFormula="",sComment="",sMilestones="";
 		UPPAgentUppaalFormula formula;
 		UPPAgentUppaalComment comment;
-		UPPAWLUppaalQuery query;
+		UPPAgentUppaalQuery query;
 		
-		for(UPPAWLMission m:plan.missions)
+		for(UPPAgentMission m:plan.missions)
 		{
 			for(int i=0;i<m.milestones.size();i++)
 			{
 				if(i != m.milestones.size()-1)
 				{
-					sMilestones += UPPAWLStaticMap.InstanceName + agentID + ".P" + m.milestones.get(i) + "||";
+					sMilestones += UPPAgentStaticMap.InstanceName + agentID + ".P" + m.milestones.get(i) + "||";
 				}
 				else
 				{
-					sMilestones += UPPAWLStaticMap.InstanceName + agentID + ".P" + m.milestones.get(i);
+					sMilestones += UPPAgentStaticMap.InstanceName + agentID + ".P" + m.milestones.get(i);
 				}
 			}
 			
-			sFormula = "E<> (" + sMilestones + ") imply " + UPPAWLMissionPlan.InstanceName + agentID + ".T" + m.id;
+			sFormula = "E<> (" + sMilestones + ") imply " + UPPAgentMissionPlan.InstanceName + agentID + ".T" + m.id;
 			sComment = "Task Matching for Task" + m.id;
 			formula = new UPPAgentUppaalFormula(sFormula);
 			comment = new UPPAgentUppaalComment(sComment);
-			query = new UPPAWLUppaalQuery();
+			query = new UPPAgentUppaalQuery();
 			query.setFormula(formula);
 			query.setComment(comment);
 			queries.addQuery(query);
 			
-			sFormula = "A[] " + UPPAWLMissionPlan.InstanceName + agentID + ".T" + m.id + " imply (" + sMilestones + ")";
+			sFormula = "A[] " + UPPAgentMissionPlan.InstanceName + agentID + ".T" + m.id + " imply (" + sMilestones + ")";
 			sComment = "Task Matching for Task" + m.id;
 			formula = new UPPAgentUppaalFormula(sFormula);
 			comment = new UPPAgentUppaalComment(sComment);
-			query = new UPPAWLUppaalQuery();
+			query = new UPPAgentUppaalQuery();
 			query.setFormula(formula);
 			query.setComment(comment);
 			queries.addQuery(query);

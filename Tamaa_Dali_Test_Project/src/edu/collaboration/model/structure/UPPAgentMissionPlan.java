@@ -34,7 +34,7 @@ public class UPPAgentMissionPlan extends UppaalAutomaton {
 		initialize();
 	}
 	
-	private void randomTasks(UPPAgentEventMonitor ev)
+	/*private void randomTasks(UPPAgentEventMonitor ev)
 	{
 		int i,j;
 		UPPAgentMission m = null;
@@ -61,7 +61,7 @@ public class UPPAgentMissionPlan extends UppaalAutomaton {
 	        }
 	        missions.add(m);
 		}
-	}
+	}*/
 	
 	private void createMission(UPPAgentEventMonitor ev)
 	{

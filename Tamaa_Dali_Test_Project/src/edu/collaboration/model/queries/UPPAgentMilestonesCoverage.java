@@ -1,8 +1,7 @@
 package edu.collaboration.model.queries;
 
-import mdh.se.dpac.uppawl.structure.UPPAWLStaticMap;
 
-public class UPPAgentMilestonesCoverage extends UPPAWLUppaalQuery {
+public class UPPAgentMilestonesCoverage extends UPPAgentUppaalQuery {
 	private int agent;
 	
 	public UPPAgentMilestonesCoverage(int agentID, int scale)

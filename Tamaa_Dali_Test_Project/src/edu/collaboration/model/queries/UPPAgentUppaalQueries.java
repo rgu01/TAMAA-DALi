@@ -9,7 +9,7 @@ public class UPPAgentUppaalQueries extends CompositeUppaalElement{
 	    this.tagName = "queries";
 	  }
 	
-	public void addQuery(UPPAWLUppaalQuery query) {
+	public void addQuery(UPPAgentUppaalQuery query) {
 	    // TODO Auto-generated method stub
 	    if (query == null) {
 	      return;

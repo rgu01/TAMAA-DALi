@@ -10,7 +10,7 @@ public class UPPAWLUppaalQuery extends CompositeUppaalElement{
 	    this.tagName = "query";
 	  }
 	  
-	 public void setFormula(UPPAWLUppaalFormula formula) {
+	 public void setFormula(UPPAgentUppaalFormula formula) {
 		    // TODO Auto-generated method stub
 		    if (formula == null) {
 		      return;
@@ -19,7 +19,7 @@ public class UPPAWLUppaalQuery extends CompositeUppaalElement{
 	  }
 	 
 
-	 public void setComment(UPPAWLUppaalComment comment) {
+	 public void setComment(UPPAgentUppaalComment comment) {
 		    // TODO Auto-generated method stub
 		    if (comment == null) {
 		      return;

@@ -2,8 +2,8 @@ package edu.collaboration.model.queries;
 
 import org.fmaes.j2uppaal.datastructures.base.CompositeUppaalElement;
 
-public class UPPAWLUppaalQueries extends CompositeUppaalElement{
-	public UPPAWLUppaalQueries() {
+public class UPPAgentUppaalQueries extends CompositeUppaalElement{
+	public UPPAgentUppaalQueries() {
 	    // TODO Auto-generated constructor stub
 	    super();
 	    this.tagName = "queries";

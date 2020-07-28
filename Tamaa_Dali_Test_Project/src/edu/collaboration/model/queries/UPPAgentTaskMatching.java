@@ -5,13 +5,13 @@ import mdh.se.dpac.uppawl.structure.UPPAWLMission;
 import mdh.se.dpac.uppawl.structure.UPPAWLMissionPlan;
 import mdh.se.dpac.uppawl.structure.UPPAWLStaticMap;
 
-public class UPPAWLTaskMatching {
+public class UPPAgentTaskMatching {
 	
-	public static void addQueries(UPPAWLMissionPlan plan, UPPAWLUppaalQueries queries, int agentID)
+	public static void addQueries(UPPAWLMissionPlan plan, UPPAgentUppaalQueries queries, int agentID)
 	{
 		String sFormula="",sComment="",sMilestones="";
-		UPPAWLUppaalFormula formula;
-		UPPAWLUppaalComment comment;
+		UPPAgentUppaalFormula formula;
+		UPPAgentUppaalComment comment;
 		UPPAWLUppaalQuery query;
 		
 		for(UPPAWLMission m:plan.missions)
@@ -30,8 +30,8 @@ public class UPPAWLTaskMatching {
 			
 			sFormula = "E<> (" + sMilestones + ") imply " + UPPAWLMissionPlan.InstanceName + agentID + ".T" + m.id;
 			sComment = "Task Matching for Task" + m.id;
-			formula = new UPPAWLUppaalFormula(sFormula);
-			comment = new UPPAWLUppaalComment(sComment);
+			formula = new UPPAgentUppaalFormula(sFormula);
+			comment = new UPPAgentUppaalComment(sComment);
 			query = new UPPAWLUppaalQuery();
 			query.setFormula(formula);
 			query.setComment(comment);
@@ -39,8 +39,8 @@ public class UPPAWLTaskMatching {
 			
 			sFormula = "A[] " + UPPAWLMissionPlan.InstanceName + agentID + ".T" + m.id + " imply (" + sMilestones + ")";
 			sComment = "Task Matching for Task" + m.id;
-			formula = new UPPAWLUppaalFormula(sFormula);
-			comment = new UPPAWLUppaalComment(sComment);
+			formula = new UPPAgentUppaalFormula(sFormula);
+			comment = new UPPAgentUppaalComment(sComment);
 			query = new UPPAWLUppaalQuery();
 			query.setFormula(formula);
 			query.setComment(comment);

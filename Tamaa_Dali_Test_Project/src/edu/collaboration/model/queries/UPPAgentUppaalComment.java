@@ -2,16 +2,16 @@ package edu.collaboration.model.queries;
 
 import org.fmaes.j2uppaal.datastructures.base.SimpleUppaalElement;
 
-public class UPPAWLUppaalFormula extends SimpleUppaalElement  {
+public class UPPAgentUppaalComment extends SimpleUppaalElement  {
 
-	public UPPAWLUppaalFormula() {
+	public UPPAgentUppaalComment() {
 		super();
-	    this.tagName = "formula";
+	    this.tagName = "comment";
 	}
 	
-	public UPPAWLUppaalFormula(String value) {
+	public UPPAgentUppaalComment(String value) {
 		super();
-	    this.tagName = "formula";
+	    this.tagName = "comment";
 	    this.value = value;
 	}
 	
@@ -30,6 +30,4 @@ public class UPPAWLUppaalFormula extends SimpleUppaalElement  {
 	}
 
 	
-
-
 }

@@ -2,17 +2,17 @@ package edu.collaboration.model.queries;
 
 import mdh.se.dpac.uppawl.structure.UPPAWLStaticMap;
 
-public class UPPAWLMilestonesCoverage extends UPPAWLUppaalQuery {
+public class UPPAgentMilestonesCoverage extends UPPAWLUppaalQuery {
 	private int agent;
 	
-	public UPPAWLMilestonesCoverage(int agentID, int scale)
+	public UPPAgentMilestonesCoverage(int agentID, int scale)
 	{
 		super();
 		agent = agentID;
 		String sFormula = "E<> forall(i:int[0," + (scale-1) + "]) visited[" + agent + "][i]";
-		UPPAWLUppaalFormula formula = new UPPAWLUppaalFormula(sFormula);
+		UPPAgentUppaalFormula formula = new UPPAgentUppaalFormula(sFormula);
 		String sComment = "Milestone Coverage";
-		UPPAWLUppaalComment comment = new UPPAWLUppaalComment(sComment);
+		UPPAgentUppaalComment comment = new UPPAgentUppaalComment(sComment);
 		super.setFormula(formula);
 		super.setComment(comment);
 	}

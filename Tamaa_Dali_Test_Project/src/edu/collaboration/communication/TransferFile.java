@@ -1,31 +1,31 @@
 package edu.collaboration.communication;
 
+import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.net.Socket;
+import java.net.SocketTimeoutException;
 import java.io.File;
 
 public class TransferFile extends Socket {
-    private Socket client;
-    private FileInputStream fis;
-    private DataOutputStream dos;
-	//public static final String SERVER_IP = "192.168.0.109"; 
-    //public static final int SERVER_PORT = 9779; 
- 
-
     public TransferFile(String ip, int port) throws Exception {
         super(ip, port);
-        this.client = this;
-        System.out.println("Cliect[port:" + client.getLocalPort() + "] connect to the Server.");
+        this.setSoTimeout(10000);
+
+        System.out.println("Cliect[port:" + this.getLocalPort() + "] connect to the Server.");
     }
  
 
     public void sendFile(String path) throws Exception {
+        FileInputStream fis = null;
+        DataOutputStream dos = null;
+        
         try {
             File file = new File(path);
             if(file.exists()) {
                 fis = new FileInputStream(file);
-                dos = new DataOutputStream(client.getOutputStream());
+                dos = new DataOutputStream(this.getOutputStream());
  
                 // File name and length
                 //dos.writeUTF(file.getName());
@@ -55,11 +55,64 @@ public class TransferFile extends Socket {
             e.printStackTrace();
         } finally {
             if(fis != null)
+            {
                 fis.close();
+            }
             if(dos != null)
-                dos.close();
-            client.close();
+            {
+            	dos.flush();
+            	dos.close();
+            }
+                //dos.close();
+            //this.close();
         }
+        System.out.println("s: Socket close? " + this.isClosed());
     }
+    
+    public void receiveFile(String filePath)
+    {
+    	byte[] inputByte = null;
+		int length = 0;
+		DataInputStream dis = null;
+		FileOutputStream fos = null;
+		try 
+		{
+			try 
+			{
 
+                System.out.println("r: Socket close? " + this.isClosed());
+				dis = new DataInputStream(this.getInputStream());
+				File f = new File(filePath);
+				if(!f.exists())
+				{
+					f.mkdir();  
+				}
+
+				fos = new FileOutputStream(new File(filePath));    
+				inputByte = new byte[1024];   
+				System.out.println("Start to receive result data...");  
+				while ((length = dis.read(inputByte, 0, inputByte.length)) > 0) 
+				{
+					fos.write(inputByte, 0, length);
+					fos.flush();    
+				}
+				System.out.println("Complete receiving result data: " + filePath);
+			} 
+			finally 
+			{
+				if (fos != null)
+					fos.close();
+				if (dis != null)
+					dis.close();
+				//this.close();
+			}
+		} 
+		catch(SocketTimeoutException e){  
+            System.out.println("Time out, No response from the server.");  
+        } 
+		catch (Exception e) 
+		{
+			e.printStackTrace();
+		}
+	}
 }

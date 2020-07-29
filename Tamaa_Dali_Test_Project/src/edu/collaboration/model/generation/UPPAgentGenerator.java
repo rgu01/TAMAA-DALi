@@ -16,7 +16,6 @@ import edu.collaboration.model.structure.*;
 
 
 public class UPPAgentGenerator {
-
 	public static String outputXML = "./model/local.xml";
 	private static String templateXML = "empty_template.xml"; //under the bin folder
 	private static String gResetString = "int steps = 0;\r\nvoid gReset()\r\n" +

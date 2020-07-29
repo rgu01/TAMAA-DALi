@@ -46,6 +46,7 @@ public class PlannerServiceHandler implements PlannerService.Iface {
 		Node top_right  = null, bot_left = null, top_left  = null, bot_right = null;
 		NavigationArea nArea = null;
 		SphericalMercator sphericalMercator = new SphericalMercator();
+		String resultFile = "./results/plan.xml";
 		
 		try {
 			transport = new TSocket("127.0.0.1", 9096);
@@ -158,6 +159,10 @@ public class PlannerServiceHandler implements PlannerService.Iface {
 			//call UPPAAL in the server side to synthesize a mission plan
 			TransferFile trans = new TransferFile(PlannerServiceHandler.SERVER_IP, PlannerServiceHandler.SERVER_PORT);
 			trans.sendFile(UPPAgentGenerator.outputXML);
+			trans.close();
+			trans = new TransferFile(PlannerServiceHandler.SERVER_IP, PlannerServiceHandler.SERVER_PORT);
+			trans.receiveFile(resultFile);
+			trans.close();
 			
 			//draw the paths in MMT
 			//Iterator<Entry<List<Node>, List<Node>>> iter = paths.entrySet().iterator();
@@ -182,28 +187,8 @@ public class PlannerServiceHandler implements PlannerService.Iface {
 				}
 			}
 
-			client.sendPlan(requestId, plan);
-			System.out.println("Mission Plan Sent!");
-			/*taskID = 21;
-			for(Task task:tasks)
-			{
-				taskPosition = task.area.area.get(0);
-				task_lon = sphericalMercator.xAxisProjection(taskPosition.longitude);
-				task_lat = sphericalMercator.yAxisProjection(taskPosition.latitude);
-				end = new Node(task_lat, task_lon);
-				//calculate path
-				path = as.calculate(start, end);
-				Collections.reverse(path);
-				//create transits in MMT
-				for (int i = 1; i < path.size()-1; i++) {
-					goal = new Position(sphericalMercator.x2lon(path.get(i).lon),sphericalMercator.y2lat(path.get(i).lat), 0.0);
-					plan.tasks.add(newTransitAction(taskID, origin, goal, plan.vehicles.get(0), 0));
-					origin = goal;
-					taskID++;
-				}
-				//plan.tasks.add(newTransitAction(taskID, origin, taskPosition, plan.vehicles.get(0), 0));
-				start = end;
-			}*/	
+			//client.sendPlan(requestId, plan);
+			//System.out.println("Mission Plan Sent!");
 		} 
 		catch (TTransportException e) 
 		{

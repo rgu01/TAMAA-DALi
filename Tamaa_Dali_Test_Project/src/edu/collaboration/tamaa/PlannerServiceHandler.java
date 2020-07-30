@@ -17,6 +17,7 @@ import edu.collaboration.communication.TransferFile;
 import edu.collaboration.model.generation.MapTxtGenerator;
 import edu.collaboration.model.generation.UPPAgentGenerator;
 import edu.collaboration.pathplanning.*;
+import edu.collaboration.pathplanning.dali.Dali;
 import edu.collaboration.pathplanning.xstar.*;
 import edu.collaboration.taskscheduling.*;
 
@@ -32,7 +33,7 @@ public class PlannerServiceHandler implements PlannerService.Iface {
 		TTransport transport = null; 	
 		TProtocol protocol = null;
 		MmtService.Client client = null;
-		AStar as = null;
+		PathPlanningAlgorithm as = null;
 		//List<Node> milestones = new ArrayList<Node>();
 		double task_lat, task_lon;
 		Node start = null, end = null;
@@ -109,6 +110,7 @@ public class PlannerServiceHandler implements PlannerService.Iface {
 			}
 			
 			as = new AStar(nArea);
+			//as = new Dali(nArea);
 			//vehicle_lon = sphericalMercator.xAxisProjection(plan.getVehicles().get(0).stateVector.getPosition().longitude);
 			//vehicle_lat = sphericalMercator.yAxisProjection(plan.getVehicles().get(0).stateVector.getPosition().latitude);
 			origin = plan.getVehicles().get(0).stateVector.getPosition();

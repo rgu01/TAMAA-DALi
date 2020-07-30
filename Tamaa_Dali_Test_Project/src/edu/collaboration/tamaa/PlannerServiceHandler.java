@@ -226,7 +226,7 @@ public class PlannerServiceHandler implements PlannerService.Iface {
 	
 	private Task newTransitAction(int actionID, Position startPosition, Position endPosition, Vehicle vehicleUsed, int startTime)
 	{
-		//System.out.println(vehicleUsed);
+		//System.out.println(vehicleUsed);//
 		Task transit = new Task();
 
 		Orientation bearing = new Orientation();

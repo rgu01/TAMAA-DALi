@@ -18,6 +18,7 @@ import edu.collaboration.model.generation.MapTxtGenerator;
 import edu.collaboration.model.generation.UPPAgentGenerator;
 import edu.collaboration.pathplanning.*;
 import edu.collaboration.pathplanning.xstar.*;
+import edu.collaboration.taskscheduling.*;
 
 public class PlannerServiceHandler implements PlannerService.Iface {
 	Mission corePlan = null;
@@ -46,7 +47,6 @@ public class PlannerServiceHandler implements PlannerService.Iface {
 		Node top_right  = null, bot_left = null, top_left  = null, bot_right = null;
 		NavigationArea nArea = null;
 		SphericalMercator sphericalMercator = new SphericalMercator();
-		String resultFile = "./results/plan.xml";
 		
 		try {
 			transport = new TSocket("127.0.0.1", 9096);
@@ -161,8 +161,11 @@ public class PlannerServiceHandler implements PlannerService.Iface {
 			trans.sendFile(UPPAgentGenerator.outputXML);
 			trans.close();
 			trans = new TransferFile(PlannerServiceHandler.SERVER_IP, PlannerServiceHandler.SERVER_PORT);
-			trans.receiveFile(resultFile);
+			trans.receiveFile(TaskScheduleParser.planPath);
 			trans.close();
+			
+			//parse the result xml
+			TaskSchedulePlan taskPlan = TaskScheduleParser.parse();
 			
 			//draw the paths in MMT
 			//Iterator<Entry<List<Node>, List<Node>>> iter = paths.entrySet().iterator();
@@ -170,7 +173,8 @@ public class PlannerServiceHandler implements PlannerService.Iface {
 			Iterator<Node> iter_path = null;
 			Path a_path;
 			Node a_node;
-			while (iter_paths.hasNext()) {
+			while (iter_paths.hasNext()) 
+			{
 			    //Map.Entry<List<Node>, List<Node>> entry = (Map.Entry<List<Node>, List<Node>>) iter.next();
 			    //List<Node> val = (List<Node>)entry.getValue();
 				a_path = iter_paths.next();

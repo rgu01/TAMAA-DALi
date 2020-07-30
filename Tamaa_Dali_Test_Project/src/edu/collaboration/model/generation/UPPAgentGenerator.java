@@ -104,14 +104,17 @@ public class UPPAgentGenerator {
 		    }
 	    }
 	    
+	    UPPAgentTaskCoverage tcq = new UPPAgentTaskCoverage(fleet);
+	    queries.addQuery(tcq);  
+	    
 	    for(int agentID:fleet.agents)
 	    {
 	    	UPPAgentStaticMap map = new UPPAgentStaticMap(agentID);
-	    	UPPAgentTaskCoverage tcq = new UPPAgentTaskCoverage(agentID);
+	    	//UPPAgentTaskCoverage tcq = new UPPAgentTaskCoverage(agentID);
 	    	monitor = new UPPAgentEventMonitor(agentID, eventNum);
 	    	UPPAgentMissionPlan missionPlan = new UPPAgentMissionPlan(agentID, monitor,taskNum);
 	    
-		    queries.addQuery(tcq);  
+		    //queries.addQuery(tcq);  
 		    
 		    monitor.setDeclaration();
 		    mapScale = map.Scale;
@@ -177,6 +180,9 @@ public class UPPAgentGenerator {
 		    doc.addAutomaton(map);
 		    doc.addAutomaton(missionPlan);
 	    }
+	    
+	    
+	    
 	    if(monitor!=null)
 	    {
 	    	monitor.initialize();

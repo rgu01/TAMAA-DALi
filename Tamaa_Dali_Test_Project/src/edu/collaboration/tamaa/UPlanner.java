@@ -2,6 +2,10 @@ package edu.collaboration.tamaa;
 
 import org.apache.thrift.transport.TServerSocket;  
 import org.apache.thrift.transport.TServerTransport;
+
+import java.io.File;
+import java.io.IOException;
+
 import javax.swing.JOptionPane;
 import org.apache.thrift.server.TServer;  
 import org.apache.thrift.server.TServer.Args;  

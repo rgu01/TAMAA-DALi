@@ -9,8 +9,9 @@ import java.util.Scanner;
 
 public class UPPAgentFleet {
 	private static String filePath = "res/agents.txt"; 
-	public List<Integer> agents = new ArrayList<Integer>();
-	public List<Integer> speed = new ArrayList<Integer>();
+	public List<UPPAgentVehicle> agents = new ArrayList<UPPAgentVehicle>();
+	//public List<Integer> agents = new ArrayList<Integer>();
+	//public List<Integer> speed = new ArrayList<Integer>();
 	
 	public UPPAgentFleet()
 	{
@@ -20,15 +21,19 @@ public class UPPAgentFleet {
 			InputStreamReader reader = new InputStreamReader(
 					new FileInputStream(filename)); 
 			Scanner sc = new Scanner(reader);
+			int id, speed;
 			if(sc != null && sc.hasNextLine())
 			{
 				sc.nextLine();
 				while(sc.hasNextInt())
 				{
 					//id
-					agents.add(sc.nextInt());
+					id = sc.nextInt();
+					//agents.add(sc.nextInt());
 					//speed
-					speed.add(sc.nextInt());
+					speed = sc.nextInt();
+					//speed.add(sc.nextInt());
+					agents.add(new UPPAgentVehicle(id, speed));
 				}
 			}
 			sc.close();

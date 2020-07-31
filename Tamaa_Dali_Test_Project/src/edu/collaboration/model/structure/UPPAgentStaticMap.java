@@ -14,6 +14,7 @@ import org.fmaes.j2uppaal.datastructures.uppaalstructures.UppaalTransition;
 public class UPPAgentStaticMap extends UppaalAutomaton {
 	public static String SystemName="Movement";
 	public static String InstanceName="movement";
+	//public static String MapPath = "res/map.txt"; 
 	public static String MapPath = "res/map.txt"; 
 	public String mDeclaration = "clock t;\r\n";
 	/*public String mDeclaration = "clock t;\r\n" + 
@@ -26,12 +27,12 @@ public class UPPAgentStaticMap extends UppaalAutomaton {
 	private static int x = -400, y = -200;
 	public	int Scale = 50;
 	public int map[][];
-	private int agent;
+	private UPPAgentVehicle agent;
 	
-	public UPPAgentStaticMap(int agentID)
+	public UPPAgentStaticMap(UPPAgentVehicle agent)
 	{
 		super();
-		agent = agentID;
+		this.agent = agent;
 		createMap();
 		Initialize();
 	}
@@ -130,7 +131,7 @@ public class UPPAgentStaticMap extends UppaalAutomaton {
 					setLocationCorrdinates(p, x+100+j*150, y+100+i*150);
 					label = new UppaalLabel();
 					label.setKind("invariant");
-					label.setValue("t<=" + map[i][j]);
+					label.setValue("t<=" + (map[i][j] / this.agent.speed));
 					p.addOrReplaceLabel(label);
 					this.addOrReplaceLocation(p);
 				}
@@ -188,7 +189,7 @@ public class UPPAgentStaticMap extends UppaalAutomaton {
 					transition.addOrReplaceLabel(label);
 					label = new UppaalLabel();
 					label.setKind("guard");
-					label.setValue("t>="+map[i][j]);
+					label.setValue("t>=" + (map[i][j] / this.agent.speed));
 					transition.addOrReplaceLabel(label);
 					this.addOrReplaceTransition(transition);
 				}
@@ -236,7 +237,7 @@ public class UPPAgentStaticMap extends UppaalAutomaton {
 		
 		childrenUppaalElements.sort(new UppaalXMLSorter()); 
 
-		this.setName(SystemName+agent);
+		this.setName(SystemName+agent.id);
 		this.setParameter(mParameters);
 		this.setDeclaration(mDeclaration);
 	}

@@ -14,6 +14,7 @@ import java.util.Iterator;
 import java.util.List;
 
 import edu.collaboration.communication.TransferFile;
+import edu.collaboration.model.generation.AgentTxtGenerator;
 import edu.collaboration.model.generation.MapTxtGenerator;
 import edu.collaboration.model.generation.UPPAgentGenerator;
 import edu.collaboration.pathplanning.*;
@@ -146,20 +147,23 @@ public class PlannerServiceHandler implements PlannerService.Iface {
 						{
 							paths.add(path);
 						}
-						/*if(!paths.containsKey(key) && !paths.containsKey(key_temp))
-						{
-							Collections.reverse(path);
-							paths.put(key, path);
-						}*/
 					}
 				}
 			}
+			
+
 			MapTxtGenerator mapGen = new MapTxtGenerator(nodes, paths);
 			mapGen.createSampleMap();
+			AgentTxtGenerator agentGen = new AgentTxtGenerator(plan.getVehicles());
+			agentGen.outputAgentTxt();
 			UPPAgentGenerator.run();
-			
+						
+			/*****************************************************************
+			 * If no server is running, and only path planning is needed,
+			 * please comment the code below
+			 */
 			//call UPPAAL in the server side to synthesize a mission plan
-			TransferFile trans = new TransferFile(PlannerServiceHandler.SERVER_IP, PlannerServiceHandler.SERVER_PORT);
+			/*TransferFile trans = new TransferFile(PlannerServiceHandler.SERVER_IP, PlannerServiceHandler.SERVER_PORT);
 			trans.sendFile(UPPAgentGenerator.outputXML);
 			trans.close();
 			trans = new TransferFile(PlannerServiceHandler.SERVER_IP, PlannerServiceHandler.SERVER_PORT);
@@ -167,7 +171,10 @@ public class PlannerServiceHandler implements PlannerService.Iface {
 			trans.close();
 			
 			//parse the result xml
-			TaskSchedulePlan taskPlan = TaskScheduleParser.parse();
+			TaskSchedulePlan taskPlan = TaskScheduleParser.parse();*/
+			/******************************************************************
+			 * end of the task scheduling code
+			 */
 			
 			//draw the paths in MMT
 			//Iterator<Entry<List<Node>, List<Node>>> iter = paths.entrySet().iterator();
@@ -193,8 +200,8 @@ public class PlannerServiceHandler implements PlannerService.Iface {
 				}
 			}
 
-			//client.sendPlan(requestId, plan);
-			//System.out.println("Mission Plan Sent!");
+			client.sendPlan(requestId, plan);
+			System.out.println("Mission Plan Sent!");
 		} 
 		catch (TTransportException e) 
 		{

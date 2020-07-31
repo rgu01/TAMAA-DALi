@@ -1,6 +1,8 @@
 package edu.collaboration.model.generation;
 
 
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import javax.swing.JOptionPane;
 import java.io.InputStream;
@@ -44,11 +46,14 @@ public class UPPAgentGenerator {
 	
 	public static void run() {
 	    String show = "";
+	    String tempatePath = "";
 		UppaalDocument doc = null;
 		DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
 	    try {
+	    	tempatePath = new File(".").getCanonicalPath() + "\\res\\" + templateXML;
 			DocumentBuilder builder = factory.newDocumentBuilder();
-			InputStream is = UPPAgentGenerator.class.getClassLoader().getResourceAsStream(templateXML); 
+			//InputStream is = UPPAgentGenerator.class.getClassLoader().getResourceAsStream(tempatePath); 
+			InputStream is = new FileInputStream(new File(tempatePath));
 			if(is != null)
 			{
 				Document templatedoc =  builder.parse(is);
@@ -90,10 +95,11 @@ public class UPPAgentGenerator {
 	    agentNum = fleet.agents.size();
 	    UPPAgentEventMonitor monitor=null;
 	    
-	    for(int agentID:fleet.agents)
+	    //for(int agentID:fleet.agents)
+	    for(UPPAgentVehicle agent:fleet.agents)
 	    {
-	    	monitor = new UPPAgentEventMonitor(agentID,0);
-	    	UPPAgentMissionPlan missionPlan = new UPPAgentMissionPlan(agentID, monitor,taskNum);
+	    	monitor = new UPPAgentEventMonitor(agent,0);
+	    	UPPAgentMissionPlan missionPlan = new UPPAgentMissionPlan(agent, monitor,taskNum);
 		    if(taskNum < missionPlan.missions.size())
 		    {
 		    	taskNum = missionPlan.missions.size();
@@ -107,12 +113,13 @@ public class UPPAgentGenerator {
 	    UPPAgentTaskCoverage tcq = new UPPAgentTaskCoverage(fleet);
 	    queries.addQuery(tcq);  
 	    
-	    for(int agentID:fleet.agents)
+	    //for(int agentID:fleet.agents)
+	    for(UPPAgentVehicle agent:fleet.agents)
 	    {
-	    	UPPAgentStaticMap map = new UPPAgentStaticMap(agentID);
+	    	UPPAgentStaticMap map = new UPPAgentStaticMap(agent);
 	    	//UPPAgentTaskCoverage tcq = new UPPAgentTaskCoverage(agentID);
-	    	monitor = new UPPAgentEventMonitor(agentID, eventNum);
-	    	UPPAgentMissionPlan missionPlan = new UPPAgentMissionPlan(agentID, monitor,taskNum);
+	    	monitor = new UPPAgentEventMonitor(agent, eventNum);
+	    	UPPAgentMissionPlan missionPlan = new UPPAgentMissionPlan(agent, monitor,taskNum);
 	    
 		    //queries.addQuery(tcq);  
 		    
@@ -154,7 +161,7 @@ public class UPPAgentGenerator {
 		    
 		    constRegularTask += missionPlan.regularTasksNum;
 		    iterationString += 0;
-		    if(agentID != fleet.agents.size() - 1)
+		    if(agent.id != fleet.agents.size() - 1)
 		    {
 		    	constRegularTask += ",";
 		    	iterationString += ",";
@@ -172,10 +179,10 @@ public class UPPAgentGenerator {
 		    
 		    for(UPPAgentEvent e:monitor.events)
 		    {
-		    	system_declaration += UPPAgentEventMonitor.InstanceName + agentID + e.id + " = " + UPPAgentEventMonitor.SystemName + "(" + agentID + "," + e.id + ");\r\n";
+		    	system_declaration += UPPAgentEventMonitor.InstanceName + agent.id + e.id + " = " + UPPAgentEventMonitor.SystemName + "(" + agent.id + "," + e.id + ");\r\n";
 		    }
-		    system_declaration += UPPAgentStaticMap.InstanceName + agentID + " = " + UPPAgentStaticMap.SystemName + agentID + "(" + agentID + ");\r\n";
-		    system_declaration += UPPAgentMissionPlan.InstanceName + agentID + " = " + UPPAgentMissionPlan.SystemName + agentID + "(" + agentID + ");\r\n";
+		    system_declaration += UPPAgentStaticMap.InstanceName + agent.id + " = " + UPPAgentStaticMap.SystemName + agent.id + "(" + agent.id + ");\r\n";
+		    system_declaration += UPPAgentMissionPlan.InstanceName + agent.id + " = " + UPPAgentMissionPlan.SystemName + agent.id + "(" + agent.id + ");\r\n";
 		    
 		    doc.addAutomaton(map);
 		    doc.addAutomaton(missionPlan);
@@ -193,14 +200,14 @@ public class UPPAgentGenerator {
 	    	}
 	    }
 	    system_declaration += "\r\nsystem ";
-	    for(int agentID:fleet.agents)
+	    for(UPPAgentVehicle agent:fleet.agents)
 	    {
-	    	monitor = new UPPAgentEventMonitor(agentID,eventNum);
-		    system_declaration += UPPAgentStaticMap.InstanceName + agentID + ", " + UPPAgentMissionPlan.InstanceName + agentID + ", ";	
+	    	monitor = new UPPAgentEventMonitor(agent,eventNum);
+		    system_declaration += UPPAgentStaticMap.InstanceName + agent.id + ", " + UPPAgentMissionPlan.InstanceName + agent.id + ", ";	
 		    
 		    for(UPPAgentEvent e:monitor.events)
 		    {
-		    	system_declaration += UPPAgentEventMonitor.InstanceName + agentID + e.id + ", ";
+		    	system_declaration += UPPAgentEventMonitor.InstanceName + agent.id + e.id + ", ";
 		    }
 	    }
 	    system_declaration = system_declaration.substring(0, system_declaration.lastIndexOf(",")) + ";";

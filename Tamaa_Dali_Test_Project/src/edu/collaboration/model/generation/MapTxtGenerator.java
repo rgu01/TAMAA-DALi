@@ -58,27 +58,30 @@ public class MapTxtGenerator {
         outputMapTxt(map);
     }
 
-        public void outputMapTxt(int[][] map){
-        	int numOfNodes = this.milestones.size();
-            try {
-                File writename = new File(mapTxt);
-                writename.createNewFile();
-                BufferedWriter out = new BufferedWriter(new FileWriter(writename));
-                out.write(numOfNodes+"\r\n");
-                for(int i = 0; i < numOfNodes; i++)
+    public void outputMapTxt(int[][] map)
+    {
+    	int numOfNodes = this.milestones.size();
+        try 
+        {
+            File writename = new File(mapTxt);
+            writename.createNewFile();
+            BufferedWriter out = new BufferedWriter(new FileWriter(writename));
+            out.write(numOfNodes+"\r\n");
+            for(int i = 0; i < numOfNodes; i++)
+            {
+                for( int j = 0; j < numOfNodes; j++)
                 {
-                    for( int j = 0; j < numOfNodes; j++)
-                    {
-                        out.write(map[i][j]+"	");
-                    }
-                    out.write("\r\n");
+                    out.write(map[i][j]+"	");
                 }
-                out.flush();
-                out.close();
-            } catch (IOException e) {
-                e.printStackTrace();
+                out.write("\r\n");
             }
-        }
-
+            out.flush();
+            out.close();
+         } 
+         catch (IOException e) 
+         {
+            e.printStackTrace();
+         }
     }
+}
 

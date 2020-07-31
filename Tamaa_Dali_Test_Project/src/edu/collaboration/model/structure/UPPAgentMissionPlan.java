@@ -21,14 +21,14 @@ public class UPPAgentMissionPlan extends UppaalAutomaton {
 	public List<UPPAgentMission> missions = new ArrayList<UPPAgentMission>();
 	public int regularTasksNum=0;
 	public int eventTasksNum=0;
-	private int agent;
+	private UPPAgentVehicle agent;
 	private int taskNum;
 	//private int Limit=4; //limit for re-initialization
 
-	public UPPAgentMissionPlan(int agentID, UPPAgentEventMonitor ev, int tn)
+	public UPPAgentMissionPlan(UPPAgentVehicle agent, UPPAgentEventMonitor ev, int tn)
 	{
 		super();
-		agent = agentID;
+		this.agent = agent;
 		taskNum = tn;
 		createMission(ev);
 		initialize();
@@ -69,7 +69,7 @@ public class UPPAgentMissionPlan extends UppaalAutomaton {
 		//randomTasks(ev);
 		try 
 		{ 
-			File filename = new File(MissionPath+agent+".txt"); 
+			File filename = new File(MissionPath+agent.id+".txt"); 
 			InputStreamReader reader = new InputStreamReader(
 					new FileInputStream(filename)); 
 			Scanner sc = new Scanner(reader);
@@ -331,7 +331,7 @@ public class UPPAgentMissionPlan extends UppaalAutomaton {
 		
 		childrenUppaalElements.sort(new UppaalXMLSorter()); 
 
-		this.setName(SystemName+agent);
+		this.setName(SystemName+agent.id);
 		mParameters = "const AgentScale id";
 		String tfString = "";
 		String tsString = "";

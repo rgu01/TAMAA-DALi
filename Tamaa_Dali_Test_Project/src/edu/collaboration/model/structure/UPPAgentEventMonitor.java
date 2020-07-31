@@ -21,13 +21,13 @@ public class UPPAgentEventMonitor extends UppaalAutomaton {
 	public static String mParameters = "const AgentScale id, const int event";
 	private static int x = -400, y = -200;
 	public List<UPPAgentEvent> events = new ArrayList<UPPAgentEvent>();	
-	private int agent;
+	private UPPAgentVehicle agent;
 	private int eventNum;
 	
-	public UPPAgentEventMonitor(int agentID, int eventNum)
+	public UPPAgentEventMonitor(UPPAgentVehicle agent, int eventNum)
 	{
 		super();
-		agent = agentID;
+		this.agent = agent;
 		this.eventNum = eventNum;
 		createTask();
 	}
@@ -37,7 +37,7 @@ public class UPPAgentEventMonitor extends UppaalAutomaton {
 		int id = 0, threshold = 0;
 		try 
 		{ 
-			File filename = new File(EventPath+agent+".txt"); 
+			File filename = new File(EventPath+agent.id+".txt"); 
 			InputStreamReader reader = new InputStreamReader(
 					new FileInputStream(filename)); 
 			Scanner sc = new Scanner(reader);

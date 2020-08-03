@@ -76,4 +76,13 @@ public class Node {
 		
 		return ps.directLength() <= 2*NavigationArea.threshold;
 	}
+	
+	@Override
+	public Node clone()
+	{
+		Node copy = new Node(this.lat, this.lon);
+		copy.parent = this.parent.clone();
+		
+		return copy;
+	}
 }

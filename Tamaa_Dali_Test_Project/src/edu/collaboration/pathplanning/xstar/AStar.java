@@ -30,6 +30,8 @@ public class AStar implements PathPlanningAlgorithm {
 		Path p_result = new Path(start, destination);
 		List<Node> path = new ArrayList<Node>();
 		List<Node> neighbors = new ArrayList<Node>();
+		this.open = new ArrayList<ANode>();
+		this.closed = new ArrayList<ANode>();
 		
 		aStart = new ANode(start.lat, start.lon, destination);
 		aDestination = new ANode(destination.lat, destination.lon, destination);

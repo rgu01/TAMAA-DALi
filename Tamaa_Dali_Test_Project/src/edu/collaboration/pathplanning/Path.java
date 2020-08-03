@@ -99,4 +99,16 @@ public class Path {
 		
 		return result;
 	}
+	
+	@Override
+	public Path clone()
+	{
+		Path copy = new Path(this.start.clone(), this.end.clone());
+		for(Node node:this.segments)
+		{
+			copy.segments.add(node.clone());
+		}
+		
+		return copy;
+	}
 }

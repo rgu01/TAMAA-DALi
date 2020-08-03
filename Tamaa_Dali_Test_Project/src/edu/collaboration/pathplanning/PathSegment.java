@@ -11,11 +11,11 @@ public class PathSegment {
 	public Node origin;
 	public Node end;
 	
-	public PathSegment(double x1, double y1, double x2, double y2)
+	public PathSegment(double lat1, double lon1, double lat2, double lon2)
 	{
 		this.weight = 1.0;
-		this.origin = new Node(x1,y1);
-		this.end = new Node(x2,y2);
+		this.origin = new Node(lat1,lon1);
+		this.end = new Node(lat2,lon2);
 	}
 	
 	public PathSegment(Node o, Node e)

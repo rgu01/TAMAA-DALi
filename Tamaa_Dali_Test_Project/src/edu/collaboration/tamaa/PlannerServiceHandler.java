@@ -24,7 +24,9 @@ import edu.collaboration.taskscheduling.*;
 
 public class PlannerServiceHandler implements PlannerService.Iface {
 	Mission corePlan = null;
-	public static final String SERVER_IP = "192.168.0.109"; 
+	//public static final String SERVER_IP = "192.168.0.109";
+	//public static final String SERVER_IP = "192.168.56.1"; 
+	public static final String SERVER_IP = "127.0.0.1"; 
     public static final int SERVER_PORT = 9779; 
     
 	@Override
@@ -190,7 +192,7 @@ public class PlannerServiceHandler implements PlannerService.Iface {
 			 * please comment the code below
 			 */
 			//call UPPAAL in the server side to synthesize a mission plan
-			/*TransferFile trans = new TransferFile(PlannerServiceHandler.SERVER_IP, PlannerServiceHandler.SERVER_PORT);
+			TransferFile trans = new TransferFile(PlannerServiceHandler.SERVER_IP, PlannerServiceHandler.SERVER_PORT);
 			trans.sendFile(UPPAgentGenerator.outputXML);
 			trans.close();
 			trans = new TransferFile(PlannerServiceHandler.SERVER_IP, PlannerServiceHandler.SERVER_PORT);
@@ -198,7 +200,7 @@ public class PlannerServiceHandler implements PlannerService.Iface {
 			trans.close();
 			
 			//parse the result xml
-			TaskSchedulePlan taskPlan = TaskScheduleParser.parse();*/
+			TaskSchedulePlan taskPlan = TaskScheduleParser.parse();
 			/******************************************************************
 			 * end of the task scheduling code
 			 */
@@ -271,13 +273,19 @@ public class PlannerServiceHandler implements PlannerService.Iface {
 	{
 		//System.out.println(vehicleUsed);//
 		Task transit = new Task();
+		SphericalMercator sphericalMercator = new SphericalMercator();
 
 		Orientation bearing = new Orientation();
-		int endTime = 0, distance;
+		int endTime = 0;
+		double start_lon = sphericalMercator.xAxisProjection(startPosition.longitude);
+		double start_lat = sphericalMercator.yAxisProjection(startPosition.latitude);
+		double end_lon = sphericalMercator.xAxisProjection(endPosition.longitude);
+		double end_lat = sphericalMercator.yAxisProjection(endPosition.latitude);
+		double distance = new PathSegment(start_lat, start_lon, end_lat, end_lon).directLength();
 
-		distance = (int)(100*Math.pow(startPosition.getLatitude()-endPosition.getLatitude(), 2));//fix number for now
+		/*distance = (int)(100*Math.pow(startPosition.getLatitude()-endPosition.getLatitude(), 2));//fix number for now
 		distance = distance + (int)(100*Math.pow(startPosition.getLongitude()-endPosition.getLongitude(), 2));//fix number for now
-		distance = (int)Math.sqrt(distance);
+		distance = (int)Math.sqrt(distance);*/
 
 		transit.altitude = 0;
 		transit.assignedVehicleId = vehicleUsed.id;

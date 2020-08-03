@@ -115,7 +115,7 @@ public class PlannerServiceHandler implements PlannerService.Iface {
 			//as = new Dali(nArea);
 			//vehicle_lon = sphericalMercator.xAxisProjection(plan.getVehicles().get(0).stateVector.getPosition().longitude);
 			//vehicle_lat = sphericalMercator.yAxisProjection(plan.getVehicles().get(0).stateVector.getPosition().latitude);
-			
+			//
 			for(Vehicle v:plan.getVehicles())
 			{
 				origin = v.stateVector.getPosition();

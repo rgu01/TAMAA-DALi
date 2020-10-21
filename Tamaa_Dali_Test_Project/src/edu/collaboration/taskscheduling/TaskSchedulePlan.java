@@ -1,9 +1,14 @@
 package edu.collaboration.taskscheduling;
 
-import java.util.LinkedList;
-import java.util.Queue;
+import java.util.ArrayList;
+import java.util.List;
 
 public class TaskSchedulePlan {
-	public Queue<TaskScheduleState> states = new LinkedList<TaskScheduleState>();
-	public Queue<TaskScheduleAction> actions = new LinkedList<TaskScheduleAction>();
+	public List<TaskScheduleState> states = new ArrayList<TaskScheduleState>();
+	public List<TaskScheduleAction> actions = new ArrayList<TaskScheduleAction>();
+	
+	public int length()
+	{
+		return states.size();
+	}
 }

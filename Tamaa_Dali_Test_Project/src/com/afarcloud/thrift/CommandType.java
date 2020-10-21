@@ -11,18 +11,18 @@ import java.util.Map;
 import java.util.HashMap;
 import org.apache.thrift.TEnum;
 
-public enum CommandType implements TEnum {
-  NAV_TAKEOFF(0),
-  NAV_LAND(1),
-  NAV_WAYPOINT(2),
-  CAMERA_IMAGE(3),
-  VIDEO_START_CAPTURE(4),
-  VIDEO_STOP_CAPTURE(5),
-  NAV_HOTPOINT(6),
-  NAV_FOLLOW_TARGET(7),
-  NAV_TRACK_SUBJECT(8),
-  CAMERA_PANORAMA(9),
-  NAV_HOME(10);
+public enum CommandType implements org.apache.thrift.TEnum {
+  NAV_TAKEOFF(1),
+  NAV_LAND(2),
+  NAV_WAYPOINT(3),
+  CAMERA_IMAGE(4),
+  VIDEO_START_CAPTURE(5),
+  VIDEO_STOP_CAPTURE(6),
+  NAV_HOTPOINT(7),
+  NAV_FOLLOW_TARGET(8),
+  NAV_TRACK_SUBJECT(9),
+  CAMERA_PANORAMA(10),
+  NAV_HOME(11);
 
   private final int value;
 
@@ -43,27 +43,27 @@ public enum CommandType implements TEnum {
    */
   public static CommandType findByValue(int value) { 
     switch (value) {
-      case 0:
-        return NAV_TAKEOFF;
       case 1:
-        return NAV_LAND;
+        return NAV_TAKEOFF;
       case 2:
-        return NAV_WAYPOINT;
+        return NAV_LAND;
       case 3:
-        return CAMERA_IMAGE;
+        return NAV_WAYPOINT;
       case 4:
-        return VIDEO_START_CAPTURE;
+        return CAMERA_IMAGE;
       case 5:
-        return VIDEO_STOP_CAPTURE;
+        return VIDEO_START_CAPTURE;
       case 6:
-        return NAV_HOTPOINT;
+        return VIDEO_STOP_CAPTURE;
       case 7:
-        return NAV_FOLLOW_TARGET;
+        return NAV_HOTPOINT;
       case 8:
-        return NAV_TRACK_SUBJECT;
+        return NAV_FOLLOW_TARGET;
       case 9:
-        return CAMERA_PANORAMA;
+        return NAV_TRACK_SUBJECT;
       case 10:
+        return CAMERA_PANORAMA;
+      case 11:
         return NAV_HOME;
       default:
         return null;

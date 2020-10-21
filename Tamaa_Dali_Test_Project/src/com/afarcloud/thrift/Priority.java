@@ -11,18 +11,14 @@ import java.util.Map;
 import java.util.HashMap;
 import org.apache.thrift.TEnum;
 
-public enum VehicleType implements org.apache.thrift.TEnum {
-  AUAV(0),
-  RUAV(1),
-  AGV(2),
-  RGV(3),
-  UAV(4),
-  UGV(5),
-  Tractor(6);
+public enum Priority implements org.apache.thrift.TEnum {
+  UNDEFINED(0),
+  LOW(1),
+  HIGH(2);
 
   private final int value;
 
-  private VehicleType(int value) {
+  private Priority(int value) {
     this.value = value;
   }
 
@@ -37,22 +33,14 @@ public enum VehicleType implements org.apache.thrift.TEnum {
    * Find a the enum type by its integer value, as defined in the Thrift IDL.
    * @return null if the value is not found.
    */
-  public static VehicleType findByValue(int value) { 
+  public static Priority findByValue(int value) { 
     switch (value) {
       case 0:
-        return AUAV;
+        return UNDEFINED;
       case 1:
-        return RUAV;
+        return LOW;
       case 2:
-        return AGV;
-      case 3:
-        return RGV;
-      case 4:
-        return UAV;
-      case 5:
-        return UGV;
-      case 6:
-        return Tractor;
+        return HIGH;
       default:
         return null;
     }

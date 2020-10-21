@@ -1,12 +1,8 @@
 package edu.collaboration.model.structure;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.InputStreamReader;
+
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Scanner;
-
 import org.fmaes.j2uppaal.builders.UppaalXMLSorter;
 import org.fmaes.j2uppaal.datastructures.uppaalstructures.UppaalAutomaton;
 import org.fmaes.j2uppaal.datastructures.uppaalstructures.UppaalLabel;
@@ -14,55 +10,30 @@ import org.fmaes.j2uppaal.datastructures.uppaalstructures.UppaalLocation;
 import org.fmaes.j2uppaal.datastructures.uppaalstructures.UppaalTransition;
 
 public class UPPAgentEventMonitor extends UppaalAutomaton {
-	public static String EventPath = "res/events"; 
 	public static String SystemName="Monitor";
 	public static String InstanceName="monitor";
 	public static String mDeclaration = "clock x;\r\nconst int T[AgentNum][EventNum]={";
 	public static String mParameters = "const AgentScale id, const int event";
 	private static int x = -400, y = -200;
-	public List<UPPAgentEvent> events = new ArrayList<UPPAgentEvent>();	
-	private UPPAgentVehicle agent;
-	private int eventNum;
+	public List<UPPAgentEvent> events;
+	//private UPPAgentVehicle agent;
 	
-	public UPPAgentEventMonitor(UPPAgentVehicle agent, int eventNum)
+	public UPPAgentEventMonitor(UPPAgentVehicle agent)
 	{
 		super();
-		this.agent = agent;
-		this.eventNum = eventNum;
-		createTask();
+		//this.agent = agent;
+		createMonitor();
 	}
 	
-	private void createTask()
+	private void createMonitor()
 	{
-		int id = 0, threshold = 0;
-		try 
-		{ 
-			File filename = new File(EventPath+agent.id+".txt"); 
-			InputStreamReader reader = new InputStreamReader(
-					new FileInputStream(filename)); 
-			Scanner sc = new Scanner(reader);
-			if(sc != null && sc.hasNextLine())
-			{
-				sc.nextLine();
-				while(sc.hasNextInt())
-				{
-					//id
-					id = sc.nextInt();
-					threshold = sc.nextInt();
-					UPPAgentEvent e = new UPPAgentEvent(id, threshold);
-					events.add(e);
-				}
-			}
-			
-			sc.close();
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
+		events = new ArrayList<UPPAgentEvent>();	
 	}
 	
 	public void setDeclaration()
 	{
 		int threshold = 0;
+		int eventNum = this.events.size();
 		for(int i = 0; i < eventNum; i++)
 		{
 			if(i < events.size())

@@ -1,11 +1,12 @@
-package edu.collaboration.model.generation;
-
+package edu.collaboration.model.structure;
 
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import javax.swing.JOptionPane;
 import java.io.InputStream;
+import java.util.List;
+
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
@@ -14,7 +15,6 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.xml.sax.SAXException;
 import edu.collaboration.model.queries.*;
-import edu.collaboration.model.structure.*;
 
 
 public class UPPAgentGenerator {
@@ -44,7 +44,7 @@ public class UPPAgentGenerator {
     		"} \r\n";
 	private static String updateIterationString="\r\n";
 	
-	public static void run() {
+	public static void run(List<UPPAgentVehicle> agents) {
 	    String show = "";
 	    String tempatePath = "";
 		UppaalDocument doc = null;
@@ -62,10 +62,10 @@ public class UPPAgentGenerator {
 				Element root = templatedoc.getDocumentElement();
 				doc = new UppaalDocument(root);
 			}
-			else
+			/*else
 			{
 				JOptionPane.showMessageDialog(null, "Template is missing.", "Error", JOptionPane.PLAIN_MESSAGE);
-			}
+			}*/
 		} catch (ParserConfigurationException ex) {
 
 	    	show = ex.getMessage();
@@ -80,8 +80,9 @@ public class UPPAgentGenerator {
 	    	JOptionPane.showMessageDialog(null, show, "Error", JOptionPane.PLAIN_MESSAGE);
 		}
 	    
-	    int mapScale = 0, taskNum = 0, eventNum = 0, agentNum = 0;
-	    UPPAgentFleet fleet = new UPPAgentFleet();
+	    int mapScale = 0, agentNum = 0;
+	    int eventNum = 0, missionNum = 0;
+	    UPPAgentFleet fleet = new UPPAgentFleet(agents);
 	    UPPAgentMission m = null;
     	UPPAgentUppaalQueries queries = new UPPAgentUppaalQueries();
 	    String system_declaration = "";
@@ -91,63 +92,39 @@ public class UPPAgentGenerator {
 	    String constRegularTask = "const int RegularTaskNum[AgentNum] = {";
     	String iterationString = "int iteration[AgentNum] = {";
     	String channelString = "chan move[AgentNum], initialize;\r\n";
-	    
-	    agentNum = fleet.agents.size();
 	    UPPAgentEventMonitor monitor=null;
-	    
-	    //for(int agentID:fleet.agents)
-	    for(UPPAgentVehicle agent:fleet.agents)
-	    {
-	    	monitor = new UPPAgentEventMonitor(agent,0);
-	    	UPPAgentMissionPlan missionPlan = new UPPAgentMissionPlan(agent, monitor,taskNum);
-		    if(taskNum < missionPlan.missions.size())
-		    {
-		    	taskNum = missionPlan.missions.size();
-		    }
-		    if(eventNum < monitor.events.size())
-		    {
-		    	eventNum = monitor.events.size();
-		    }
-	    }
-	    
 	    UPPAgentTaskCoverage tcq = new UPPAgentTaskCoverage(fleet);
 	    queries.addQuery(tcq);  
+	    agentNum = fleet.agents.size();
 	    
-	    //for(int agentID:fleet.agents)
 	    for(UPPAgentVehicle agent:fleet.agents)
 	    {
 	    	UPPAgentStaticMap map = new UPPAgentStaticMap(agent);
-	    	//UPPAgentTaskCoverage tcq = new UPPAgentTaskCoverage(agentID);
-	    	monitor = new UPPAgentEventMonitor(agent, eventNum);
-	    	UPPAgentMissionPlan missionPlan = new UPPAgentMissionPlan(agent, monitor,taskNum);
-	    
-		    //queries.addQuery(tcq);  
+	    	monitor = new UPPAgentEventMonitor(agent);
+	    	UPPAgentMissionPlan missionPlan = new UPPAgentMissionPlan(agent, monitor);
 		    
 		    monitor.setDeclaration();
 		    mapScale = map.Scale;
 		    
-		    for(int i = 0; i < taskNum; i++)
+		    for(int i = 0; i < agent.missions.size(); i++)
 		    {
-		    	if(i<missionPlan.missions.size())
-		    	{
-		    		m = missionPlan.missions.get(i);
-		    	}
+		    	m = agent.missions.get(i);
 	    		if(i == 0)
 	    		{
 		    		constBcet += "{0,";
 		    		constWcet += "{0,";
 	    		}
-		    	if(i<missionPlan.missions.size())
+		    	if(i<agent.missions.size())
 		    	{
-		    		constBcet += m.bcet;
-		    		constWcet += m.wcet;
+		    		constBcet += m.task.bcet;
+		    		constWcet += m.task.wcet;
 		    	}
 		    	else
 		    	{
 		    		constBcet += 0;
 		    		constWcet += 0;
 		    	}
-	    		if(i != taskNum-1)
+	    		if(i != agent.missions.size()-1)
 	    		{
 		    		constBcet += ",";
 		    		constWcet += ",";
@@ -159,9 +136,9 @@ public class UPPAgentGenerator {
 	    		}
 		    }
 		    
-		    constRegularTask += missionPlan.regularTasksNum;
+		    constRegularTask += agent.missions.size();
 		    iterationString += 0;
-		    if(agent.id != fleet.agents.size() - 1)
+		    if(agent.ID != fleet.agents.size() - 1)
 		    {
 		    	constRegularTask += ",";
 		    	iterationString += ",";
@@ -179,17 +156,20 @@ public class UPPAgentGenerator {
 		    
 		    for(UPPAgentEvent e:monitor.events)
 		    {
-		    	system_declaration += UPPAgentEventMonitor.InstanceName + agent.id + e.id + " = " + UPPAgentEventMonitor.SystemName + "(" + agent.id + "," + e.id + ");\r\n";
+		    	system_declaration += UPPAgentEventMonitor.InstanceName + agent.ID + e.id + " = " + UPPAgentEventMonitor.SystemName + "(" + agent.ID + "," + e.id + ");\r\n";
 		    }
-		    system_declaration += UPPAgentStaticMap.InstanceName + agent.id + " = " + UPPAgentStaticMap.SystemName + agent.id + "(" + agent.id + ");\r\n";
-		    system_declaration += UPPAgentMissionPlan.InstanceName + agent.id + " = " + UPPAgentMissionPlan.SystemName + agent.id + "(" + agent.id + ");\r\n";
+		    system_declaration += UPPAgentStaticMap.InstanceName + agent.ID + " = " + UPPAgentStaticMap.SystemName + agent.ID + "(" + agent.ID + ");\r\n";
+		    system_declaration += UPPAgentMissionPlan.InstanceName + agent.ID + " = " + UPPAgentMissionPlan.SystemName + agent.ID + "(" + agent.ID + ");\r\n";
+		    
+		    if(missionNum < agent.missions.size())
+		    {
+		    	missionNum = agent.missions.size();
+		    }
 		    
 		    doc.addAutomaton(map);
 		    doc.addAutomaton(missionPlan);
 	    }
-	    
-	    
-	    
+	       
 	    if(monitor!=null)
 	    {
 	    	monitor.initialize();
@@ -202,19 +182,19 @@ public class UPPAgentGenerator {
 	    system_declaration += "\r\nsystem ";
 	    for(UPPAgentVehicle agent:fleet.agents)
 	    {
-	    	monitor = new UPPAgentEventMonitor(agent,eventNum);
-		    system_declaration += UPPAgentStaticMap.InstanceName + agent.id + ", " + UPPAgentMissionPlan.InstanceName + agent.id + ", ";	
+	    	monitor = new UPPAgentEventMonitor(agent);
+		    system_declaration += UPPAgentStaticMap.InstanceName + agent.ID + ", " + UPPAgentMissionPlan.InstanceName + agent.ID + ", ";	
 		    
 		    for(UPPAgentEvent e:monitor.events)
 		    {
-		    	system_declaration += UPPAgentEventMonitor.InstanceName + agent.id + e.id + ", ";
+		    	system_declaration += UPPAgentEventMonitor.InstanceName + agent.ID + e.id + ", ";
 		    }
 	    }
 	    system_declaration = system_declaration.substring(0, system_declaration.lastIndexOf(",")) + ";";
 	    try
 	    {
 	    	gResetString = "";
-	    	global_declaration += addDeclaration(mapScale, taskNum, eventNum, agentNum) + 
+	    	global_declaration += addDeclaration(mapScale, missionNum, eventNum, agentNum) + 
 	    		constBcet + constWcet + constRegularTask + channelString + 
 	    		"\r\n" +
 	    		iterationString + 
@@ -233,7 +213,7 @@ public class UPPAgentGenerator {
 	    doc.saveToFile(outputXML);
 	
 	    show = "Model for " + fleet.agents.size() + " agents has built! MapScale: " + 
-	    	    mapScale + ", taskNum: " + taskNum + ", eventNum: " + eventNum + ".";
+	    	    mapScale + ", taskNum: " + missionNum + ", eventNum: " + eventNum + ".";
 	    
 	    JOptionPane.showMessageDialog(null, show, "Done", JOptionPane.PLAIN_MESSAGE);
 	}

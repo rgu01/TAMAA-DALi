@@ -3,113 +3,94 @@ package edu.collaboration.model.structure;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.afarcloud.thrift.Task;
+
+import edu.collaboration.pathplanning.Node;
+
 public class UPPAgentMission {
-	public int id;
-	public int bcet;
-	public int wcet;
-	public boolean regularTask;
-	public List<Integer> milestones;
-	private List<Integer> events_trigger; //The event triggering this task
-	//private List<Integer> events_reset;
+	public int ID;
+	public Task task;
+	private List<Node> milestones = new ArrayList<Node>();
+	public boolean regularTask = true;
+	// private List<Integer> events_trigger; //The event triggering this task
 	private String precondition;
 	private UPPAgentEventMonitor monitor;
-	
-	public UPPAgentMission(int id, UPPAgentEventMonitor ev)
-	{
-		this.id = id;
-		bcet = 0;
-		wcet = 0;
-		regularTask = true;
-		milestones = new ArrayList<Integer>();
-		events_trigger = new ArrayList<Integer>();
-		//events_reset = new ArrayList<Integer>();
-		precondition = "";
-		monitor = ev;
+
+	public UPPAgentMission(int id, Node milestone) {
+		this.ID = id;
+		this.task = milestone.task;
+		this.precondition = "";
+		this.regularTask = true;
+		// events_trigger = new ArrayList<Integer>();
+		// test
+		if (this.ID != 0) {
+			this.setPrecondition("tf[" + (this.ID - 1) + "]");
+			this.task.bcet = 1;
+			this.task.wcet = 5;
+		}
+		// test finish
+		this.addMilestone(milestone);
+	}
+
+	public void addMilestone(Node milestone) {
+		this.milestones.add(milestone);
 	}
 	
-	public void setPrecondition(String value)
+	public List<Node> getMilestones()
 	{
-		boolean tag = false;
-		if(!value.equals("-"))
-		{
+		return this.milestones;
+	}
+
+	public void setPrecondition(String value) {
+		// boolean tag = false;
+		if (!value.equals("-")) {
 			precondition = value.replaceAll("&&", "&amp;&amp;");
-			if(regularTask)
-			{
-				for(UPPAgentEvent e:monitor.events)
-				{
+			if (regularTask && this.monitor != null) {
+				for (UPPAgentEvent e : this.monitor.events) {
 					precondition += "&amp;&amp;!ev[id][" + e.id + "]";
 				}
+			} else {
+				/*
+				 * for(UPPAgentEvent e:monitor.events) { for(int t:events_trigger) { if(t==e.id)
+				 * { precondition += "&amp;&amp;ev[id][" + e.id + "]"; tag = true; break; } }
+				 * if(!tag) { precondition += "&amp;&amp;!ev[id][" + e.id + "]"; } tag = false;
+				 * }
+				 */
 			}
-			else
-			{
-				for(UPPAgentEvent e:monitor.events)
-				{
-					for(int t:events_trigger)
-					{
-						if(t==e.id)
-						{
-							precondition += "&amp;&amp;ev[id][" + e.id + "]";
-							tag = true;
-							break;
-						}
-					}
-					if(!tag)
-					{
-						precondition += "&amp;&amp;!ev[id][" + e.id + "]";
-					}
-					tag = false;
-				}
-			}
-		}
-		else
-		{
-			if(!regularTask)
-			{
-				precondition = "";
-				for(int t:events_trigger)
-				{
-					precondition += "ev[id][" + t + "]";
-				}
-			}
-			else
-			{
-				for(UPPAgentEvent e:monitor.events)
-				{
+		} else {
+			if (!regularTask) {
+				/*
+				 * precondition = ""; for(int t:events_trigger) { precondition += "ev[id][" + t
+				 * + "]"; }
+				 */
+			} else if (this.monitor != null) {
+				for (UPPAgentEvent e : this.monitor.events) {
 					precondition += "!ev[id][" + e.id + "]";
 				}
 			}
 		}
 	}
-	
-	public String getPrecondition()
-	{
-		return this.precondition;
+
+	public String getPrecondition() {
+		String milestoneStr = "";
+		Node milestone;
+
+		for (int i = 0; i < this.milestones.size(); i++) {
+			milestone = this.milestones.get(i);
+			if (i == 0) {
+				milestoneStr += "position[id][" + milestone.id + "]";
+			} else {
+				milestoneStr += "||position[id][" + milestone.id + "]";
+			}
+		}
+
+		return this.precondition + "&amp;&amp;(" + milestoneStr + ")";
 	}
-	
-	public void addEventsTrigger(int event)
-	{
-		if(event != -1)
-		{
+
+	public void addEventsTrigger(int event) {
+		if (event != -1) {
 			regularTask = false;
-			events_trigger.add(event);
+			// events_trigger.add(event);
 		}
 	}
-	
-	public List<Integer> getEventsTrigger()
-	{
-		return events_trigger;
-	}
-	
-	//public void addEventsToReset(int event)
-	//{
-	//	if(event != -1)
-	//	{
-	//		events_reset.add(event);
-	//	}
-	//}
-	
-	//public List<Integer> getEventsToReset()
-	//{
-	//	return events_reset;
-	//}
 }

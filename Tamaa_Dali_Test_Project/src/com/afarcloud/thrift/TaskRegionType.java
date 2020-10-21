@@ -11,7 +11,7 @@ import java.util.Map;
 import java.util.HashMap;
 import org.apache.thrift.TEnum;
 
-public enum TaskRegionType implements TEnum {
+public enum TaskRegionType implements org.apache.thrift.TEnum {
   Point(0),
   Column(1),
   Area(2),

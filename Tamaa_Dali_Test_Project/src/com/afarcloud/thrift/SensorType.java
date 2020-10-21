@@ -11,23 +11,24 @@ import java.util.Map;
 import java.util.HashMap;
 import org.apache.thrift.TEnum;
 
-public enum SensorType implements TEnum {
-  soil_temperature(0),
-  electrical_conductivity_bulk(1),
-  electrical_conductivity_pores(2),
-  temperature_teros12(3),
-  volumetric_water_content_mineral_soil(4),
-  relative_dielectric_constant(5),
-  soil_matrix_potential(6),
-  temperature_teros21(7),
-  air_temperature(8),
-  air_humidity(9),
-  water_consumption(10),
-  dry_matter(11),
-  d_value(12),
-  protein(13),
-  fibre(14),
-  COLLAR(15);
+public enum SensorType implements org.apache.thrift.TEnum {
+  algorithm(0),
+  air_sensor(1),
+  airNTPActuator(2),
+  collar(3),
+  environmental(4),
+  flow_meter(5),
+  gas(6),
+  gps_tracker(7),
+  grass_sensor(8),
+  indoor_positioning(9),
+  rumen_sensor(10),
+  ISOBUSgw(11),
+  silage(12),
+  soil(13),
+  tractor(14),
+  ugv(15),
+  weatherStation(16);
 
   private final int value;
 
@@ -49,37 +50,39 @@ public enum SensorType implements TEnum {
   public static SensorType findByValue(int value) { 
     switch (value) {
       case 0:
-        return soil_temperature;
+        return algorithm;
       case 1:
-        return electrical_conductivity_bulk;
+        return air_sensor;
       case 2:
-        return electrical_conductivity_pores;
+        return airNTPActuator;
       case 3:
-        return temperature_teros12;
+        return collar;
       case 4:
-        return volumetric_water_content_mineral_soil;
+        return environmental;
       case 5:
-        return relative_dielectric_constant;
+        return flow_meter;
       case 6:
-        return soil_matrix_potential;
+        return gas;
       case 7:
-        return temperature_teros21;
+        return gps_tracker;
       case 8:
-        return air_temperature;
+        return grass_sensor;
       case 9:
-        return air_humidity;
+        return indoor_positioning;
       case 10:
-        return water_consumption;
+        return rumen_sensor;
       case 11:
-        return dry_matter;
+        return ISOBUSgw;
       case 12:
-        return d_value;
+        return silage;
       case 13:
-        return protein;
+        return soil;
       case 14:
-        return fibre;
+        return tractor;
       case 15:
-        return COLLAR;
+        return ugv;
+      case 16:
+        return weatherStation;
       default:
         return null;
     }

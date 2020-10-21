@@ -11,7 +11,7 @@ import java.util.Map;
 import java.util.HashMap;
 import org.apache.thrift.TEnum;
 
-public enum TaskCommandStatus implements TEnum {
+public enum TaskCommandStatus implements org.apache.thrift.TEnum {
   NotAssigned(0),
   NotStarted(1),
   Running(2),

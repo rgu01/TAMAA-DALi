@@ -11,22 +11,22 @@ public class UPPAgentTaskMatching {
 		UPPAgentUppaalComment comment;
 		UPPAgentUppaalQuery query;
 		
-		for(UPPAgentMission m:plan.missions)
+		for(UPPAgentMission m:plan.agent.missions)
 		{
-			for(int i=0;i<m.milestones.size();i++)
+			for(int i=0;i<m.getMilestones().size();i++)
 			{
-				if(i != m.milestones.size()-1)
+				if(i != m.getMilestones().size()-1)
 				{
-					sMilestones += UPPAgentStaticMap.InstanceName + agentID + ".P" + m.milestones.get(i) + "||";
+					sMilestones += UPPAgentStaticMap.InstanceName + agentID + ".P" + m.getMilestones().get(i) + "||";
 				}
 				else
 				{
-					sMilestones += UPPAgentStaticMap.InstanceName + agentID + ".P" + m.milestones.get(i);
+					sMilestones += UPPAgentStaticMap.InstanceName + agentID + ".P" + m.getMilestones().get(i);
 				}
 			}
 			
-			sFormula = "E<> (" + sMilestones + ") imply " + UPPAgentMissionPlan.InstanceName + agentID + ".T" + m.id;
-			sComment = "Task Matching for Task" + m.id;
+			sFormula = "E<> (" + sMilestones + ") imply " + UPPAgentMissionPlan.InstanceName + agentID + ".T" + m.ID;
+			sComment = "Task Matching for Task" + m.ID;
 			formula = new UPPAgentUppaalFormula(sFormula);
 			comment = new UPPAgentUppaalComment(sComment);
 			query = new UPPAgentUppaalQuery();
@@ -34,8 +34,8 @@ public class UPPAgentTaskMatching {
 			query.setComment(comment);
 			queries.addQuery(query);
 			
-			sFormula = "A[] " + UPPAgentMissionPlan.InstanceName + agentID + ".T" + m.id + " imply (" + sMilestones + ")";
-			sComment = "Task Matching for Task" + m.id;
+			sFormula = "A[] " + UPPAgentMissionPlan.InstanceName + agentID + ".T" + m.ID + " imply (" + sMilestones + ")";
+			sComment = "Task Matching for Task" + m.ID;
 			formula = new UPPAgentUppaalFormula(sFormula);
 			comment = new UPPAgentUppaalComment(sComment);
 			query = new UPPAgentUppaalQuery();

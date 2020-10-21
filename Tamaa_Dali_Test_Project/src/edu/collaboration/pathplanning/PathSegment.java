@@ -1,5 +1,10 @@
 package edu.collaboration.pathplanning;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import com.afarcloud.thrift.Command;
+
 /**
  * 
  * @author rgu01
@@ -23,6 +28,17 @@ public class PathSegment {
 		this.weight = 1.0;
 		this.origin = o;
 		this.end = e;
+	}
+	
+	public Command createNewMove()
+	{
+		Command move = new Command();
+		move.params = new ArrayList<Double>();
+		
+		move.params.set(4, this.end.lat);
+		move.params.set(5, this.end.lon);
+		
+		return move;
 	}
 	
 	public double directLength()

@@ -11,14 +11,19 @@ import java.util.Map;
 import java.util.HashMap;
 import org.apache.thrift.TEnum;
 
-public enum EquipmentType implements TEnum {
+public enum EquipmentType implements org.apache.thrift.TEnum {
   CAMERA_360(0),
   CAMERA_PHOTO(1),
   CAMERA_VIDEO(2),
-  IR_CAMERA_PHOTO(3),
-  IR_CAMERA_VIDEO(4),
-  WIFI(5),
-  COLLISION_AVOIDANCE(6);
+  CAMERA_TRACK(3),
+  CAMERA_PANORAMA(4),
+  CAMERA_FOLLOW(5),
+  CAMERA_HOTPOINT(6),
+  IR_CAMERA_PHOTO(7),
+  IR_CAMERA_VIDEO(8),
+  WIFI(9),
+  COLLISION_AVOIDANCE(10),
+  SPRAYER(11);
 
   private final int value;
 
@@ -46,13 +51,23 @@ public enum EquipmentType implements TEnum {
       case 2:
         return CAMERA_VIDEO;
       case 3:
-        return IR_CAMERA_PHOTO;
+        return CAMERA_TRACK;
       case 4:
-        return IR_CAMERA_VIDEO;
+        return CAMERA_PANORAMA;
       case 5:
-        return WIFI;
+        return CAMERA_FOLLOW;
       case 6:
+        return CAMERA_HOTPOINT;
+      case 7:
+        return IR_CAMERA_PHOTO;
+      case 8:
+        return IR_CAMERA_VIDEO;
+      case 9:
+        return WIFI;
+      case 10:
         return COLLISION_AVOIDANCE;
+      case 11:
+        return SPRAYER;
       default:
         return null;
     }

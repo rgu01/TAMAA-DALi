@@ -11,7 +11,7 @@ import java.util.Map;
 import java.util.HashMap;
 import org.apache.thrift.TEnum;
 
-public enum TaskType implements TEnum {
+public enum TaskType implements org.apache.thrift.TEnum {
   TRANSIT(0),
   SURVEY(1),
   INSPECT(2),

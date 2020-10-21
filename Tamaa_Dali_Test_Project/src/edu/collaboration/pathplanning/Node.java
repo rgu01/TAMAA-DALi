@@ -3,20 +3,52 @@ package edu.collaboration.pathplanning;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.afarcloud.thrift.Position;
+import com.afarcloud.thrift.Task;
+
+import MercatoerProjection.SphericalMercator;
+
 public class Node {
-	private static int ID = 0;
-	public int id;
 	public double lat;
 	public double lon;
 	public Node parent;
+	public Task task;
+	public int id;
 	//
+	public Node(int id, Task task)
+	{
+		SphericalMercator sphericalMercator = new SphericalMercator();
+		this.task = task;
+		this.parent = null;
+		this.lon = sphericalMercator.xAxisProjection(task.area.area.get(0).longitude);
+		this.lat = sphericalMercator.yAxisProjection(task.area.area.get(0).latitude);
+		this.id = id;
+	}
+	
 	public Node(double lat, double lon)
 	{
 		this.lon = lon;
 		this.lat = lat;
 		this.parent = null;
-		id = Node.ID;
-		Node.ID = Node.ID + 1;
+		this.task = null;
+		this.id = -1;
+	}	
+	
+	public Node(Position position)
+	{
+		SphericalMercator sphericalMercator = new SphericalMercator();
+		this.parent = null;
+		this.lon = sphericalMercator.xAxisProjection(position.longitude);
+		this.lat = sphericalMercator.yAxisProjection(position.latitude);
+		this.parent = null;
+		this.task = null;
+		this.id = -1;
+	}
+	
+	public Position getPosition()
+	{
+		SphericalMercator sphericalMercator = new SphericalMercator();
+		return new Position(sphericalMercator.x2lon(this.lon), sphericalMercator.y2lat(this.lat), 0.0);
 	}
 	
 	public List<Node> neighbors()
@@ -67,7 +99,7 @@ public class Node {
 	
 	public String toString()
 	{
-		return "Node "+ this.id +":(" + this.lat + ", " + this.lon + ")";
+		return "Node " + this.id + " :(" + this.lat + ", " + this.lon + ")";
 	}
 	
 	public boolean near(Node ns)

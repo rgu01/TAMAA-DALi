@@ -1,12 +1,5 @@
 package edu.collaboration.model.structure;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.InputStreamReader;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Scanner;
-
 import org.fmaes.j2uppaal.builders.UppaalXMLSorter;
 import org.fmaes.j2uppaal.datastructures.uppaalstructures.UppaalAutomaton;
 import org.fmaes.j2uppaal.datastructures.uppaalstructures.UppaalLabel;
@@ -16,117 +9,14 @@ import org.fmaes.j2uppaal.datastructures.uppaalstructures.UppaalTransition;
 public class UPPAgentMissionPlan extends UppaalAutomaton {
 	public static String SystemName="TaskExecution";
 	public static String InstanceName="taskExe";
-	public static String MissionPath = "res/tasks"; 
 	private static int x = -400, y = -200;
-	public List<UPPAgentMission> missions = new ArrayList<UPPAgentMission>();
-	public int regularTasksNum=0;
-	public int eventTasksNum=0;
-	private UPPAgentVehicle agent;
-	private int taskNum;
-	//private int Limit=4; //limit for re-initialization
+	public UPPAgentVehicle agent;
 
-	public UPPAgentMissionPlan(UPPAgentVehicle agent, UPPAgentEventMonitor ev, int tn)
+	public UPPAgentMissionPlan(UPPAgentVehicle agent, UPPAgentEventMonitor ev)
 	{
 		super();
 		this.agent = agent;
-		taskNum = tn;
-		createMission(ev);
 		initialize();
-	}
-	
-	/*private void randomTasks(UPPAgentEventMonitor ev)
-	{
-		int i,j;
-		UPPAgentMission m = null;
-		taskNum = 2;
-		for(i=1;i<=taskNum;i++)
-		{
-			m = new UPPAgentMission(i,ev);
-			//best case execution time
-			m.bcet = (int) (10*Math.random());
-			//worst case execution time
-			m.wcet = m.bcet + (int) (10*Math.random());
-			//milestones
-			m.milestones.add((int) (taskNum*Math.random()));
-	        //event trigger this task
-	        m.addEventsTrigger(-1);
-	        this.regularTasksNum++;
-	        if(i>1)
-	        {
-	        	m.setPrecondition("tf["+(i-1)+"]");
-	        }
-	        else
-	        {
-	        	m.setPrecondition("-");
-	        }
-	        missions.add(m);
-		}
-	}*/
-	
-	private void createMission(UPPAgentEventMonitor ev)
-	{
-		int id = 0;
-		//randomTasks(ev);
-		try 
-		{ 
-			File filename = new File(MissionPath+agent.id+".txt"); 
-			InputStreamReader reader = new InputStreamReader(
-					new FileInputStream(filename)); 
-			Scanner sc = new Scanner(reader);
-			if(sc != null && sc.hasNextLine())
-			{
-				sc.nextLine();
-				while(sc.hasNextInt())
-				{
-					//id
-					id = sc.nextInt();
-					UPPAgentMission m = null;
-					if(id == 0)
-					{
-						sc.close();
-						throw new Exception("0 is a reserved id for idle task, please change your configuration of tasks");
-					}
-					else
-					{
-						m = new UPPAgentMission(id,ev);
-					}
-					//best case execution time
-					m.bcet = sc.nextInt();
-					//worst case execution time
-					m.wcet = sc.nextInt();
-					//milestones
-			        for (String retval: sc.next().split(","))
-			        {
-			            m.milestones.add(Integer.parseInt(retval));
-			        }
-			        //event trigger this task
-			        m.addEventsTrigger(sc.nextInt());
-			        if(m.regularTask)
-			        {
-			        	this.regularTasksNum++;
-			        }
-			        else
-			        {
-			        	this.eventTasksNum++;
-			        }
-	        		//events.add(Integer.parseInt(retval));
-			        //event to reset
-			        //for (String retval: sc.next().split(","))
-			        //{
-			        //	if(retval != "-1")
-			        //	{
-			        //		m.addEventsToReset(Integer.parseInt(retval));
-			        //	}
-			        //}
-					//precondition
-			        m.setPrecondition(sc.next());
-			        missions.add(m);
-				}
-			}
-			sc.close();
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
 	}
 	
 	private void initialize()
@@ -134,7 +24,7 @@ public class UPPAgentMissionPlan extends UppaalAutomaton {
 		UppaalLocation m,source,target;
 		UppaalLabel label;
 		UppaalTransition transition;
-		UPPAgentMission um;
+		//UPPAgentEventMonitor empty = new UPPAgentEventMonitor(agent);
 		int tx=0,ty=0,sx=0,sy=0,nx=0,ny=0,k=0,j=0;
 		String mParameters = "";
 		String mDeclaration = "";
@@ -147,10 +37,9 @@ public class UPPAgentMissionPlan extends UppaalAutomaton {
 		this.addOrReplaceLocation(m);	
 		this.setInitialLocation("T0");
 		
-		for(int i=0, id=1; i<missions.size();i++,id++)
+		for(UPPAgentMission um:this.agent.missions)
 		{
-			um = missions.get(i);
-			k=i%4;
+			k=um.ID%4;
 			switch (k)
 			{
 			case 0:
@@ -171,15 +60,15 @@ public class UPPAgentMissionPlan extends UppaalAutomaton {
 				j++;
 				break;
 			}
-				
+			
 			m = new UppaalLocation();
-			m.setName("T"+id);
-			m.setId("T"+id);
+			m.setName("T"+um.ID);
+			m.setId("T"+um.ID);
 			setLocationCorrdinates(m, tx, ty);
 			label = new UppaalLabel();
 			label.setKind("invariant");
 			//label.setValue("t<=" + "WCET[id]["+id+"]");
-			label.setValue("t<=" + um.wcet);
+			label.setValue("t<=" + um.task.wcet);
 			m.addOrReplaceLabel(label);
 			this.addOrReplaceLocation(m);
 		}
@@ -203,13 +92,11 @@ public class UPPAgentMissionPlan extends UppaalAutomaton {
 		this.addOrReplaceTransition(transition);
 		
 		String guardOfPositions = "";
-		//String assignmentOfEvents = "";
-		for(int i=0, id=1; i<missions.size();i++,id++)
+		for(UPPAgentMission um:this.agent.missions)
 		{
-			um = missions.get(i);
 			transition = new UppaalTransition();
 			transition.setSourceLocationId("T0");
-			transition.setTargetLocationId("T"+id);
+			transition.setTargetLocationId("T"+um.ID);
 			label = new UppaalLabel();
 			label.setKind("assignment");
 			//for(j=0; j<um.getEventsToTrigger().size();j++)
@@ -217,20 +104,21 @@ public class UPPAgentMissionPlan extends UppaalAutomaton {
 			//	assignmentOfEvents += ",E[" + um.getEventsToTrigger().get(j) + "]=true";
 			//}
 			//label.setValue("t=0,MS["+id+"]=true,MF["+id+"]=false" + assignmentOfEvents);
-			label.setValue("t=0,ts["+id+"]=true,tf["+id+"]=false");
+			label.setValue("t=0,ts["+um.ID+"]=true,tf["+um.ID+"]=false");
 			//label.setValue("t=0,tf["+id+"]=false");
 			transition.addOrReplaceLabel(label);
 			label = new UppaalLabel();
 			label.setKind("guard");
-			for(j=0; j<um.milestones.size();j++)
+			label.setValue(um.getPrecondition());
+			/*for(j=0; j<um.getMilestones().size();j++)
 			{
-				if(j != um.milestones.size()-1)
+				if(j != um.getMilestones().size()-1)
 				{
-					guardOfPositions += "position[id][" + um.milestones.get(j) + "]||";
+					guardOfPositions += "position[id][" + um.getMilestones().get(j) + "]||";
 				}
 				else
 				{
-					guardOfPositions += "position[id][" + um.milestones.get(j) + "]";
+					guardOfPositions += "position[id][" + um.getMilestones().get(j) + "]";
 				}
 			}
 			if(um.getPrecondition().equals(""))
@@ -240,7 +128,7 @@ public class UPPAgentMissionPlan extends UppaalAutomaton {
 			else
 			{
 				label.setValue(guardOfPositions + "&amp;&amp;(" + um.getPrecondition()+")");
-			}
+			}*/
 			transition.addOrReplaceLabel(label);
 			this.addOrReplaceTransition(transition);
 			
@@ -248,10 +136,10 @@ public class UPPAgentMissionPlan extends UppaalAutomaton {
 			//assignmentOfEvents = "";
 			
 			transition = new UppaalTransition();
-			transition.setSourceLocationId("T"+id);
+			transition.setSourceLocationId("T"+um.ID);
 			transition.setTargetLocationId("T0");
 			
-			source = (UppaalLocation) this.getLocationById("T"+id);
+			source = (UppaalLocation) this.getLocationById("T"+um.ID);
 			target = (UppaalLocation) this.getLocationById("T0");
 			sx=Integer.parseInt(source.getCoordinate("x"));
 			sy=Integer.parseInt(source.getCoordinate("y"));
@@ -277,7 +165,7 @@ public class UPPAgentMissionPlan extends UppaalAutomaton {
 			//	assignmentOfEvents += ",E[" + um.getEventsToReset().get(j) + "]=false";
 			//}
 			//label.setValue("t=0,MS["+id+"]=false,MF["+id+"]=true" + assignmentOfEvents);
-			label.setValue("t=0,ts["+id+"]=false,tf["+id+"]=true,\r\nupdateIteration()");
+			label.setValue("t=0,ts["+um.ID+"]=false,tf["+um.ID+"]=true,\r\nupdateIteration()");
 			//label.setValue("t=0,tf["+id+"]=true,\r\nupdateIteration()");
 			label.setCoordinate("x", nx+30+"");
 			label.setCoordinate("y", ny+30+"");
@@ -285,18 +173,18 @@ public class UPPAgentMissionPlan extends UppaalAutomaton {
 			label = new UppaalLabel();
 			label.setKind("guard");
 			//label.setValue("t>=" + "BCET[id]["+id+"]");
-			label.setValue("t>=" + um.bcet);
+			label.setValue("t>=" + um.task.bcet);
 			label.setCoordinate("x", nx+"");
 			label.setCoordinate("y", ny+"");
 			transition.addOrReplaceLabel(label);
 			if(!um.regularTask)
 			{
-				label = new UppaalLabel();
+				/*label = new UppaalLabel();
 				label.setKind("synchronisation");
 				label.setValue("done[id][" + um.getEventsTrigger().get(0) + "]!");
 				label.setCoordinate("x", nx-30+"");
 				label.setCoordinate("y", ny-30+"");
-				transition.addOrReplaceLabel(label);
+				transition.addOrReplaceLabel(label);*/
 			}
 			transition.addNail(nx+"", ny+"");
 			this.addOrReplaceTransition(transition);
@@ -305,37 +193,14 @@ public class UPPAgentMissionPlan extends UppaalAutomaton {
 			//assignmentOfEvents = "";
 		}
 		
-		//sel-loop for initialization
-		/*transition = new UppaalTransition();
-		transition.setSourceLocationId("T0");
-		transition.setTargetLocationId("T0");
-		label = new UppaalLabel();
-		label.setKind("guard");
-		label.setValue("steps >= " + Limit);
-		transition.addOrReplaceLabel(label);
-		label = new UppaalLabel();
-		label.setKind("synchronisation");
-		label.setValue("initialize!");
-		transition.addOrReplaceLabel(label);
-		label = new UppaalLabel();
-		label.setKind("assignment");
-		label.setValue("reset()");
-		transition.addOrReplaceLabel(label);
-		sx = Integer.parseInt(((UppaalLocation)this.getLocationById("T0")).getCoordinate("x")) + 20;
-		sy = Integer.parseInt(((UppaalLocation)this.getLocationById("T0")).getCoordinate("y")) + 50;
-		transition.addNail(sx+"", sy+"");
-		sx = Integer.parseInt(((UppaalLocation)this.getLocationById("T0")).getCoordinate("x")) + 50;
-		sy = Integer.parseInt(((UppaalLocation)this.getLocationById("T0")).getCoordinate("y")) + 20;
-		transition.addNail(sx+"", sy+"");
-		this.addTransition(transition);*/
 		
 		childrenUppaalElements.sort(new UppaalXMLSorter()); 
 
-		this.setName(SystemName+agent.id);
+		this.setName(SystemName+agent.ID);
 		mParameters = "const AgentScale id";
 		String tfString = "";
 		String tsString = "";
-		for(int i = 0; i < taskNum; i++)
+		for(int i = 0; i < agent.missions.size(); i++)
 		{
 			if(i==0)
 			{
@@ -344,7 +209,7 @@ public class UPPAgentMissionPlan extends UppaalAutomaton {
 			}
 			tfString += "false";
 			tsString += "false";
-			if(i!=taskNum-1)
+			if(i!=agent.missions.size()-1)
 			{
 				tfString += ",";
 				tsString += ",";

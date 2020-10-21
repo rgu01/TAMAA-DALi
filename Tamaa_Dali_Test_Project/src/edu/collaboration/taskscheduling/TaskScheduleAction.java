@@ -1,6 +1,10 @@
 package edu.collaboration.taskscheduling;
 
 public class TaskScheduleAction {
+	public static String StrMoveStart = "Move Start";
+	public static String StrMoveFinish = "Move Finish";
+	public static String StrTaskStart = "Task Start";
+	public static String StrTaskFinish = "Task Finish";
 	public int agentID;
 	public String type;
 	public String target;

@@ -23,7 +23,7 @@ import edu.collaboration.taskscheduling.*;
 
 public class PlannerServiceHandler implements PlannerService.Iface {
 	// Mission corePlan = null;
-	private static int InitialTaskID = 20;
+	private static int InitialTaskID = 21;
 	// public static final String SERVER_IP = "192.168.0.109";
 	public static final String SERVER_IP = "192.168.56.1";
 	// public static final String SERVER_IP = "127.0.0.1";
@@ -115,6 +115,14 @@ public class PlannerServiceHandler implements PlannerService.Iface {
 				agent.vehicle = v;
 				milestones.add(agent.getStartNode());
 				for (Task task : plan.tasks) {
+					// test begin
+					task.missionId = (int) task.altitude;
+					//
+					if(task.assignedVehicleId == 0)
+					{
+						task.assignedVehicleId = v.id;
+					}
+					//test over
 					if (agent.canDoTask(task)) {
 						Node milestone = new Node(milestoneID++, task);
 						milestones.add(milestone);
@@ -143,7 +151,7 @@ public class PlannerServiceHandler implements PlannerService.Iface {
 			/*****************************************************************
 			 * If no server is running, and only path planning is needed, please comment the
 			 * code below
-			 */
+			 *
 			UPPAgentGenerator.run(agents);
 			// call UPPAAL in the server side to synthesize a mission plan
 			TransferFile trans = new TransferFile(PlannerServiceHandler.SERVER_IP, PlannerServiceHandler.SERVER_PORT);
@@ -152,6 +160,9 @@ public class PlannerServiceHandler implements PlannerService.Iface {
 			trans = new TransferFile(PlannerServiceHandler.SERVER_IP, PlannerServiceHandler.SERVER_PORT);
 			trans.receiveFile(TaskScheduleParser.planPath);
 			trans.close();
+			/******************************************************************
+			 * end of the task scheduling code
+			 */
 
 			// parse the result xml
 			TaskSchedulePlan taskPlan = TaskScheduleParser.parse();
@@ -161,7 +172,7 @@ public class PlannerServiceHandler implements PlannerService.Iface {
 			Task movement = null, execution = null;
 			List<Command> segments = null;
 			int startTime = 0;
-			Node currentNode, targetNode;
+			Node currentNode, targetNode, waypoint;
 			for (int index = 0; index < taskPlan.length(); index++) {
 				states = taskPlan.states.get(index);
 				action = taskPlan.actions.get(index);
@@ -185,33 +196,32 @@ public class PlannerServiceHandler implements PlannerService.Iface {
 						else if (action.type.equals(TaskScheduleAction.StrTaskStart)) {
 							currentNode = agent.getMilestone(agentState.currentPosition);
 							for (Task task : plan.tasks) {
+								waypoint = new Node(task.getArea().area.get(0));
 								if (task.taskTemplate.taskType.equals(TaskType.INSPECT)
-										&& task.getArea().area.get(0).equals(currentNode.getPosition())) {
+										&& waypoint.equals(currentNode)) {
 									task.assignedVehicleId = agent.vehicle.id;
 									task.startTime = startTime;
 									movement.parentTaskId = task.id;
 									execution = task;
-									//add movement going to this task's milestone
-									plan.addToTasks(movement);
-									for(Command segment:segments)
-									{
-										plan.addToCommands(segment);
-									}
+									break;
 								}
+							}
+							// add movement going to this task's milestone
+							plan.addToTasks(movement);
+							for (Command segment : segments) {
+								plan.addToCommands(segment);
 							}
 						}
 						// finish an execution
 						else if (action.type.equals(TaskScheduleAction.StrTaskFinish)) {
 							currentNode = agent.getMilestone(agentState.currentPosition);
-							execution.endTime = startTime + (int)action.time;
-							plan.addToTasks(execution);
+							execution.assignedVehicleId = agent.vehicle.id;
+							execution.endTime = startTime + (int) action.time;
+							//plan.addToTasks(execution);
 						}
 					}
 				}
 			}
-			/******************************************************************
-			 * end of the task scheduling code
-			 */
 
 			client.sendPlan(requestId, plan);
 			System.out.println("Mission Plan Sent!");
@@ -239,7 +249,7 @@ public class PlannerServiceHandler implements PlannerService.Iface {
 	}
 
 	private Task startMove(Node node, UPPAgentVehicle agent, long startTime) {
-		int taskID = InitialTaskID + 1;
+		int taskID = InitialTaskID++;
 		Task transit = new Task();
 		Orientation bearing = new Orientation();
 		List<EquipmentType> requiredTypes = new java.util.ArrayList<EquipmentType>();
@@ -274,15 +284,18 @@ public class PlannerServiceHandler implements PlannerService.Iface {
 		Position startPoint = transit.area.area.get(0);
 		Path path = agent.findPath(startPoint, endPoint.getPosition());
 		Node start = path.start;
+		long startTime = transit.startTime;
 		List<Command> movement = new ArrayList<Command>();
+
 		transit.area.area.add(endPoint.getPosition());
 		transit.endTime = transit.startTime + duration;
 		for (Node end : path.segments) {
 			if (!end.equals(start)) {
-				Command move = new PathSegment(start, end).createNewMove();
+				Command move = new PathSegment(start, end).createNewMove(agent, startTime);
 				move.setRelatedTask(transit);
 				movement.add(move);
 				start = end;
+				startTime = move.endTime;
 			}
 		}
 

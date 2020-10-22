@@ -93,8 +93,11 @@ public class Node {
           
         // typecast o to Node so that we can compare data members  
         Node ns = (Node) o; 
+        
+        double dif_lat = Math.abs(this.lat - ns.lat);
+        double dif_lon = Math.abs(this.lon - ns.lon);
 		
-		return this.lat == ns.lat && this.lon == ns.lon;
+		return dif_lat<=0.0001 && dif_lon<=0.0001;
 	}
 	
 	public String toString()

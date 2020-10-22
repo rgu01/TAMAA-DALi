@@ -100,4 +100,9 @@ public class Path {
 
 		return copy;
 	}
+
+	@Override
+	public String toString() {
+		return this.start.toString() + "->" + this.end.toString();
+	}
 }

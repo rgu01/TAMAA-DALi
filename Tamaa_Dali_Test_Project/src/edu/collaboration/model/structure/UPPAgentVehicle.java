@@ -87,7 +87,7 @@ public class UPPAgentVehicle {
 			}
 		}
 		if (tag) {
-			UPPAgentMission newOne = new UPPAgentMission(this.missions.size() + 1, milestone);
+			UPPAgentMission newOne = new UPPAgentMission(milestone.task.missionId, milestone);
 			this.missions.add(newOne);
 		}
 	}

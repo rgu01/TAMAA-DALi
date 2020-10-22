@@ -5,6 +5,8 @@ import java.util.List;
 
 import com.afarcloud.thrift.Command;
 
+import edu.collaboration.model.structure.UPPAgentVehicle;
+
 /**
  * 
  * @author rgu01
@@ -30,13 +32,19 @@ public class PathSegment {
 		this.end = e;
 	}
 	
-	public Command createNewMove()
+	public Command createNewMove(UPPAgentVehicle agent, long startingTime)
 	{
 		Command move = new Command();
 		move.params = new ArrayList<Double>();
-		
-		move.params.set(4, this.end.lat);
-		move.params.set(5, this.end.lon);
+		move.addToParams(0);
+		move.addToParams(0);
+		move.addToParams(0);
+		move.addToParams(0);
+		move.addToParams(this.end.lat);
+		move.addToParams(this.end.lon);
+		move.addToParams(0);
+		move.startTime = startingTime;
+		move.endTime = startingTime + (int) (this.directLength() / agent.vehicle.maxSpeed);
 		
 		return move;
 	}

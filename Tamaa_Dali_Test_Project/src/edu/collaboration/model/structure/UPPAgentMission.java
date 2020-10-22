@@ -19,60 +19,57 @@ public class UPPAgentMission {
 	public UPPAgentMission(int id, Node milestone) {
 		this.ID = id;
 		this.task = milestone.task;
-		this.precondition = "";
 		this.regularTask = true;
 		// events_trigger = new ArrayList<Integer>();
 		// test
-		if (this.ID != 0) {
-			this.setPrecondition("tf[" + (this.ID - 1) + "]");
-			this.task.bcet = 1;
-			this.task.wcet = 5;
-		}
+		/*
+		 * if (this.ID != 0) { this.setPrecondition("tf[" + (this.ID - 1) + "]");
+		 * this.task.bcet = 1; this.task.wcet = 5; }
+		 */
 		// test finish
+		this.setPrecondition(this.task.precondition);
 		this.addMilestone(milestone);
 	}
 
 	public void addMilestone(Node milestone) {
 		this.milestones.add(milestone);
 	}
-	
-	public List<Node> getMilestones()
-	{
+
+	public List<Node> getMilestones() {
 		return this.milestones;
 	}
 
 	public void setPrecondition(String value) {
 		// boolean tag = false;
-		if (!value.equals("-")) {
-			precondition = value.replaceAll("&&", "&amp;&amp;");
-			if (regularTask && this.monitor != null) {
-				for (UPPAgentEvent e : this.monitor.events) {
-					precondition += "&amp;&amp;!ev[id][" + e.id + "]";
-				}
-			} else {
-				/*
-				 * for(UPPAgentEvent e:monitor.events) { for(int t:events_trigger) { if(t==e.id)
-				 * { precondition += "&amp;&amp;ev[id][" + e.id + "]"; tag = true; break; } }
-				 * if(!tag) { precondition += "&amp;&amp;!ev[id][" + e.id + "]"; } tag = false;
-				 * }
-				 */
-			}
+		precondition = value.replaceAll("&&", "&amp;&amp;");
+		if (!value.equals("")) {
+			/*
+			 * if (regularTask && this.monitor != null) { for (UPPAgentEvent e :
+			 * this.monitor.events) { precondition += "&amp;&amp;!ev[id][" + e.id + "]"; } }
+			 * else {
+			 * 
+			 * for(UPPAgentEvent e:monitor.events) { for(int t:events_trigger) { if(t==e.id)
+			 * { precondition += "&amp;&amp;ev[id][" + e.id + "]"; tag = true; break; } }
+			 * if(!tag) { precondition += "&amp;&amp;!ev[id][" + e.id + "]"; } tag = false;
+			 * }
+			 * 
+			 * }
+			 */
 		} else {
-			if (!regularTask) {
-				/*
-				 * precondition = ""; for(int t:events_trigger) { precondition += "ev[id][" + t
-				 * + "]"; }
-				 */
-			} else if (this.monitor != null) {
-				for (UPPAgentEvent e : this.monitor.events) {
-					precondition += "!ev[id][" + e.id + "]";
-				}
-			}
+			/*
+			 * if (!regularTask) {
+			 * 
+			 * precondition = ""; for(int t:events_trigger) { precondition += "ev[id][" + t
+			 * + "]"; }
+			 * 
+			 * } else if (this.monitor != null) { for (UPPAgentEvent e :
+			 * this.monitor.events) { precondition += "!ev[id][" + e.id + "]"; } }
+			 */
 		}
 	}
 
 	public String getPrecondition() {
-		String milestoneStr = "";
+		String milestoneStr = "", result = "";
 		Node milestone;
 
 		for (int i = 0; i < this.milestones.size(); i++) {
@@ -83,8 +80,13 @@ public class UPPAgentMission {
 				milestoneStr += "||position[id][" + milestone.id + "]";
 			}
 		}
+		if (precondition.equals("")) {
+			result = milestoneStr;
+		} else {
+			result = this.precondition + "&amp;&amp;(" + milestoneStr + ")";
+		}
 
-		return this.precondition + "&amp;&amp;(" + milestoneStr + ")";
+		return result;
 	}
 
 	public void addEventsTrigger(int event) {

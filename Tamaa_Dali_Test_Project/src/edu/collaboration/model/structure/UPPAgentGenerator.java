@@ -215,7 +215,7 @@ public class UPPAgentGenerator {
 	    show = "Model for " + fleet.agents.size() + " agents has built! MapScale: " + 
 	    	    mapScale + ", taskNum: " + missionNum + ", eventNum: " + eventNum + ".";
 	    
-	    JOptionPane.showMessageDialog(null, show, "Done", JOptionPane.PLAIN_MESSAGE);
+	    //JOptionPane.showMessageDialog(null, show, "Done", JOptionPane.PLAIN_MESSAGE);
 	}
 	
 	private static String addDeclaration(int mapScale, int taskNum, int eventNum, int agentNum) throws Exception {

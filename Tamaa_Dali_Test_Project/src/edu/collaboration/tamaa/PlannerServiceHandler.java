@@ -13,6 +13,8 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+import javax.swing.JOptionPane;
+
 import edu.collaboration.communication.TransferFile;
 import edu.collaboration.model.structure.UPPAgentGenerator;
 import edu.collaboration.model.structure.UPPAgentVehicle;
@@ -224,7 +226,9 @@ public class PlannerServiceHandler implements PlannerService.Iface {
 			}
 
 			client.sendPlan(requestId, plan);
-			System.out.println("Mission Plan Sent!");
+			//System.out.println("Mission Plan Sent!");
+			String show = "A plan with " + plan.tasks.size() + " tasks, and " + plan.commands.size() + " commands has been sent!";
+			JOptionPane.showMessageDialog(null, show, "Done", JOptionPane.PLAIN_MESSAGE);
 		} catch (TTransportException e) {
 			System.out.println("final error");
 			System.out.println(e.getMessage());
@@ -239,6 +243,7 @@ public class PlannerServiceHandler implements PlannerService.Iface {
 			ex.printStackTrace();
 		} finally {
 			transport.close();
+			System.exit(0);
 		}
 	}
 

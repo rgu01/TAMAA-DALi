@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.afarcloud.thrift.Command;
+import com.afarcloud.thrift.CommandType;
+import com.afarcloud.thrift.TaskCommandStatus;
 
 import edu.collaboration.model.structure.UPPAgentVehicle;
 
@@ -32,16 +34,19 @@ public class PathSegment {
 		this.end = e;
 	}
 	
-	public Command createNewMove(UPPAgentVehicle agent, long startingTime)
+	public Command createNewMove(int moveID, UPPAgentVehicle agent, long startingTime)
 	{
 		Command move = new Command();
+		move.id = moveID;
+		move.commandType = CommandType.NAV_WAYPOINT;
+		move.commandStatus = TaskCommandStatus.Running;
 		move.params = new ArrayList<Double>();
 		move.addToParams(0);
 		move.addToParams(0);
 		move.addToParams(0);
 		move.addToParams(0);
-		move.addToParams(this.end.lat);
-		move.addToParams(this.end.lon);
+		move.addToParams(this.end.getPosition().latitude);
+		move.addToParams(this.end.getPosition().longitude);
 		move.addToParams(0);
 		move.startTime = startingTime;
 		move.endTime = startingTime + (int) (this.directLength() / agent.vehicle.maxSpeed);

@@ -9,6 +9,11 @@ public class Obstacle {
 	public Obstacle()
 	{
 		this.vertices = new ArrayList<Node>();
+	}	
+	
+	public Obstacle(List<Node> vertices)
+	{
+		this.vertices = vertices;
 	}
 
 	public boolean block(Node start, Node goal)

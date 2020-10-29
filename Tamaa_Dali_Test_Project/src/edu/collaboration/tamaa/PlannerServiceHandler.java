@@ -27,9 +27,19 @@ public class PlannerServiceHandler implements PlannerService.Iface {
 	// Mission corePlan = null;
 	private static int InitialTaskID = 21;
 	// public static final String SERVER_IP = "192.168.0.109";
-	public static final String SERVER_IP = "192.168.56.1";
+	// public static final String SERVER_IP = "192.168.56.1";
 	// public static final String SERVER_IP = "127.0.0.1";
-	public static final int SERVER_PORT = 9779;
+	// public static final int SERVER_PORT = 9779;
+	public String mmtAddress = "127.0.0.1";
+	public int mmtPort = 9096;
+
+	public PlannerServiceHandler() {
+	}
+
+	public PlannerServiceHandler(String mmtAddress, int mmtPort) {
+		this.mmtAddress = mmtAddress;
+		this.mmtPort = mmtPort;
+	}
 
 	@Override
 	public void computePlan(int requestId, Mission plan) throws TException {
@@ -49,12 +59,13 @@ public class PlannerServiceHandler implements PlannerService.Iface {
 		List<UPPAgentVehicle> agents = new ArrayList<UPPAgentVehicle>();
 		double top_left_lon = 0, top_left_lat = 0, top_right_lon = 0, top_right_lat = 0, bot_right_lon = 0,
 				bot_right_lat = 0, bot_left_lon = 0, bot_left_lat = 0;
-		Node top_right = null, bot_left = null, top_left = null, bot_right = null;
+		//Node top_right = null, bot_left = null, top_left = null, bot_right = null;
+		Node vertices[] = new Node[4];
 		NavigationArea nArea = null;
 		SphericalMercator sphericalMercator = new SphericalMercator();
 
 		try {
-			transport = new TSocket("127.0.0.1", 9096);
+			transport = new TSocket(this.mmtAddress, this.mmtPort);
 			transport.open();
 
 			protocol = new TBinaryProtocol(transport);
@@ -70,11 +81,11 @@ public class PlannerServiceHandler implements PlannerService.Iface {
 			bot_right_lat = sphericalMercator.yAxisProjection(plan.getNavigationArea().area.get(1).latitude);
 			bot_left_lon = sphericalMercator.xAxisProjection(plan.getNavigationArea().area.get(0).longitude);
 			bot_left_lat = sphericalMercator.yAxisProjection(plan.getNavigationArea().area.get(0).latitude);
-			top_right = new Node(top_right_lat, top_right_lon);
-			bot_left = new Node(bot_left_lat, bot_left_lon);
-			top_left = new Node(top_left_lat, top_left_lon);
-			bot_right = new Node(bot_right_lat, bot_right_lon);
-			nArea = new NavigationArea(top_left, bot_left, bot_right, top_right);
+			vertices[0] = new Node(top_right_lat, top_right_lon);
+			vertices[1] = new Node(bot_left_lat, bot_left_lon);
+			vertices[2] = new Node(top_left_lat, top_left_lon);
+			vertices[3] = new Node(bot_right_lat, bot_right_lon);
+			nArea = new NavigationArea(vertices,4);
 			/*
 			 * nArea.boundry.add(top_left); nArea.boundry.add(bot_left);
 			 * nArea.boundry.add(bot_right); nArea.boundry.add(top_right);
@@ -91,20 +102,16 @@ public class PlannerServiceHandler implements PlannerService.Iface {
 				bot_right_lat = sphericalMercator.yAxisProjection(forbidden.getArea().get(1).latitude);
 				bot_left_lon = sphericalMercator.xAxisProjection(forbidden.getArea().get(0).longitude);
 				bot_left_lat = sphericalMercator.yAxisProjection(forbidden.getArea().get(0).latitude);
-				top_right = new Node(top_right_lat, top_right_lon);
-				bot_left = new Node(bot_left_lat, bot_left_lon);
-				top_left = new Node(top_left_lat, top_left_lon);
-				bot_right = new Node(bot_right_lat, bot_right_lon);
-				obs.vertices.add(top_left);
-				obs.vertices.add(bot_left);
-				obs.vertices.add(bot_right);
-				obs.vertices.add(top_right);
+				obs.vertices.add(new Node(top_right_lat, top_right_lon));
+				obs.vertices.add(new Node(bot_left_lat, bot_left_lon));
+				obs.vertices.add(new Node(top_left_lat, top_left_lon));
+				obs.vertices.add(new Node(bot_right_lat, bot_right_lon));
 
 				nArea.obstacles.add(obs);
 			}
 
 			as = new AStar(nArea);
-			// as = new Dali(nArea);
+			//as = new Dali(nArea);
 			// vehicle_lon =
 			// sphericalMercator.xAxisProjection(plan.getVehicles().get(0).stateVector.getPosition().longitude);
 			// vehicle_lat =
@@ -120,11 +127,10 @@ public class PlannerServiceHandler implements PlannerService.Iface {
 					// test begin
 					task.missionId = (int) task.altitude;
 					//
-					if(task.assignedVehicleId == 0)
-					{
+					if (task.assignedVehicleId == 0) {
 						task.assignedVehicleId = v.id;
 					}
-					//test over
+					// test over
 					if (agent.canDoTask(task)) {
 						Node milestone = new Node(milestoneID++, task);
 						milestones.add(milestone);
@@ -154,16 +160,16 @@ public class PlannerServiceHandler implements PlannerService.Iface {
 			 * If no server is running, and only path planning is needed, please comment the
 			 * code below
 			 *
-			UPPAgentGenerator.run(agents);
-			// call UPPAAL in the server side to synthesize a mission plan
-			TransferFile trans = new TransferFile(PlannerServiceHandler.SERVER_IP, PlannerServiceHandler.SERVER_PORT);
-			trans.sendFile(UPPAgentGenerator.outputXML);
-			trans.close();
-			trans = new TransferFile(PlannerServiceHandler.SERVER_IP, PlannerServiceHandler.SERVER_PORT);
-			trans.receiveFile(TaskScheduleParser.planPath);
-			trans.close();
-			/******************************************************************
-			 * end of the task scheduling code
+			 * UPPAgentGenerator.run(agents); // call UPPAAL in the server side to
+			 * synthesize a mission plan TransferFile trans = new
+			 * TransferFile(PlannerServiceHandler.SERVER_IP,
+			 * PlannerServiceHandler.SERVER_PORT);
+			 * trans.sendFile(UPPAgentGenerator.outputXML); trans.close(); trans = new
+			 * TransferFile(PlannerServiceHandler.SERVER_IP,
+			 * PlannerServiceHandler.SERVER_PORT);
+			 * trans.receiveFile(TaskScheduleParser.planPath); trans.close();
+			 * /****************************************************************** end of
+			 * the task scheduling code
 			 */
 
 			// parse the result xml
@@ -219,15 +225,16 @@ public class PlannerServiceHandler implements PlannerService.Iface {
 							currentNode = agent.getMilestone(agentState.currentPosition);
 							execution.assignedVehicleId = agent.vehicle.id;
 							execution.endTime = startTime + (int) action.time;
-							//plan.addToTasks(execution);
+							// plan.addToTasks(execution);
 						}
 					}
 				}
 			}
 
 			client.sendPlan(requestId, plan);
-			//System.out.println("Mission Plan Sent!");
-			String show = "A plan with " + plan.tasks.size() + " tasks, and " + plan.commands.size() + " commands has been sent!";
+			// System.out.println("Mission Plan Sent!");
+			String show = "A plan with " + plan.tasks.size() + " tasks, and " + plan.commands.size()
+					+ " commands has been sent!";
 			JOptionPane.showMessageDialog(null, show, "Done", JOptionPane.PLAIN_MESSAGE);
 		} catch (TTransportException e) {
 			System.out.println("final error");
@@ -285,6 +292,7 @@ public class PlannerServiceHandler implements PlannerService.Iface {
 		return transit;
 	}
 
+	private static int moveID = 0;
 	private List<Command> finishMove(Task transit, UPPAgentVehicle agent, Node endPoint, int duration) {
 		Position startPoint = transit.area.area.get(0);
 		Path path = agent.findPath(startPoint, endPoint.getPosition());
@@ -296,7 +304,7 @@ public class PlannerServiceHandler implements PlannerService.Iface {
 		transit.endTime = transit.startTime + duration;
 		for (Node end : path.segments) {
 			if (!end.equals(start)) {
-				Command move = new PathSegment(start, end).createNewMove(agent, startTime);
+				Command move = new PathSegment(start, end).createNewMove(moveID++, agent, startTime);
 				move.setRelatedTask(transit);
 				movement.add(move);
 				start = end;

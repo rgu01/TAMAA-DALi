@@ -39,6 +39,8 @@ public class AStar implements PathPlanningAlgorithm {
 		aStart.parent = aStart;
 		open.add(aStart);
 		
+		//double closest = 100.0;
+		
 		while(open.size() != 0)
 		{
 			temp = this.pop(this.open);
@@ -46,6 +48,15 @@ public class AStar implements PathPlanningAlgorithm {
 			{
 				break;
 			}
+			/*else
+			{
+				PathSegment ps = new PathSegment(temp, aDestination);
+				double tempDouble = ps.directLength();
+				if(tempDouble < closest)
+				{
+					closest = tempDouble;
+				}
+			}*/
 			closed.add(temp);
 			neighbors = temp.neighbors();
 			for(Node nb : neighbors)

@@ -3,13 +3,18 @@ package edu.collaboration.tamaa;
 import org.apache.thrift.transport.TServerSocket;
 import org.apache.thrift.transport.TServerTransport;
 
+import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.io.FileWriter;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.io.PrintStream;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Scanner;
 
 import javax.swing.JOptionPane;
 import org.apache.thrift.server.TServer;
@@ -23,9 +28,14 @@ import edu.collaboration.taskscheduling.TaskSchedulePlan;
 //try
 
 public class UPlanner {
-	public static void StartServer(PlannerService.Processor<PlannerServiceHandler> processor) {
+	private String configPath = "res/config.txt";
+	private String mmtAddress;
+	private int mmtPort;
+	private int tamaaPort;
+
+	public void StartServer(PlannerService.Processor<PlannerServiceHandler> processor) {
 		try {
-			TServerTransport serverTransport = new TServerSocket(9097);
+			TServerTransport serverTransport = new TServerSocket(this.tamaaPort);
 			TServer server = new TSimpleServer(new Args(serverTransport).processor(processor));
 
 			// Use this for a multithreaded server
@@ -47,13 +57,7 @@ public class UPlanner {
 		}
 	}
 
-	public static void main(String[] args) {
-		logtoText();
-		System.out.println("============" + new Date().toString() + "============");
-		StartServer(new PlannerService.Processor<PlannerServiceHandler>(new PlannerServiceHandler()));
-	}
-
-	public static void logtoText() {
+	public void logtoText() {
 		String dirName = "./results/";
 		Date date = new Date();
 		DateFormat format = new SimpleDateFormat("yyyyMMdd");
@@ -67,12 +71,37 @@ public class UPlanner {
 			if (!file.exists()) {
 				file.createNewFile();
 			}
-			FileOutputStream fileOutputStream = new FileOutputStream(file,true);
+			FileOutputStream fileOutputStream = new FileOutputStream(file, true);
 			PrintStream printStream = new PrintStream(fileOutputStream);
 			System.setOut(printStream);
 
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+	}
+
+	public void readConfig() {
+		try {
+			File filename = new File(this.configPath);
+			InputStreamReader reader = new InputStreamReader(new FileInputStream(filename));
+			Scanner sc = new Scanner(reader);
+			if (sc != null && sc.hasNextLine()) {
+				this.mmtAddress = sc.nextLine().replace("MMT Address: ", "");
+				this.mmtPort = Integer.parseInt(sc.nextLine().replace("MMT Port: ", ""));
+				this.tamaaPort = Integer.parseInt(sc.nextLine().replace("Planner port: ", ""));
+				sc.close();
+			}
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+
+	public static void main(String[] args) {
+		UPlanner planner = new UPlanner();
+		planner.readConfig();
+		planner.logtoText();
+		System.out.println("============" + new Date().toString() + "============");
+		planner.StartServer(new PlannerService.Processor<PlannerServiceHandler>(
+				new PlannerServiceHandler(planner.mmtAddress, planner.mmtPort)));
 	}
 }

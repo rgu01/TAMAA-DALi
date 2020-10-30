@@ -13,7 +13,7 @@ public class UPPAgentMission {
 	private List<Node> milestones = new ArrayList<Node>();
 	public boolean regularTask = true;
 	// private List<Integer> events_trigger; //The event triggering this task
-	private String precondition;
+	private String precondition = "";
 	private UPPAgentEventMonitor monitor;
 
 	public UPPAgentMission(int id, Node milestone) {
@@ -41,8 +41,8 @@ public class UPPAgentMission {
 
 	public void setPrecondition(String value) {
 		// boolean tag = false;
-		precondition = value.replaceAll("&&", "&amp;&amp;");
-		if (!value.equals("")) {
+		if (value != null && !value.equals("")) {
+			precondition = value.replaceAll("&&", "&amp;&amp;");
 			/*
 			 * if (regularTask && this.monitor != null) { for (UPPAgentEvent e :
 			 * this.monitor.events) { precondition += "&amp;&amp;!ev[id][" + e.id + "]"; } }

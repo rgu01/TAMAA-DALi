@@ -1,0 +1,29 @@
+============Tue Oct 27 13:46:12 CET 2020============
+Starting the simple server...
+msg from MMT: It's a me! MMT!
+dom4j parserXml
+============Tue Oct 27 13:47:37 CET 2020============
+Starting the simple server...
+msg from MMT: It's a me! MMT!
+dom4j parserXml
+============Tue Oct 27 13:49:48 CET 2020============
+Starting the simple server...
+msg from MMT: It's a me! MMT!
+dom4j parserXml
+============Tue Oct 27 14:08:26 CET 2020============
+Starting the simple server...
+============Tue Oct 27 14:19:51 CET 2020============
+Starting the simple server...
+msg from MMT: It's a me! MMT!
+dom4j parserXml
+============Tue Oct 27 14:51:55 CET 2020============
+Starting the simple server...
+msg from MMT: It's a me! MMT!
+dom4j parserXml
+============Tue Oct 27 15:01:54 CET 2020============
+Starting the simple server...
+============Tue Oct 27 15:02:24 CET 2020============
+Starting the simple server...
+msg from MMT: It's a me! MMT!
+final xerror
+Cannot read field "edges" because "current" is null

@@ -32,13 +32,17 @@ public class PlannerServiceHandler implements PlannerService.Iface {
 	// public static final int SERVER_PORT = 9779;
 	public String mmtAddress = "127.0.0.1";
 	public int mmtPort = 9096;
+	private String uppaalAddress;
+	private int uppaalPort;
 
 	public PlannerServiceHandler() {
 	}
 
-	public PlannerServiceHandler(String mmtAddress, int mmtPort) {
+	public PlannerServiceHandler(String mmtAddress, int mmtPort, String uppaalAddress, int uppaalPort) {
 		this.mmtAddress = mmtAddress;
 		this.mmtPort = mmtPort;
+		this.uppaalAddress = uppaalAddress;
+		this.uppaalPort = uppaalPort;
 	}
 
 	@Override
@@ -159,16 +163,14 @@ public class PlannerServiceHandler implements PlannerService.Iface {
 			/*****************************************************************
 			 * If no server is running, and only path planning is needed, please comment the
 			 * code below
-			 *
-			 * UPPAgentGenerator.run(agents); // call UPPAAL in the server side to
-			 * synthesize a mission plan TransferFile trans = new
-			 * TransferFile(PlannerServiceHandler.SERVER_IP,
-			 * PlannerServiceHandler.SERVER_PORT);
-			 * trans.sendFile(UPPAgentGenerator.outputXML); trans.close(); trans = new
-			 * TransferFile(PlannerServiceHandler.SERVER_IP,
-			 * PlannerServiceHandler.SERVER_PORT);
-			 * trans.receiveFile(TaskScheduleParser.planPath); trans.close();
-			 * /****************************************************************** end of
+			 */
+			 UPPAgentGenerator.run(agents); // call UPPAAL in the server side to synthesize a mission plan 
+			 TransferFile trans = new TransferFile(this.uppaalAddress, this.uppaalPort);
+			 trans.sendFile(UPPAgentGenerator.outputXML); 
+			 trans.close(); 
+			 trans = new TransferFile(this.uppaalAddress, this.uppaalPort);
+			 trans.receiveFile(TaskScheduleParser.planPath); trans.close();
+			 /****************************************************************** end of
 			 * the task scheduling code
 			 */
 

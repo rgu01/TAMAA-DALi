@@ -32,6 +32,8 @@ public class UPlanner {
 	private String mmtAddress;
 	private int mmtPort;
 	private int tamaaPort;
+	private String uppaalAddress;
+	private int uppaalPort;
 
 	public void StartServer(PlannerService.Processor<PlannerServiceHandler> processor) {
 		try {
@@ -88,7 +90,9 @@ public class UPlanner {
 			if (sc != null && sc.hasNextLine()) {
 				this.mmtAddress = sc.nextLine().replace("MMT Address: ", "");
 				this.mmtPort = Integer.parseInt(sc.nextLine().replace("MMT Port: ", ""));
-				this.tamaaPort = Integer.parseInt(sc.nextLine().replace("Planner port: ", ""));
+				this.tamaaPort = Integer.parseInt(sc.nextLine().replace("Planner Port: ", ""));
+				this.uppaalAddress = sc.nextLine().replace("UPPAAL Address: ", "");
+				this.uppaalPort = Integer.parseInt(sc.nextLine().replace("UPPAAL Port: ", ""));
 				sc.close();
 			}
 		} catch (IOException e) {
@@ -102,6 +106,6 @@ public class UPlanner {
 		planner.logtoText();
 		System.out.println("============" + new Date().toString() + "============");
 		planner.StartServer(new PlannerService.Processor<PlannerServiceHandler>(
-				new PlannerServiceHandler(planner.mmtAddress, planner.mmtPort)));
+				new PlannerServiceHandler(planner.mmtAddress, planner.mmtPort, planner.uppaalAddress, planner.uppaalPort)));
 	}
 }

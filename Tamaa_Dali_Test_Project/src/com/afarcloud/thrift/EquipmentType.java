@@ -23,7 +23,9 @@ public enum EquipmentType implements org.apache.thrift.TEnum {
   IR_CAMERA_VIDEO(8),
   WIFI(9),
   COLLISION_AVOIDANCE(10),
-  SPRAYER(11);
+  SPRAYER(11),
+  DUMP_BODY(12),
+  BUCKET(13);
 
   private final int value;
 
@@ -68,6 +70,10 @@ public enum EquipmentType implements org.apache.thrift.TEnum {
         return COLLISION_AVOIDANCE;
       case 11:
         return SPRAYER;
+      case 12:
+        return DUMP_BODY;
+      case 13:
+        return BUCKET;
       default:
         return null;
     }

@@ -1,0 +1,69 @@
+============Fri Oct 30 09:59:10 CET 2020============
+Starting the simple server...
+msg from MMT: It's a me! MMT!
+final xerror
+null
+============Fri Oct 30 10:01:24 CET 2020============
+Starting the simple server...
+msg from MMT: It's a me! MMT!
+final xerror
+null
+============Fri Oct 30 10:02:12 CET 2020============
+Starting the simple server...
+msg from MMT: It's a me! MMT!
+============Fri Oct 30 10:37:16 CET 2020============
+Starting the simple server...
+msg from MMT: It's a me! MMT!
+final xerror
+null
+============Fri Oct 30 10:38:43 CET 2020============
+Starting the simple server...
+msg from MMT: It's a me! MMT!
+final xerror
+null
+============Fri Oct 30 10:39:37 CET 2020============
+Starting the simple server...
+============Fri Oct 30 10:52:08 CET 2020============
+Starting the simple server...
+msg from MMT: It's a me! MMT!
+final xerror
+null
+============Fri Oct 30 10:53:16 CET 2020============
+Starting the simple server...
+msg from MMT: It's a me! MMT!
+Cliect[port:3601] connect to the Server.
+======== Start to send files ========
+| 7% || 14% || 22% || 29% || 36% || 44% || 51% || 59% || 66% || 73% || 81% || 88% || 96% || 100% |
+======== Files tranferred successfully ========
+s: Socket close? true
+Cliect[port:3602] connect to the Server.
+r: Socket close? false
+Start to receive result data...
+Complete receiving result data: ./results/plan.xml
+Error on line 1 of document file:///C:/Users/rgu01.MDH/OneDrive - Mälardalens högskola/Backup/workspace/TAMAA-DALi/Tamaa_Dali_Test_Project/./results/plan.xml : Premature end of file.
+dom4j parserXml
+============Fri Oct 30 10:54:40 CET 2020============
+Starting the simple server...
+msg from MMT: It's a me! MMT!
+Cliect[port:3645] connect to the Server.
+======== Start to send files ========
+| 7% || 14% || 22% || 29% || 36% || 44% || 51% || 59% || 66% || 73% || 81% || 88% || 96% || 100% |
+======== Files tranferred successfully ========
+s: Socket close? true
+Cliect[port:3646] connect to the Server.
+r: Socket close? false
+Start to receive result data...
+Complete receiving result data: ./results/plan.xml
+============Fri Oct 30 10:55:30 CET 2020============
+Starting the simple server...
+msg from MMT: It's a me! MMT!
+Cliect[port:3668] connect to the Server.
+======== Start to send files ========
+| 7% || 14% || 22% || 29% || 36% || 44% || 51% || 59% || 66% || 73% || 81% || 88% || 96% || 100% |
+======== Files tranferred successfully ========
+s: Socket close? true
+Cliect[port:3669] connect to the Server.
+r: Socket close? false
+Start to receive result data...
+Complete receiving result data: ./results/plan.xml
+dom4j parserXml

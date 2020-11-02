@@ -53,17 +53,10 @@ public class PlannerServiceHandler implements PlannerService.Iface {
 		TProtocol protocol = null;
 		MmtService.Client client = null;
 		PathPlanningAlgorithm as = null;
-		double task_lat, task_lon;
-		// Node start = null, end = null;
-		// List<Position> milestones = new ArrayList<Position>();
-		Position origin = null, goal = null;
-		// Map<List<Node>, List<Node>> paths = new HashMap<List<Node>, List<Node>>();
-		// List<List<Node>> nodesForDifferentAgents = new ArrayList<List<Node>>();
-		// List<List<Path>> pathsForDifferentAgents = new ArrayList<List<Path>>();
 		List<UPPAgentVehicle> agents = new ArrayList<UPPAgentVehicle>();
 		double top_left_lon = 0, top_left_lat = 0, top_right_lon = 0, top_right_lat = 0, bot_right_lon = 0,
 				bot_right_lat = 0, bot_left_lon = 0, bot_left_lat = 0;
-		//Node top_right = null, bot_left = null, top_left = null, bot_right = null;
+		double minSpeed = Double.MAX_VALUE;
 		Node vertices[] = new Node[4];
 		NavigationArea nArea = null;
 		SphericalMercator sphericalMercator = new SphericalMercator();
@@ -75,6 +68,13 @@ public class PlannerServiceHandler implements PlannerService.Iface {
 			protocol = new TBinaryProtocol(transport);
 			client = new MmtService.Client(protocol);
 			System.out.println("msg from MMT: " + client.ping());
+			
+			for (Vehicle v : plan.getVehicles()) {
+				if(v.getMaxSpeed() < minSpeed)
+				{
+					minSpeed = v.getMaxSpeed();
+				}
+			}
 
 			// Navigation Area
 			top_left_lon = sphericalMercator.xAxisProjection(plan.getNavigationArea().area.get(3).longitude);
@@ -89,15 +89,14 @@ public class PlannerServiceHandler implements PlannerService.Iface {
 			vertices[1] = new Node(bot_left_lat, bot_left_lon);
 			vertices[2] = new Node(top_left_lat, top_left_lon);
 			vertices[3] = new Node(bot_right_lat, bot_right_lon);
-			nArea = new NavigationArea(vertices,4);
+			nArea = new NavigationArea(vertices,4,minSpeed);
 			/*
 			 * nArea.boundry.add(top_left); nArea.boundry.add(bot_left);
 			 * nArea.boundry.add(bot_right); nArea.boundry.add(top_right);
 			 */
 			// Obstacles
+			List<Node> obsVertices = new ArrayList<Node>();
 			for (Region forbidden : plan.getForbiddenArea()) {
-				Obstacle obs = new Obstacle();
-
 				top_left_lon = sphericalMercator.xAxisProjection(forbidden.getArea().get(3).longitude);
 				top_left_lat = sphericalMercator.yAxisProjection(forbidden.getArea().get(3).latitude);
 				top_right_lon = sphericalMercator.xAxisProjection(forbidden.getArea().get(2).longitude);
@@ -106,11 +105,12 @@ public class PlannerServiceHandler implements PlannerService.Iface {
 				bot_right_lat = sphericalMercator.yAxisProjection(forbidden.getArea().get(1).latitude);
 				bot_left_lon = sphericalMercator.xAxisProjection(forbidden.getArea().get(0).longitude);
 				bot_left_lat = sphericalMercator.yAxisProjection(forbidden.getArea().get(0).latitude);
-				obs.vertices.add(new Node(top_right_lat, top_right_lon));
-				obs.vertices.add(new Node(bot_left_lat, bot_left_lon));
-				obs.vertices.add(new Node(top_left_lat, top_left_lon));
-				obs.vertices.add(new Node(bot_right_lat, bot_right_lon));
+				obsVertices.add(new Node(top_right_lat, top_right_lon));
+				obsVertices.add(new Node(bot_left_lat, bot_left_lon));
+				obsVertices.add(new Node(top_left_lat, top_left_lon));
+				obsVertices.add(new Node(bot_right_lat, bot_right_lon));
 
+				Obstacle obs = new Obstacle(obsVertices);
 				nArea.obstacles.add(obs);
 			}
 
@@ -169,7 +169,8 @@ public class PlannerServiceHandler implements PlannerService.Iface {
 			 trans.sendFile(UPPAgentGenerator.outputXML); 
 			 trans.close(); 
 			 trans = new TransferFile(this.uppaalAddress, this.uppaalPort);
-			 trans.receiveFile(TaskScheduleParser.planPath); trans.close();
+			 trans.receiveFile(TaskScheduleParser.planPath); 
+			 trans.close();
 			 /****************************************************************** end of
 			 * the task scheduling code
 			 */

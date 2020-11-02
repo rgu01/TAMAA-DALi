@@ -16,8 +16,8 @@ public class NavigationArea {
 	 */
 
 	// A square navigation area
-	public NavigationArea(Node n[], int number) {
-		int granularity = 100;
+	public NavigationArea(Node n[], int number, double speed) {
+
 		double maxLat = n[0].lat, minLat = n[0].lat, maxLon = n[0].lon, minLon = n[0].lon;
 
 		for (int i = 0; i < number; i++) {
@@ -38,8 +38,9 @@ public class NavigationArea {
 		double lon_dif = topLeft.lon - botRight.lon;
 		double lat_dif = topLeft.lat - botRight.lat;
 		double total_dif = lon_dif > lat_dif ? lon_dif : lat_dif;
+		double total_time = total_dif/speed;
 		
-		NavigationArea.threshold = total_dif / granularity;
+		NavigationArea.threshold = total_dif / total_time;
 		this.boundry = new ArrayList<Node>();
 		this.milestones = new ArrayList<Node>();
 		this.obstacles = new ArrayList<Obstacle>();

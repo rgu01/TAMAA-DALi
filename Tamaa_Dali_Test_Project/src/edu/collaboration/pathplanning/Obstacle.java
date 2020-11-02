@@ -5,15 +5,35 @@ import java.util.List;
 
 public class Obstacle {
 	public List<Node> vertices;
-	
-	public Obstacle()
-	{
-		this.vertices = new ArrayList<Node>();
-	}	
-	
+		
 	public Obstacle(List<Node> vertices)
 	{
-		this.vertices = vertices;
+		Node temp = null;
+		double maxLat = vertices.get(0).lat, minLat = vertices.get(0).lat, 
+			   maxLon = vertices.get(0).lon, minLon = vertices.get(0).lon;
+
+		for (int i = 0; i < vertices.size(); i++) {
+			temp = vertices.get(i);
+			if (maxLat < temp.lat) {
+				maxLat = temp.lat;
+			} else if (minLat > temp.lat) {
+				minLat = temp.lat;
+			}
+			if (maxLon < temp.lon) {
+				maxLon = temp.lon;
+			} else if (minLon > temp.lon) {
+				minLon = temp.lon;
+			}
+		}
+		
+		Node topLeft = new Node(maxLat, minLon), topRight = new Node(maxLat, maxLon), 
+			 botLeft = new Node(minLat, minLon), botRight = new Node(minLat, maxLon);
+		
+		this.vertices = new ArrayList<Node>();
+		this.vertices.add(topLeft);// top left
+		this.vertices.add(botLeft);// bottom left
+		this.vertices.add(botRight);// bottom right
+		this.vertices.add(topRight);// top right
 	}
 
 	public boolean block(Node start, Node goal)

@@ -75,7 +75,6 @@ public class PlannerServiceHandler implements PlannerService.Iface {
 					minSpeed = v.getMaxSpeed();
 				}
 			}
-
 			// Navigation Area
 			top_left_lon = sphericalMercator.xAxisProjection(plan.getNavigationArea().area.get(3).longitude);
 			top_left_lat = sphericalMercator.yAxisProjection(plan.getNavigationArea().area.get(3).latitude);
@@ -89,7 +88,7 @@ public class PlannerServiceHandler implements PlannerService.Iface {
 			vertices[1] = new Node(bot_left_lat, bot_left_lon);
 			vertices[2] = new Node(top_left_lat, top_left_lon);
 			vertices[3] = new Node(bot_right_lat, bot_right_lon);
-			nArea = new NavigationArea(vertices,4,minSpeed);
+			nArea = new NavigationArea(vertices, 4, minSpeed);
 			/*
 			 * nArea.boundry.add(top_left); nArea.boundry.add(bot_left);
 			 * nArea.boundry.add(bot_right); nArea.boundry.add(top_right);
@@ -116,11 +115,6 @@ public class PlannerServiceHandler implements PlannerService.Iface {
 
 			as = new AStar(nArea);
 			//as = new Dali(nArea);
-			// vehicle_lon =
-			// sphericalMercator.xAxisProjection(plan.getVehicles().get(0).stateVector.getPosition().longitude);
-			// vehicle_lat =
-			// sphericalMercator.yAxisProjection(plan.getVehicles().get(0).stateVector.getPosition().latitude);
-			//
 			for (Vehicle v : plan.getVehicles()) {
 				int agentID = 0, milestoneID = 1;// 0 is for the starting position
 				List<Node> milestones = new ArrayList<Node>();
@@ -128,13 +122,13 @@ public class PlannerServiceHandler implements PlannerService.Iface {
 				agent.vehicle = v;
 				milestones.add(agent.getStartNode());
 				for (Task task : plan.tasks) {
-					// test begin
+					// one vehicle assumed begin
 					task.missionId = (int) task.altitude;
 					//
 					if (task.assignedVehicleId == 0) {
 						task.assignedVehicleId = v.id;
 					}
-					// test over
+					// one vehicle assumed over
 					if (agent.canDoTask(task)) {
 						Node milestone = new Node(milestoneID++, task);
 						milestones.add(milestone);
@@ -233,6 +227,30 @@ public class PlannerServiceHandler implements PlannerService.Iface {
 					}
 				}
 			}
+			
+			String commandsLog = "";
+			Position ppp1 = new Position(), ppp2 = new Position();
+			Node s1,s2;
+			for(int i = 0; i < plan.getCommands().size()-1;i++)
+			{
+				ppp1.latitude = plan.getCommands().get(i).params.get(4);
+				ppp1.longitude = plan.getCommands().get(i).params.get(5);
+				ppp2.latitude = plan.getCommands().get(i+1).params.get(4);
+				ppp2.longitude = plan.getCommands().get(i+1).params.get(5);
+				s1 = new Node(ppp1);
+				s2 = new Node(ppp2);
+				if(i == 58)
+				{
+					i = i+0;
+				}
+				if(nArea.collide(s1, s2))
+				{
+					i = i+0;
+				}
+				commandsLog += plan.getCommands().get(i).endTime + ": " + new Node(ppp1).toString() + "\r\n";
+				//commandsLog += plan.getCommands().get(i+1).endTime + ": " + new Node(ppp2).toString() + "\r\n";
+			}
+			System.out.println(commandsLog);
 
 			client.sendPlan(requestId, plan);
 			// System.out.println("Mission Plan Sent!");

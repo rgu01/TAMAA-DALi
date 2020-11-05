@@ -9,12 +9,6 @@ public class NavigationArea {
 	public List<Node> milestones;
 	public List<Obstacle> obstacles;
 
-	/*
-	 * public NavigationArea() { this.boundry = new ArrayList<Node>();
-	 * this.milestones = new ArrayList<Node>(); this.obstacles = new
-	 * ArrayList<Obstacle>(); }
-	 */
-
 	// A square navigation area
 	public NavigationArea(Node n[], int number, double speed) {
 
@@ -50,12 +44,6 @@ public class NavigationArea {
 		boundry.add(topRight);// top right
 	}
 
-	/*
-	 * public NavigationArea(List<Node> boundry, List<Node> milestones,
-	 * List<Obstacle> obstacles) { this.boundry = boundry; this.milestones =
-	 * milestones; this.obstacles = obstacles; }
-	 */
-
 	public boolean contains(Node n) {
 		Node topRight = this.boundry.get(3);
 		Node botLeft = this.boundry.get(1);
@@ -69,4 +57,16 @@ public class NavigationArea {
 		return true;
 	}
 
+	public boolean collide(Node start, Node goal)
+	{
+		for(Obstacle obs:this.obstacles)
+		{
+			if(obs.block(start,goal))
+			{
+				return true;
+			}
+		}
+		return false;
+	}
+	
 }

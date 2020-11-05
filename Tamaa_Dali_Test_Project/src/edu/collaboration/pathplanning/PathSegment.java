@@ -92,5 +92,11 @@ public class PathSegment {
         }
         return true;
 	}
+	
+	@Override
+	public String toString()
+	{
+		return this.origin.toString() + "->" + this.end.toString();
+	}
 
 }

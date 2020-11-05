@@ -40,9 +40,16 @@ public class Obstacle {
 	{
 		PathSegment line = new PathSegment(start, goal), sideOfObstacle;
 		
-		for(int i = 0; i < vertices.size()-1; i++)
+		for(int i = 0; i < vertices.size(); i++)
 		{
-			sideOfObstacle = new PathSegment(vertices.get(i), vertices.get(i+1));
+			if(i < vertices.size()-1)
+			{
+				sideOfObstacle = new PathSegment(vertices.get(i), vertices.get(i+1));
+			}
+			else
+			{
+				sideOfObstacle = new PathSegment(vertices.get(i), vertices.get(0));
+			}
 			if(sideOfObstacle.isIntersect(line))
 			{
 				return true;

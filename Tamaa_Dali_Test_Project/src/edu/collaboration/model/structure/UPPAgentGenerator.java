@@ -50,7 +50,7 @@ public class UPPAgentGenerator {
 		UppaalDocument doc = null;
 		DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
 	    try {
-	    	tempatePath = new File(".").getCanonicalPath() + "\\res\\" + templateXML;
+	    	tempatePath = new File(".").getCanonicalPath() + File.separator +  "res" + File.separator + templateXML;
 			DocumentBuilder builder = factory.newDocumentBuilder();
 			//InputStream is = UPPAgentGenerator.class.getClassLoader().getResourceAsStream(tempatePath); 
 			InputStream is = new FileInputStream(new File(tempatePath));

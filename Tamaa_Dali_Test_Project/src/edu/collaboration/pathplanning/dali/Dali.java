@@ -47,14 +47,16 @@ public class Dali implements PathPlanningAlgorithm {
 	boolean isInArea(NavigationArea nArea, CoordinatesTuple coordinates) {
 		Node topLeft = nArea.boundry.get(0);
 		Node botRight = nArea.boundry.get(2);
-		if( coordinates.x <= topLeft.lat || coordinates.x >= botRight.lat || coordinates.y >= topLeft.lon || coordinates.y <= botRight.lon) {
+		if( coordinates.x >= topLeft.lat || coordinates.x <= botRight.lat ||
+				coordinates.y <= topLeft.lon || coordinates.y >= botRight.lon) {
 
 			return false;
 		}
 		for (Obstacle obs : nArea.obstacles) {
 			Node obsTL =  obs.vertices.get(0);
 			Node obsBR = obs.vertices.get(2);
-			if( coordinates.x > obsTL.lat && coordinates.x < obsBR.lat && coordinates.y < obsTL.lon && coordinates.y > obsBR.lon) {
+			if( coordinates.x < obsTL.lat && coordinates.x > obsBR.lat &&
+					coordinates.y > obsTL.lon && coordinates.y < obsBR.lon) {
 				return false;
 			}
 		}
@@ -104,7 +106,8 @@ public class Dali implements PathPlanningAlgorithm {
 	}
 	
 	void generateGraph(NavigationArea nArea) {
-		DaliNode topLeft = new DaliNode(0, nArea.boundry.get(0).lat, nArea.boundry.get(0).lon);
+		DaliNode topLeft = new DaliNode(0, nArea.boundry.get(0).lat - NavigationArea.threshold / 2 , 
+											nArea.boundry.get(0).lon + NavigationArea.threshold / 2 );
 		processing.add(topLeft);
 		nodes.put(0, topLeft);
 		loc2node.put(new CoordinatesTuple(nArea.boundry.get(0).lat, nArea.boundry.get(0).lon), topLeft);

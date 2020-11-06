@@ -111,6 +111,7 @@ public class PlannerServiceHandler implements PlannerService.Iface {
 
 				Obstacle obs = new Obstacle(obsVertices);
 				nArea.obstacles.add(obs);
+				obsVertices.clear();
 			}
 
 			as = new AStar(nArea);

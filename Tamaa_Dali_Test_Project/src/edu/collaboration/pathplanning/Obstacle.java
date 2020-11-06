@@ -58,4 +58,16 @@ public class Obstacle {
 		
 		return false;
 	}
+	
+	@Override
+	public String toString()
+	{
+		String result = "";
+		for(Node node:this.vertices)
+		{
+			result += node.toString() + "; ";
+		}
+		
+		return result;
+	}
 }

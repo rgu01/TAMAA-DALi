@@ -148,7 +148,7 @@ public class Dali implements PathPlanningAlgorithm {
 		DaliNode source = findNearestNode(start.lat, start.lon);
 		HashMap<DaliNode, Double> processing = new HashMap<DaliNode, Double>();
 		HashMap<DaliNode, Double> distances = new HashMap<DaliNode, Double>();
-		Path p_result = new Path(source, destination);
+		Path p_result = new Path(start, destination);
 		processing.put(source, 0.0);
 		while(!processing.isEmpty() || !distances.containsKey(target)) {
 			DaliNode current = processing.entrySet().stream().min(Entry.comparingByValue()).get().getKey();

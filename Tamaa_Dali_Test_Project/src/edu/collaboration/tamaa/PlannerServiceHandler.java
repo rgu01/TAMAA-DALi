@@ -114,8 +114,8 @@ public class PlannerServiceHandler implements PlannerService.Iface {
 				obsVertices.clear();
 			}
 
-			as = new AStar(nArea);
-			//as = new Dali(nArea);
+			//as = new AStar(nArea);
+			as = new Dali(nArea);
 			for (Vehicle v : plan.getVehicles()) {
 				int agentID = 0, milestoneID = 1;// 0 is for the starting position
 				List<Node> milestones = new ArrayList<Node>();

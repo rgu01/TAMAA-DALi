@@ -12,6 +12,7 @@ public class DaliNode extends Node {
 	
 	boolean isDesirable = true;
 	double intensity =1;
+	double regionIntensity = 1;
 	
 	DaliNode previous = null; //for backtracking
 

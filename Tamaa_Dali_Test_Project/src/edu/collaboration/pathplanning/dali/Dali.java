@@ -25,14 +25,18 @@ public class Dali implements PathPlanningAlgorithm {
 		generateGraph(nArea);
 	}
 	
-	public Dali(NavigationArea nArea, List<DaliConstraint> constraints) {
-		generateGraph(nArea);
-		for (DaliConstraint c : constraints) {
-			DaliNode center = findNearestNode(c.lat, c.lon);
-			if (center != null) 
-				c.addConstaint(center);
-		}
+	public Dali(NavigationArea nArea, List<DaliRegionConstraint> regionPreferences) {
+		generateGraph(nArea, regionPreferences);
 	}
+	
+//	public Dali(NavigationArea nArea, List<DaliConstraint> constraints) {
+//		generateGraph(nArea);
+//		for (DaliConstraint c : constraints) {
+//			DaliNode center = findNearestNode(c.lat, c.lon);
+//			if (center != null) 
+//				c.addConstaint(center);
+//		}
+//	}
 	
 ///////////////////////////////////////////////////////////
 // Creation of a graph
@@ -44,42 +48,26 @@ public class Dali implements PathPlanningAlgorithm {
 	//TODO move to Navigation area 
 	//TODO assume square area
 	//TODO assume order of corners: tl, bl, br, tr
-	boolean isInArea(NavigationArea nArea, CoordinatesTuple coordinates) {
+	boolean isInNavigationArea(NavigationArea nArea, CoordinatesTuple coordinates) {
 		Node topLeft = nArea.boundry.get(0);
 		Node botRight = nArea.boundry.get(2);
-		if( coordinates.x >= topLeft.lat || coordinates.x <= botRight.lat ||
-				coordinates.y <= topLeft.lon || coordinates.y >= botRight.lon) {
-
+		if (!Utils.isInside(coordinates.lat, coordinates.lon, topLeft, botRight)) {
 			return false;
 		}
 		for (Obstacle obs : nArea.obstacles) {
 			Node obsTL =  obs.vertices.get(0);
 			Node obsBR = obs.vertices.get(2);
-			if( coordinates.x < obsTL.lat && coordinates.x > obsBR.lat &&
-					coordinates.y > obsTL.lon && coordinates.y < obsBR.lon) {
+			if (Utils.isInside(coordinates.lat, coordinates.lon, obsTL, obsBR)) {
 				return false;
 			}
 		}
 		return true;
 	}
 	
-	List<CoordinatesTuple> neighbourLocations(double lat, double lon) {
-		ArrayList<CoordinatesTuple> res = new ArrayList<CoordinatesTuple>();
-		res.add(new CoordinatesTuple(lat, lon + NavigationArea.threshold));
-		res.add(new CoordinatesTuple(lat + NavigationArea.threshold, lon + NavigationArea.threshold));
-		res.add(new CoordinatesTuple(lat + NavigationArea.threshold, lon));
-		res.add(new CoordinatesTuple(lat + NavigationArea.threshold, lon - NavigationArea.threshold));
-		res.add(new CoordinatesTuple(lat, lon - NavigationArea.threshold));
-		res.add(new CoordinatesTuple(lat - NavigationArea.threshold, lon - NavigationArea.threshold));
-		res.add(new CoordinatesTuple(lat - NavigationArea.threshold, lon ));
-		res.add(new CoordinatesTuple(lat - NavigationArea.threshold, lon + NavigationArea.threshold));
-		return res;
-	}
-	
-	void addNode(CoordinatesTuple coordinates, DaliNode prev) {
+	DaliNode addNode(CoordinatesTuple coordinates, DaliNode prev) {
 		DaliNode newNode = findNode(coordinates);
 		if (newNode == null) {
-			newNode = new DaliNode(nid, coordinates.x, coordinates.y);
+			newNode = new DaliNode(nid, coordinates.lat, coordinates.lon);
 			nid++;
 			processing.add(newNode);
 			nodes.put(nid, newNode);
@@ -88,6 +76,7 @@ public class Dali implements PathPlanningAlgorithm {
 		DaliEdge e = prev.createEdge(newNode, eid);
 		edges.put(eid, e);
 		eid++;
+		return newNode;
 	}
 	
 	DaliNode findNode(double x, double y) {
@@ -106,6 +95,10 @@ public class Dali implements PathPlanningAlgorithm {
 	}
 	
 	void generateGraph(NavigationArea nArea) {
+		generateGraph(nArea, null);
+	}
+	
+	void generateGraph(NavigationArea nArea, List<DaliRegionConstraint> regionPreferences) {
 		DaliNode topLeft = new DaliNode(0, nArea.boundry.get(0).lat - NavigationArea.threshold / 2 , 
 											nArea.boundry.get(0).lon + NavigationArea.threshold / 2 );
 		processing.add(topLeft);
@@ -115,10 +108,21 @@ public class Dali implements PathPlanningAlgorithm {
 		eid = 0;
 		while (!processing.isEmpty()) {
 			DaliNode currentDaliNode = processing.remove(0);
-			for (CoordinatesTuple neighbour : neighbourLocations(currentDaliNode.lat, currentDaliNode.lon)) {
-				if (isInArea(nArea, neighbour)) {
-					addNode(neighbour, currentDaliNode);
+			for (CoordinatesTuple neighbour : Utils.neighbourLocations(currentDaliNode.lat, currentDaliNode.lon)) {
+				if (isInNavigationArea(nArea, neighbour)) {
+					DaliNode newNode = addNode(neighbour, currentDaliNode);
+					processPriorityRegion(regionPreferences, newNode);
 				}				
+			}
+		}
+	}
+
+	private void processPriorityRegion(List<DaliRegionConstraint> regionPreferences, DaliNode newNode) {
+		if (regionPreferences != null) {
+			for(DaliRegionConstraint rc : regionPreferences) {
+				if (Utils.isInside(newNode.lat, newNode.lon, rc.topLeft, rc.bottomRight)) {
+					newNode.regionIntensity = rc.priority;
+				}
 			}
 		}
 	}
@@ -157,7 +161,8 @@ public class Dali implements PathPlanningAlgorithm {
 			for (DaliEdge e : current.edges) {	
 				if (distances.containsKey(e.dest) || e.heat == 1) continue;
 				if (anomalies.containsKey(e.id) && anomalies.get(e.id).timeToLive > currentDistance / vehicleSpeed) continue;
-				double edist = currentDistance + (e.dest.isDesirable ? 1/e.dest.intensity : e.dest.intensity) * e.length / (1-e.heat);
+				double edist = currentDistance + e.length * 
+						(e.dest.isDesirable ? 1/e.dest.intensity : e.dest.intensity)  / (1-e.heat) / (e.dest.regionIntensity);
 				if (!processing.containsKey(e.dest) || processing.get(e.dest) > edist) {
 					processing.put(e.dest, edist);
 					e.dest.previous = current;

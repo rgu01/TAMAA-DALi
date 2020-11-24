@@ -13,6 +13,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+import javax.persistence.criteria.CriteriaBuilder.Case;
 import javax.swing.JOptionPane;
 
 import edu.collaboration.communication.TransferFile;
@@ -20,6 +21,7 @@ import edu.collaboration.model.structure.UPPAgentGenerator;
 import edu.collaboration.model.structure.UPPAgentVehicle;
 import edu.collaboration.pathplanning.*;
 import edu.collaboration.pathplanning.dali.Dali;
+import edu.collaboration.pathplanning.dali.DaliRegionConstraint;
 import edu.collaboration.pathplanning.xstar.*;
 import edu.collaboration.taskscheduling.*;
 
@@ -47,6 +49,7 @@ public class PlannerServiceHandler implements PlannerService.Iface {
 
 	@Override
 	public void computePlan(int requestId, Mission plan) throws TException {
+		boolean useDali = true;
 		// boolean pathExist = false;
 		// Communication with MMT
 		TTransport transport = null;
@@ -95,6 +98,7 @@ public class PlannerServiceHandler implements PlannerService.Iface {
 			 */
 			// Obstacles
 			List<Node> obsVertices = new ArrayList<Node>();
+			List<DaliRegionConstraint> regionPreferences = new ArrayList<DaliRegionConstraint>();
 			for (Region forbidden : plan.getForbiddenArea()) {
 				top_left_lon = sphericalMercator.xAxisProjection(forbidden.getArea().get(3).longitude);
 				top_left_lat = sphericalMercator.yAxisProjection(forbidden.getArea().get(3).latitude);
@@ -108,14 +112,22 @@ public class PlannerServiceHandler implements PlannerService.Iface {
 				obsVertices.add(new Node(bot_left_lat, bot_left_lon));
 				obsVertices.add(new Node(top_left_lat, top_left_lon));
 				obsVertices.add(new Node(bot_right_lat, bot_right_lon));
-
-				Obstacle obs = new Obstacle(obsVertices);
-				nArea.obstacles.add(obs);
+				switch (forbidden.regionType) {
+					case FORBIDDEN:
+						nArea.obstacles.add(new Obstacle(obsVertices));
+						break;
+					case PREFERRED:
+						regionPreferences.add(new DaliRegionConstraint(obsVertices, 1.5));
+						break;
+					case LESS_PREFERRED:
+						regionPreferences.add(new DaliRegionConstraint(obsVertices, 0.5));
+						break;
+					default:
+				}
 				obsVertices.clear();
 			}
 
-			//as = new AStar(nArea);
-			as = new Dali(nArea);
+			as =  useDali ? new Dali(nArea, regionPreferences) : new AStar(nArea);
 			for (Vehicle v : plan.getVehicles()) {
 				int agentID = 0, milestoneID = 1;// 0 is for the starting position
 				List<Node> milestones = new ArrayList<Node>();

@@ -2,8 +2,11 @@ package edu.collaboration.pathplanning.dali;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map.Entry;
+import java.util.stream.Collector;
+import java.util.stream.Collectors;
 
 import edu.collaboration.pathplanning.NavigationArea;
 import edu.collaboration.pathplanning.Node;
@@ -17,9 +20,11 @@ public class Dali implements PathPlanningAlgorithm {
 	HashMap<CoordinatesTuple, DaliNode> loc2node = new HashMap<CoordinatesTuple, DaliNode>();
 	HashMap<Integer, DaliEdge> edges = new HashMap<Integer, DaliEdge>();
 	
-	HashMap<Integer, DaliAnomaly> anomalies = new HashMap<Integer, DaliAnomaly>();
+	List<DaliAnomaly> anomalies = new ArrayList<DaliAnomaly>();
+	List<Obstacle> permanentObstacles;
 	
 	public double vehicleSpeed = 1;
+	double startTime =0;
 	
 	public Dali(NavigationArea nArea) {
 		generateGraph(nArea);
@@ -54,7 +59,7 @@ public class Dali implements PathPlanningAlgorithm {
 		if (!Utils.isInside(coordinates.lat, coordinates.lon, topLeft, botRight)) {
 			return false;
 		}
-		for (Obstacle obs : nArea.obstacles) {
+		for (Obstacle obs : permanentObstacles) {
 			Node obsTL =  obs.vertices.get(0);
 			Node obsBR = obs.vertices.get(2);
 			if (Utils.isInside(coordinates.lat, coordinates.lon, obsTL, obsBR)) {
@@ -72,6 +77,7 @@ public class Dali implements PathPlanningAlgorithm {
 			processing.add(newNode);
 			nodes.put(nid, newNode);
 			loc2node.put(coordinates, newNode);
+			addToAnomalies(newNode);
 		}
 		DaliEdge e = prev.createEdge(newNode, eid);
 		edges.put(eid, e);
@@ -98,9 +104,20 @@ public class Dali implements PathPlanningAlgorithm {
 		generateGraph(nArea, null);
 	}
 	
+	void processAnomalies(NavigationArea nArea) {
+		for (Obstacle obs : nArea.obstacles) {
+			if (obs.endTime >0) {
+				anomalies.add(new DaliAnomaly(obs));
+			}
+		}
+	}
+	
 	void generateGraph(NavigationArea nArea, List<DaliRegionConstraint> regionPreferences) {
+		processAnomalies(nArea);
+		permanentObstacles = nArea.obstacles.stream().filter(obs -> (obs.endTime <=0)).collect(Collectors.toList());
 		DaliNode topLeft = new DaliNode(0, nArea.boundry.get(0).lat - NavigationArea.threshold / 2 , 
 											nArea.boundry.get(0).lon + NavigationArea.threshold / 2 );
+		addToAnomalies(topLeft);
 		processing.add(topLeft);
 		nodes.put(0, topLeft);
 		loc2node.put(new CoordinatesTuple(nArea.boundry.get(0).lat, nArea.boundry.get(0).lon), topLeft);
@@ -126,6 +143,23 @@ public class Dali implements PathPlanningAlgorithm {
 			}
 		}
 	}
+	
+	private void addToAnomalies(Node node) {
+		for (DaliAnomaly anomaly : anomalies) {
+			if (anomaly.isInside(node)) {
+				anomaly.addNode(node);
+			}
+		}
+	}
+	
+	private boolean blockedByAnomalies(int node_id, double time) {
+		for (DaliAnomaly anomaly : anomalies) {
+			if (anomaly.isBlocking(node_id , time)) {
+				return true;
+			}
+		}
+		return false;
+	}
 
 ////////////////////////////////////////////
 // Methods for updates for heat and anomalies. 
@@ -138,16 +172,20 @@ public class Dali implements PathPlanningAlgorithm {
 		}
 	}
 	
-	public void updateAnomalies(List<DaliAnomaly> newAnomalies, double passedTime) {
-		anomalies.entrySet().removeIf(e -> e.getValue().timeToLive < passedTime);
-		anomalies.entrySet().forEach(e -> e.getValue().timeToLive -= passedTime);
-		newAnomalies.forEach(e -> anomalies.put(e.edgeID, e));
+	//public void updateAnomalies(List<DaliAnomaly> newAnomalies, double passedTime) {
+	//	anomalies.entrySet().removeIf(e -> e.getValue().timeToLive < passedTime);
+	//	anomalies.entrySet().forEach(e -> e.getValue().timeToLive -= passedTime);
+	//	newAnomalies.forEach(e -> anomalies.put(e.edgeID, e));
+	//}
+	
+	public void setStartTime(double time) {
+		this.startTime = time;
 	}
 
 ///////////////////////////////////////////	
 	
 	@Override
-	public Path calculate(Node start, Node destination) {
+	public Path calculate(Node start, Node destination, double vehicleSpeed) {
 		DaliNode target = findNearestNode(destination.lat, destination.lon);
 		DaliNode source = findNearestNode(start.lat, start.lon);
 		HashMap<DaliNode, Double> processing = new HashMap<DaliNode, Double>();
@@ -160,7 +198,7 @@ public class Dali implements PathPlanningAlgorithm {
 			processing.remove(current);
 			for (DaliEdge e : current.edges) {	
 				if (distances.containsKey(e.dest) || e.heat == 1) continue;
-				if (anomalies.containsKey(e.id) && anomalies.get(e.id).timeToLive > currentDistance / vehicleSpeed) continue;
+				if (blockedByAnomalies(e.dest.id, currentDistance / vehicleSpeed - startTime)) continue;
 				double edist = currentDistance + e.length * 
 						(e.dest.isDesirable ? 1/e.dest.intensity : e.dest.intensity)  / (1-e.heat) / (e.dest.regionIntensity);
 				if (!processing.containsKey(e.dest) || processing.get(e.dest) > edist) {
@@ -188,6 +226,25 @@ public class Dali implements PathPlanningAlgorithm {
 			System.out.println("No path found");
 			return null;
 		}
+	}
+	
+	public boolean pathEntersAnomaly(Path path, double startTime, double speed) {
+		int i =0;
+		double time = startTime;
+		while (i!= path.segments.size() -1) {
+			DaliNode cur = (DaliNode)path.segments.get(i);
+			DaliNode nxt = (DaliNode)path.segments.get(i+1);
+			DaliEdge edge = cur.edges.stream().filter(e -> e.dest == nxt).findFirst().orElse(null);
+			if (edge == null) {
+				return true;
+			}
+			time = time + edge.length / speed;
+			if (blockedByAnomalies(nxt.id, time)) {
+				return true;
+			}
+			i++;
+		}
+		return false;
 	}
 
 }

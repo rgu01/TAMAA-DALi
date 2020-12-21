@@ -15,6 +15,7 @@ import java.util.List;
 
 import javax.persistence.criteria.CriteriaBuilder.Case;
 import javax.swing.JOptionPane;
+import javax.swing.text.html.HTMLDocument.HTMLReader.IsindexAction;
 
 import edu.collaboration.communication.TransferFile;
 import edu.collaboration.model.structure.UPPAgentGenerator;
@@ -154,7 +155,7 @@ public class PlannerServiceHandler implements PlannerService.Iface {
 						if (!n1.equals(n2)) {
 							Path path = new Path(n1, n2);
 							if (!agent.isPathExist(path)) {
-								path = as.calculate(n1, n2);
+								path = as.calculate(n1, n2, v.maxSpeed);
 							}
 
 							if (!paths.contains(path)) {
@@ -191,6 +192,8 @@ public class PlannerServiceHandler implements PlannerService.Iface {
 			List<Command> segments = null;
 			int startTime = 0;
 			Node currentNode, targetNode, waypoint;
+			List<Path> passAnomalyPaths = new ArrayList<Path>();
+			Node lastPosition = null;
 			for (int index = 0; index < taskPlan.length(); index++) {
 				states = taskPlan.states.get(index);
 				action = taskPlan.actions.get(index);
@@ -202,12 +205,21 @@ public class PlannerServiceHandler implements PlannerService.Iface {
 							if (!agentState.currentPosition.equals("initial")) {
 								currentNode = agent.getMilestone(agentState.currentPosition);
 								movement = this.startMove(currentNode, agent, startTime);
+								if (as instanceof Dali) {
+									lastPosition = currentNode;
+								}
 							}
 						}
 						// finish a move
 						else if (action.type.equals(TaskScheduleAction.StrMoveFinish)) {
 							targetNode = agent.getMilestone(action.target);
 							segments = this.finishMove(movement, agent, targetNode, (int) action.time);
+							if (as instanceof Dali) {
+								Path currentPath = agent.findPath(lastPosition.getPosition(), targetNode.getPosition());
+								if (((Dali)as).pathEntersAnomaly(currentPath, startTime, agent.vehicle.maxSpeed)){
+									passAnomalyPaths.add(currentPath);
+								}
+							}
 							startTime += (int) action.time;
 						}
 						// start an execution

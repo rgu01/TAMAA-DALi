@@ -7,7 +7,7 @@ import edu.collaboration.pathplanning.PathPlanningAlgorithm;
 public class ThetaStar implements PathPlanningAlgorithm {
 
 	@Override
-	public Path calculate(Node start, Node destination) {
+	public Path calculate(Node start, Node destination, double vehicleSpeed) {
 		// TODO Auto-generated method stub
 		return null;
 	}

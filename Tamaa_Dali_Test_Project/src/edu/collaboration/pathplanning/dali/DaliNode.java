@@ -7,7 +7,6 @@ import edu.collaboration.pathplanning.Node;
 
 public class DaliNode extends Node {
 	
-	int id;
 	List<DaliEdge> edges= new ArrayList<DaliEdge>();
 	
 	boolean isDesirable = true;

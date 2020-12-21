@@ -25,7 +25,7 @@ public class AStar implements PathPlanningAlgorithm {
 	}
 
 	@Override
-	public Path calculate(Node start, Node destination) {
+	public Path calculate(Node start, Node destination, double vehicleSpeed) {
 		ANode temp = null, aStart = null, aDestination = null;
 		Path p_result = new Path(start, destination);
 		List<Node> path = new ArrayList<Node>();

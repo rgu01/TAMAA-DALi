@@ -5,8 +5,24 @@ import java.util.List;
 
 public class Obstacle {
 	public List<Node> vertices;
-		
+	public double startTime;
+	public double endTime;
+	
 	public Obstacle(List<Node> vertices)
+	{
+		this.startTime = -1;
+		this.endTime = -1;
+		orderVertices(vertices);
+	}
+	
+	public Obstacle(List<Node> vertices, double start, double end)
+	{
+		this.startTime = start;
+		this.endTime = end;
+		orderVertices(vertices);
+	}
+	
+	private void orderVertices(List<Node> vertices)
 	{
 		Node temp = null;
 		double maxLat = vertices.get(0).lat, minLat = vertices.get(0).lat, 

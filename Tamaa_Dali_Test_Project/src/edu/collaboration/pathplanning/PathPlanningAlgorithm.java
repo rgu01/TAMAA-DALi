@@ -6,5 +6,5 @@ package edu.collaboration.pathplanning;
  * The result of path should be a sequence of nodes starting from the start, and ending at the destination
  */
 public interface PathPlanningAlgorithm {
-	public Path calculate(Node start, Node destination);
+	public Path calculate(Node start, Node destination, double vehicleSpeed);
 }

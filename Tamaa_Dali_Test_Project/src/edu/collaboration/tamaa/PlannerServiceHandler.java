@@ -115,7 +115,7 @@ public class PlannerServiceHandler implements PlannerService.Iface {
 				obsVertices.add(new Node(bot_right_lat, bot_right_lon));
 				switch (forbidden.regionType) {
 					case FORBIDDEN:
-						nArea.obstacles.add(new Obstacle(obsVertices));
+						nArea.obstacles.add(new Obstacle(obsVertices, (double)forbidden.startTime, (double)forbidden.endTime));
 						break;
 					case PREFERRED:
 						regionPreferences.add(new DaliRegionConstraint(obsVertices, 1.5));
@@ -129,128 +129,23 @@ public class PlannerServiceHandler implements PlannerService.Iface {
 			}
 
 			as =  useDali ? new Dali(nArea, regionPreferences) : new AStar(nArea);
-			for (Vehicle v : plan.getVehicles()) {
-				int agentID = 0, milestoneID = 1;// 0 is for the starting position
-				List<Node> milestones = new ArrayList<Node>();
-				UPPAgentVehicle agent = new UPPAgentVehicle(agentID++);
-				agent.vehicle = v;
-				milestones.add(agent.getStartNode());
-				for (Task task : plan.tasks) {
-					// one vehicle assumed begin
-					task.missionId = (int) task.altitude;
-					//
-					if (task.assignedVehicleId == 0) {
-						task.assignedVehicleId = v.id;
-					}
-					// one vehicle assumed over
-					if (agent.canDoTask(task)) {
-						Node milestone = new Node(milestoneID++, task);
-						milestones.add(milestone);
-						agent.addTask(milestone);
-					}
-				}
-				List<Path> paths = new ArrayList<Path>();
-				for (Node n1 : milestones) {
-					for (Node n2 : milestones) {
-						if (!n1.equals(n2)) {
-							Path path = new Path(n1, n2);
-							if (!agent.isPathExist(path)) {
-								path = as.calculate(n1, n2, v.maxSpeed);
-							}
-
-							if (!paths.contains(path)) {
-								paths.add(path);
-							}
-						}
-					}
-				}
-				agent.paths = paths;
-				agents.add(agent);
-			}
+			computePaths(plan, as, agents);
 
 			/*****************************************************************
 			 * If no server is running, and only path planning is needed, please comment the
 			 * code below
 			 */
-			 UPPAgentGenerator.run(agents); // call UPPAAL in the server side to synthesize a mission plan 
-			 TransferFile trans = new TransferFile(this.uppaalAddress, this.uppaalPort);
-			 trans.sendFile(UPPAgentGenerator.outputXML); 
-			 trans.close(); 
-			 trans = new TransferFile(this.uppaalAddress, this.uppaalPort);
-			 trans.receiveFile(TaskScheduleParser.planPath); 
-			 trans.close();
+			 callUppaal(agents);
 			 /****************************************************************** end of
 			 * the task scheduling code
 			 */
 
 			// parse the result xml
-			TaskSchedulePlan taskPlan = TaskScheduleParser.parse();
-			TaskScheduleState states;
-			AgentState agentState;
-			TaskScheduleAction action;
-			Task movement = null, execution = null;
-			List<Command> segments = null;
-			int startTime = 0;
-			Node currentNode, targetNode, waypoint;
 			List<Path> passAnomalyPaths = new ArrayList<Path>();
-			Node lastPosition = null;
-			for (int index = 0; index < taskPlan.length(); index++) {
-				states = taskPlan.states.get(index);
-				action = taskPlan.actions.get(index);
-				for (UPPAgentVehicle agent : agents) {
-					if (agent.ID == action.agentID) {
-						agentState = states.getAgentState(agent.ID);
-						// start to move
-						if (action.type.equals(TaskScheduleAction.StrMoveStart)) {
-							if (!agentState.currentPosition.equals("initial")) {
-								currentNode = agent.getMilestone(agentState.currentPosition);
-								movement = this.startMove(currentNode, agent, startTime);
-								if (as instanceof Dali) {
-									lastPosition = currentNode;
-								}
-							}
-						}
-						// finish a move
-						else if (action.type.equals(TaskScheduleAction.StrMoveFinish)) {
-							targetNode = agent.getMilestone(action.target);
-							segments = this.finishMove(movement, agent, targetNode, (int) action.time);
-							if (as instanceof Dali) {
-								Path currentPath = agent.findPath(lastPosition.getPosition(), targetNode.getPosition());
-								if (((Dali)as).pathEntersAnomaly(currentPath, startTime, agent.vehicle.maxSpeed)){
-									passAnomalyPaths.add(currentPath);
-								}
-							}
-							startTime += (int) action.time;
-						}
-						// start an execution
-						else if (action.type.equals(TaskScheduleAction.StrTaskStart)) {
-							currentNode = agent.getMilestone(agentState.currentPosition);
-							for (Task task : plan.tasks) {
-								waypoint = new Node(task.getArea().area.get(0));
-								if (task.taskTemplate.taskType.equals(TaskType.INSPECT)
-										&& waypoint.equals(currentNode)) {
-									task.assignedVehicleId = agent.vehicle.id;
-									task.startTime = startTime;
-									movement.parentTaskId = task.id;
-									execution = task;
-									break;
-								}
-							}
-							// add movement going to this task's milestone
-							plan.addToTasks(movement);
-							for (Command segment : segments) {
-								plan.addToCommands(segment);
-							}
-						}
-						// finish an execution
-						else if (action.type.equals(TaskScheduleAction.StrTaskFinish)) {
-							currentNode = agent.getMilestone(agentState.currentPosition);
-							execution.assignedVehicleId = agent.vehicle.id;
-							execution.endTime = startTime + (int) action.time;
-							// plan.addToTasks(execution);
-						}
-					}
-				}
+			List<Integer> passAnomalyPathsTime = new ArrayList<Integer>();
+			parseXML(plan, as, agents, passAnomalyPaths, passAnomalyPathsTime);
+			while (passAnomalyPaths.size() != 0) {
+				recomputePlan(plan, as, agents, passAnomalyPaths, passAnomalyPathsTime);
 			}
 			
 			String commandsLog = "";
@@ -297,6 +192,154 @@ public class PlannerServiceHandler implements PlannerService.Iface {
 		} finally {
 			transport.close();
 			System.exit(0);
+		}
+	}
+
+	private void recomputePlan(Mission plan, PathPlanningAlgorithm as, List<UPPAgentVehicle> agents, 
+			List<Path> passAnomalyPaths, List<Integer> passAnomalyPathsTime) throws Exception {
+		if (!(as instanceof Dali)) {
+			passAnomalyPaths.clear();
+			return;
+		}
+		Dali dali = (Dali)as;
+		dali.setCheckAnomalies(true);
+		for (UPPAgentVehicle agent : agents) {
+			for (int i =0; i < passAnomalyPaths.size(); i++) {
+				Path path = passAnomalyPaths.get(i);
+				int startTime = passAnomalyPathsTime.get(i);
+				agent.paths.removeIf(oldpath -> oldpath.start == path.start && oldpath.end == path.end);
+				Path newPath = dali.calculate(path.start, path.end, agent.vehicle.maxSpeed, startTime);
+				agent.paths.add(newPath);
+			}
+		}
+		callUppaal(agents);
+		passAnomalyPaths.clear();
+		passAnomalyPathsTime.clear();
+		parseXML(plan, as, agents, passAnomalyPaths, passAnomalyPathsTime);
+	}		
+		
+	private void parseXML(Mission plan, PathPlanningAlgorithm as, List<UPPAgentVehicle> agents, 
+		List<Path> passAnomalyPaths, List<Integer> passAnomalyPathsTime) {
+		TaskSchedulePlan taskPlan = TaskScheduleParser.parse();
+		TaskScheduleState states;
+		AgentState agentState;
+		TaskScheduleAction action;
+		Task movement = null, execution = null;
+		List<Command> segments = null;
+		int startTime = 0;
+		Node currentNode, targetNode, waypoint;
+		Node lastPosition = null;
+		int lastPostionTime = 0;
+		for (int index = 0; index < taskPlan.length(); index++) {
+			states = taskPlan.states.get(index);
+			action = taskPlan.actions.get(index);
+			for (UPPAgentVehicle agent : agents) {
+				if (agent.ID == action.agentID) {
+					agentState = states.getAgentState(agent.ID);
+					// start to move
+					if (action.type.equals(TaskScheduleAction.StrMoveStart)) {
+						if (!agentState.currentPosition.equals("initial")) {
+							currentNode = agent.getMilestone(agentState.currentPosition);
+							movement = this.startMove(currentNode, agent, startTime);
+							if (as instanceof Dali) {
+								lastPosition = currentNode;
+								lastPostionTime = startTime;
+							}
+						}
+					}
+					// finish a move
+					else if (action.type.equals(TaskScheduleAction.StrMoveFinish)) {
+						targetNode = agent.getMilestone(action.target);
+						segments = this.finishMove(movement, agent, targetNode, (int) action.time);
+						if (as instanceof Dali) {
+							Path currentPath = agent.findPath(lastPosition.getPosition(), targetNode.getPosition());
+							if (((Dali)as).pathEntersAnomaly(currentPath, startTime, agent.vehicle.maxSpeed)){
+								passAnomalyPaths.add(currentPath);
+								passAnomalyPathsTime.add(lastPostionTime);
+							}
+						}
+						startTime += (int) action.time;
+					}
+					// start an execution
+					else if (action.type.equals(TaskScheduleAction.StrTaskStart)) {
+						currentNode = agent.getMilestone(agentState.currentPosition);
+						for (Task task : plan.tasks) {
+							waypoint = new Node(task.getArea().area.get(0));
+							if (task.taskTemplate.taskType.equals(TaskType.INSPECT)
+									&& waypoint.equals(currentNode)) {
+								task.assignedVehicleId = agent.vehicle.id;
+								task.startTime = startTime;
+								movement.parentTaskId = task.id;
+								execution = task;
+								break;
+							}
+						}
+						// add movement going to this task's milestone
+						plan.addToTasks(movement);
+						for (Command segment : segments) {
+							plan.addToCommands(segment);
+						}
+					}
+					// finish an execution
+					else if (action.type.equals(TaskScheduleAction.StrTaskFinish)) {
+						currentNode = agent.getMilestone(agentState.currentPosition);
+						execution.assignedVehicleId = agent.vehicle.id;
+						execution.endTime = startTime + (int) action.time;
+						// plan.addToTasks(execution);
+					}
+				}
+			}
+		}
+	}
+
+	private void callUppaal(List<UPPAgentVehicle> agents) throws Exception {
+		UPPAgentGenerator.run(agents); // call UPPAAL in the server side to synthesize a mission plan 
+		 TransferFile trans = new TransferFile(this.uppaalAddress, this.uppaalPort);
+		 trans.sendFile(UPPAgentGenerator.outputXML); 
+		 trans.close(); 
+		 trans = new TransferFile(this.uppaalAddress, this.uppaalPort);
+		 trans.receiveFile(TaskScheduleParser.planPath); 
+		 trans.close();
+	}
+
+	private void computePaths(Mission plan, PathPlanningAlgorithm as, List<UPPAgentVehicle> agents) {
+		for (Vehicle v : plan.getVehicles()) {
+			int agentID = 0, milestoneID = 1;// 0 is for the starting position
+			List<Node> milestones = new ArrayList<Node>();
+			UPPAgentVehicle agent = new UPPAgentVehicle(agentID++);
+			agent.vehicle = v;
+			milestones.add(agent.getStartNode());
+			for (Task task : plan.tasks) {
+				// one vehicle assumed begin
+				task.missionId = (int) task.altitude;
+				//
+				if (task.assignedVehicleId == 0) {
+					task.assignedVehicleId = v.id;
+				}
+				// one vehicle assumed over
+				if (agent.canDoTask(task)) {
+					Node milestone = new Node(milestoneID++, task);
+					milestones.add(milestone);
+					agent.addTask(milestone);
+				}
+			}
+			List<Path> paths = new ArrayList<Path>();
+			for (Node n1 : milestones) {
+				for (Node n2 : milestones) {
+					if (!n1.equals(n2)) {
+						Path path = new Path(n1, n2);
+						if (!agent.isPathExist(path)) {
+							path = as.calculate(n1, n2, v.maxSpeed);
+						}
+
+						if (!paths.contains(path)) {
+							paths.add(path);
+						}
+					}
+				}
+			}
+			agent.paths = paths;
+			agents.add(agent);
 		}
 	}
 

@@ -24,7 +24,8 @@ public class Dali implements PathPlanningAlgorithm {
 	List<Obstacle> permanentObstacles;
 	
 	public double vehicleSpeed = 1;
-	double startTime =0;
+	//double startTime =0;
+	boolean checkAnomalies = false;
 	
 	public Dali(NavigationArea nArea) {
 		generateGraph(nArea);
@@ -178,14 +179,22 @@ public class Dali implements PathPlanningAlgorithm {
 	//	newAnomalies.forEach(e -> anomalies.put(e.edgeID, e));
 	//}
 	
-	public void setStartTime(double time) {
-		this.startTime = time;
+	//public void setStartTime(double time) {
+	//	this.startTime = time;
+	//}
+	
+	public void setCheckAnomalies(boolean val) {
+		this.checkAnomalies = val;
 	}
 
 ///////////////////////////////////////////	
 	
 	@Override
 	public Path calculate(Node start, Node destination, double vehicleSpeed) {
+		return calculate(start, destination, vehicleSpeed, 0);
+	}
+	
+	public Path calculate(Node start, Node destination, double vehicleSpeed, double startTime) {
 		DaliNode target = findNearestNode(destination.lat, destination.lon);
 		DaliNode source = findNearestNode(start.lat, start.lon);
 		HashMap<DaliNode, Double> processing = new HashMap<DaliNode, Double>();
@@ -198,7 +207,7 @@ public class Dali implements PathPlanningAlgorithm {
 			processing.remove(current);
 			for (DaliEdge e : current.edges) {	
 				if (distances.containsKey(e.dest) || e.heat == 1) continue;
-				if (blockedByAnomalies(e.dest.id, currentDistance / vehicleSpeed - startTime)) continue;
+				if (checkAnomalies && blockedByAnomalies(e.dest.id, currentDistance / vehicleSpeed - startTime)) continue;
 				double edist = currentDistance + e.length * 
 						(e.dest.isDesirable ? 1/e.dest.intensity : e.dest.intensity)  / (1-e.heat) / (e.dest.regionIntensity);
 				if (!processing.containsKey(e.dest) || processing.get(e.dest) > edist) {

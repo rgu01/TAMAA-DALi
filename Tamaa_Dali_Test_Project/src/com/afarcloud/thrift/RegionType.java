@@ -16,7 +16,8 @@ public enum RegionType implements org.apache.thrift.TEnum {
   NAVIGATION(1),
   FORBIDDEN(2),
   PREFERRED(3),
-  LESS_PREFERRED(4);
+  LESS_PREFERRED(4),
+  HEAT_REGION(5);
 
   private final int value;
 
@@ -47,6 +48,8 @@ public enum RegionType implements org.apache.thrift.TEnum {
         return PREFERRED;
       case 4:
         return LESS_PREFERRED;
+      case 5:
+        return HEAT_REGION;
       default:
         return null;
     }

@@ -8,6 +8,8 @@ import java.util.Map.Entry;
 import java.util.stream.Collector;
 import java.util.stream.Collectors;
 
+import com.afarcloud.thrift.RegionType;
+
 import edu.collaboration.pathplanning.NavigationArea;
 import edu.collaboration.pathplanning.Node;
 import edu.collaboration.pathplanning.Obstacle;
@@ -22,6 +24,7 @@ public class Dali implements PathPlanningAlgorithm {
 	
 	List<DaliAnomaly> anomalies = new ArrayList<DaliAnomaly>();
 	List<Obstacle> permanentObstacles;
+	HashMap<Integer, Double> heatNodes = new HashMap<Integer, Double>();
 	
 	public double vehicleSpeed = 1;
 	//double startTime =0;
@@ -29,10 +32,12 @@ public class Dali implements PathPlanningAlgorithm {
 	
 	public Dali(NavigationArea nArea) {
 		generateGraph(nArea);
+		updateHeatMap();
 	}
 	
 	public Dali(NavigationArea nArea, List<DaliRegionConstraint> regionPreferences) {
 		generateGraph(nArea, regionPreferences);
+		updateHeatMap();
 	}
 	
 //	public Dali(NavigationArea nArea, List<DaliConstraint> constraints) {
@@ -104,17 +109,11 @@ public class Dali implements PathPlanningAlgorithm {
 	void generateGraph(NavigationArea nArea) {
 		generateGraph(nArea, null);
 	}
-	
-	void processAnomalies(NavigationArea nArea) {
-		for (Obstacle obs : nArea.obstacles) {
-			if (obs.endTime >0) {
-				anomalies.add(new DaliAnomaly(obs));
-			}
-		}
-	}
-	
+		
 	void generateGraph(NavigationArea nArea, List<DaliRegionConstraint> regionPreferences) {
-		processAnomalies(nArea);
+		//processAnomalies(nArea);
+		anomalies = nArea.obstacles.stream().filter(obs -> (obs.endTime >0)).
+														map(obs -> new DaliAnomaly(obs)).collect(Collectors.toList());
 		permanentObstacles = nArea.obstacles.stream().filter(obs -> (obs.endTime <=0)).collect(Collectors.toList());
 		DaliNode topLeft = new DaliNode(0, nArea.boundry.get(0).lat - NavigationArea.threshold / 2 , 
 											nArea.boundry.get(0).lon + NavigationArea.threshold / 2 );
@@ -139,7 +138,17 @@ public class Dali implements PathPlanningAlgorithm {
 		if (regionPreferences != null) {
 			for(DaliRegionConstraint rc : regionPreferences) {
 				if (Utils.isInside(newNode.lat, newNode.lon, rc.topLeft, rc.bottomRight)) {
-					newNode.regionIntensity = rc.priority;
+					if (rc.regionType == RegionType.HEAT_REGION) {
+						if (heatNodes.containsKey(newNode.id)) {
+							heatNodes.put(newNode.id, Double.max(heatNodes.get(newNode.id), rc.priority));
+						}
+						else {
+							heatNodes.put(newNode.id, rc.priority);
+						}
+					}
+					else { 
+						newNode.regionIntensity = rc.priority;
+					}
 				}
 			}
 		}
@@ -167,9 +176,11 @@ public class Dali implements PathPlanningAlgorithm {
 ///////////////////////////////////////////
 	
 	//Heat in interval [0,1] with 0 - unoccupied and 1 - unpassable
-	public void updateHeatMap(HashMap<Integer, Double> heat) {
-		for (Entry<Integer, Double> entry : heat.entrySet()) {
-			edges.get(entry.getKey()).heat = entry.getValue();
+	public void updateHeatMap() {
+		for (DaliEdge edge : edges.values()) {
+			if (heatNodes.containsKey(edge.dest.id)) {
+				edge.heat = heatNodes.get(edge.dest.id);
+			}
 		}
 	}
 	
@@ -197,6 +208,14 @@ public class Dali implements PathPlanningAlgorithm {
 	public Path calculate(Node start, Node destination, double vehicleSpeed, double startTime) {
 		DaliNode target = findNearestNode(destination.lat, destination.lon);
 		DaliNode source = findNearestNode(start.lat, start.lon);
+		if (target == null) {
+			System.out.println("Target node  not found");
+			return null;
+		}
+		if (source == null) {
+			System.out.println("Source node  not found");
+			return null;
+		}
 		HashMap<DaliNode, Double> processing = new HashMap<DaliNode, Double>();
 		HashMap<DaliNode, Double> distances = new HashMap<DaliNode, Double>();
 		Path p_result = new Path(start, destination);
@@ -207,9 +226,8 @@ public class Dali implements PathPlanningAlgorithm {
 			processing.remove(current);
 			for (DaliEdge e : current.edges) {	
 				if (distances.containsKey(e.dest) || e.heat == 1) continue;
-				if (checkAnomalies && blockedByAnomalies(e.dest.id, currentDistance / vehicleSpeed - startTime)) continue;
-				double edist = currentDistance + e.length * 
-						(e.dest.isDesirable ? 1/e.dest.intensity : e.dest.intensity)  / (1-e.heat) / (e.dest.regionIntensity);
+				if (checkAnomalies && blockedByAnomalies(e.dest.id, currentDistance / vehicleSpeed + startTime)) continue;
+				double edist = currentDistance + e.length  / (1-e.heat) / (e.dest.regionIntensity);
 				if (!processing.containsKey(e.dest) || processing.get(e.dest) > edist) {
 					processing.put(e.dest, edist);
 					e.dest.previous = current;
@@ -218,15 +236,21 @@ public class Dali implements PathPlanningAlgorithm {
 			distances.put(current, currentDistance);
 		}
 		if (distances.containsKey(target)) {
+			double totalLength = 0;
 			List<Node> path = new ArrayList<Node>();
 			DaliNode current = target;
 			path.add(target);
 			while (current.previous != source) {
+				DaliEdge e = current.previous.findOutEdge(current);
+				totalLength += e.length/(1-e.heat); 
 				current = current.previous;
 				path.add(0, current);
-			}	
+			}
+			DaliEdge e = current.previous.findOutEdge(current);
+			totalLength += e.length/(1-e.heat);
 			path.add(0, source);
 			p_result.segments = path;
+			p_result.setLength(totalLength);
 			System.out.println("Done");
 			return p_result;
 		}

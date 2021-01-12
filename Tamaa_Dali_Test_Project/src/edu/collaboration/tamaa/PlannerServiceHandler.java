@@ -118,10 +118,13 @@ public class PlannerServiceHandler implements PlannerService.Iface {
 						nArea.obstacles.add(new Obstacle(obsVertices, (double)forbidden.startTime, (double)forbidden.endTime));
 						break;
 					case PREFERRED:
-						regionPreferences.add(new DaliRegionConstraint(obsVertices, 1.5));
+						regionPreferences.add(new DaliRegionConstraint(obsVertices, forbidden.intensity, RegionType.PREFERRED));
 						break;
 					case LESS_PREFERRED:
-						regionPreferences.add(new DaliRegionConstraint(obsVertices, 0.5));
+						regionPreferences.add(new DaliRegionConstraint(obsVertices, forbidden.intensity, RegionType.LESS_PREFERRED));
+						break;
+					case HEAT_REGION:
+						regionPreferences.add(new DaliRegionConstraint(obsVertices, forbidden.intensity, RegionType.HEAT_REGION));
 						break;
 					default:
 				}
@@ -203,6 +206,7 @@ public class PlannerServiceHandler implements PlannerService.Iface {
 		}
 		Dali dali = (Dali)as;
 		dali.setCheckAnomalies(true);
+		cleanPlan(plan);
 		for (UPPAgentVehicle agent : agents) {
 			for (int i =0; i < passAnomalyPaths.size(); i++) {
 				Path path = passAnomalyPaths.get(i);
@@ -217,7 +221,12 @@ public class PlannerServiceHandler implements PlannerService.Iface {
 		passAnomalyPathsTime.clear();
 		parseXML(plan, as, agents, passAnomalyPaths, passAnomalyPathsTime);
 	}		
-		
+	
+	private void cleanPlan(Mission plan) {
+		plan.commands.clear();
+		plan.tasks.removeIf(x -> x.getTaskTemplate().getTaskType().name() == "TRANSIT");
+	}
+	
 	private void parseXML(Mission plan, PathPlanningAlgorithm as, List<UPPAgentVehicle> agents, 
 		List<Path> passAnomalyPaths, List<Integer> passAnomalyPathsTime) {
 		TaskSchedulePlan taskPlan = TaskScheduleParser.parse();
@@ -253,7 +262,7 @@ public class PlannerServiceHandler implements PlannerService.Iface {
 						segments = this.finishMove(movement, agent, targetNode, (int) action.time);
 						if (as instanceof Dali) {
 							Path currentPath = agent.findPath(lastPosition.getPosition(), targetNode.getPosition());
-							if (((Dali)as).pathEntersAnomaly(currentPath, startTime, agent.vehicle.maxSpeed)){
+							if (((Dali)as).pathEntersAnomaly(currentPath, lastPostionTime, agent.vehicle.maxSpeed)){
 								passAnomalyPaths.add(currentPath);
 								passAnomalyPathsTime.add(lastPostionTime);
 							}
@@ -332,7 +341,7 @@ public class PlannerServiceHandler implements PlannerService.Iface {
 							path = as.calculate(n1, n2, v.maxSpeed);
 						}
 
-						if (!paths.contains(path)) {
+						if (path != null && !paths.contains(path)) {
 							paths.add(path);
 						}
 					}

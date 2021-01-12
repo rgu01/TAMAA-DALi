@@ -33,4 +33,8 @@ public class DaliNode extends Node {
 	public double distanceToPoint(double x, double y) {
 		return Math.sqrt((this.lat - x)*(this.lat - x) + (this.lon - y)*(this.lon - y));
 	}
+	
+	public DaliEdge findOutEdge(Node dest) {
+		return this.edges.stream().filter(x -> x.dest == dest).findFirst().orElse(null);
+	}
 }

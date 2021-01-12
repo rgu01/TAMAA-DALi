@@ -14,6 +14,7 @@ public class Path {
 	public Node start;
 	public Node end;
 	public List<Node> segments;
+	private double length = -1;
 
 	public Path(Node s, Node e) {
 		this.start = s;
@@ -26,8 +27,15 @@ public class Path {
 		this.end = e;
 		this.segments = segs;
 	}
+	
+	public void setLength(double value) {
+		this.length = value;
+	}
 
 	public double length() {
+		if (this.length > -1) {
+			return this.length;
+		}
 		double len = 0.0;
 		Node n1 = null, n2 = null;
 		PathSegment ps = null;

@@ -3,10 +3,11 @@ package edu.collaboration.pathplanning.dali;
 import java.util.HashMap;
 import java.util.Map.Entry;
 
+import com.afarcloud.thrift.RegionType;
+
 import java.util.List;
 
 import edu.collaboration.pathplanning.Node;
-
 
 public class DaliRegionConstraint {
 
@@ -16,21 +17,24 @@ public class DaliRegionConstraint {
 	public static double endTime;
 	double priority;
 	boolean isDesirable;
+	RegionType regionType;
 	
-	public DaliRegionConstraint(List<Node> corners, double priority, double start, double end) {
+	public DaliRegionConstraint(List<Node> corners, double priority, double start, double end, RegionType rt) {
 		selectVertices(corners);
 		this.priority = priority;
 		isDesirable = priority > 1;	
 		this.startTime = start;
 		this.endTime = end;
+		this.regionType = rt;
 	}
 	
-	public DaliRegionConstraint(List<Node> corners, double priority) {
+	public DaliRegionConstraint(List<Node> corners, double priority, RegionType rt) {
 		selectVertices(corners);
 		this.priority = priority;
 		isDesirable = priority > 1;
 		this.startTime = -1;
 		this.endTime = -1;
+		this.regionType = rt;
 	}
 	
 	private void selectVertices(List<Node> corners) {

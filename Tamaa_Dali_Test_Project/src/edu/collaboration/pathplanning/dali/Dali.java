@@ -147,7 +147,11 @@ public class Dali implements PathPlanningAlgorithm {
 						}
 					}
 					else { 
-						newNode.regionIntensity = rc.priority;
+						double localIntencity = 1 + (rc.priority -1)/ newNode.distanceToPoint(rc.center.lat, rc.center.lon);
+						if (newNode.regionIntensity < localIntencity) {
+							newNode.regionIntensity = localIntencity;
+							newNode.isDesirable = rc.regionType == RegionType.PREFERRED;
+						}
 					}
 				}
 			}
@@ -227,7 +231,8 @@ public class Dali implements PathPlanningAlgorithm {
 			for (DaliEdge e : current.edges) {	
 				if (distances.containsKey(e.dest) || e.heat == 1) continue;
 				if (checkAnomalies && blockedByAnomalies(e.dest.id, currentDistance / vehicleSpeed + startTime)) continue;
-				double edist = currentDistance + e.length  / (1-e.heat) / (e.dest.regionIntensity);
+				double edist = currentDistance + (e.dest.isDesirable ? 1/e.dest.regionIntensity : e.dest.regionIntensity) *
+						e.length  / (1-e.heat) ;
 				if (!processing.containsKey(e.dest) || processing.get(e.dest) > edist) {
 					processing.put(e.dest, edist);
 					e.dest.previous = current;

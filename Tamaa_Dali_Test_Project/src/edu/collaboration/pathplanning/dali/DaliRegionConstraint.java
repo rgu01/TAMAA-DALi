@@ -13,6 +13,7 @@ public class DaliRegionConstraint {
 
 	CoordinatesTuple topLeft;
 	CoordinatesTuple bottomRight;
+	CoordinatesTuple center;
 	public static double startTime;
 	public static double endTime;
 	double priority;
@@ -21,19 +22,24 @@ public class DaliRegionConstraint {
 	
 	public DaliRegionConstraint(List<Node> corners, double priority, double start, double end, RegionType rt) {
 		selectVertices(corners);
-		this.priority = priority;
-		isDesirable = priority > 1;	
+		setPriority(priority, rt);
 		this.startTime = start;
 		this.endTime = end;
-		this.regionType = rt;
 	}
 	
 	public DaliRegionConstraint(List<Node> corners, double priority, RegionType rt) {
 		selectVertices(corners);
-		this.priority = priority;
-		isDesirable = priority > 1;
+		setPriority(priority, rt);
 		this.startTime = -1;
 		this.endTime = -1;
+	}
+	
+	private void setPriority(double priority, RegionType rt) {
+		if (priority <1) { /// cancel wrong input
+			priority = 1;
+		}
+		this.priority = priority;
+		isDesirable = priority > 0;
 		this.regionType = rt;
 	}
 	
@@ -59,6 +65,7 @@ public class DaliRegionConstraint {
 		
 		topLeft = new CoordinatesTuple(maxLat, minLon);
 		bottomRight = new CoordinatesTuple(minLat, maxLon);
+		center = new CoordinatesTuple((maxLat + minLat)/2, (maxLon + minLon)/2);
 	}
 
 }

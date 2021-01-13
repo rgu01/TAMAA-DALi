@@ -40,9 +40,9 @@ public class DaliConstraint {
 		}
 		for (Entry<DaliNode, Double> entry : distances.entrySet()) {
 			double effect = (entry.getValue())*intensity/radius;
-			if (effect > entry.getKey().intensity) {
+			if (effect > entry.getKey().regionIntensity) {
 				entry.getKey().isDesirable = isDesirable;
-				entry.getKey().intensity = effect;
+				entry.getKey().regionIntensity = effect;
 			}
 		}
 	}

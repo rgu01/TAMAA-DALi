@@ -10,8 +10,7 @@ public class DaliNode extends Node {
 	List<DaliEdge> edges= new ArrayList<DaliEdge>();
 	
 	boolean isDesirable = true;
-	double intensity =1;
-	double regionIntensity = 1;
+	double regionIntensity = 0;
 	
 	DaliNode previous = null; //for backtracking
 

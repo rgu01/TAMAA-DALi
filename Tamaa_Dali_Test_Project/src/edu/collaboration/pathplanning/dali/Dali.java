@@ -1,10 +1,12 @@
 package edu.collaboration.pathplanning.dali;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map.Entry;
+import java.util.PriorityQueue;
 import java.util.stream.Collector;
 import java.util.stream.Collectors;
 
@@ -102,8 +104,12 @@ public class Dali implements PathPlanningAlgorithm {
 	}
 
 	DaliNode findNearestNode(double x, double y) {
-		return nodes.values().stream().filter(n -> Math.abs(n.lat-x)< NavigationArea.threshold / 2 
-												&& Math.abs(n.lon-y)< NavigationArea.threshold / 2).findAny().orElse(null);
+		DaliNode tl = this.nodes.get(0);
+		double xPos = tl.lat - NavigationArea.threshold *(Math.round((tl.lat -x)/ NavigationArea.threshold));
+		double yPos = tl.lon + NavigationArea.threshold *(Math.round((y- tl.lon)/ NavigationArea.threshold));
+		return findNode(xPos, yPos);
+		//return nodes.values().stream().filter(n -> Math.abs(n.lat-x)< NavigationArea.threshold / 2 
+		//										&& Math.abs(n.lon-y)< NavigationArea.threshold / 2).findAny().orElse(null);
 	}
 	
 	void generateGraph(NavigationArea nArea) {
@@ -209,6 +215,17 @@ public class Dali implements PathPlanningAlgorithm {
 		return calculate(start, destination, vehicleSpeed, 0);
 	}
 	
+	void clearNodes() {
+		for (DaliNode n : this.nodes.values()) {
+			n.currentDistance = Double.POSITIVE_INFINITY;
+		}
+	}
+	
+	private Boolean sameDirection(DaliNode next, DaliNode cur) {
+		DaliNode prev = cur.previous;
+		return (next.lat - cur.lat == cur.lat -prev.lat) && (next.lon - cur.lon == cur.lon -prev.lon);
+	}
+	
 	public Path calculate(Node start, Node destination, double vehicleSpeed, double startTime) {
 		DaliNode target = findNearestNode(destination.lat, destination.lon);
 		DaliNode source = findNearestNode(start.lat, start.lon);
@@ -220,6 +237,36 @@ public class Dali implements PathPlanningAlgorithm {
 			System.out.println("Source node  not found");
 			return null;
 		}
+		PriorityQueue<DaliNode> processing = new PriorityQueue<DaliNode>(new Comparator<DaliNode>() { 
+			@Override
+		    public int compare(DaliNode a, DaliNode b) {
+				return a.currentDistance < b.currentDistance ? -1 : a.currentDistance == b.currentDistance ? 0 : 1;
+			}
+		});
+		HashMap<DaliNode, Double> distances = new HashMap<DaliNode, Double>();
+		Path p_result = new Path(start, destination);
+		source.currentDistance = 0;
+		processing.add(source);
+		while(!processing.isEmpty() || !distances.containsKey(target)) {
+			DaliNode current = processing.remove();
+			double currentDistance = current.currentDistance;
+			for (DaliEdge e : current.edges) {	
+				if (distances.containsKey(e.dest) || e.heat == 1) continue;
+				if (checkAnomalies && blockedByAnomalies(e.dest.id, currentDistance / vehicleSpeed + startTime)) continue;
+				double priorityCoeff = e.dest.isDesirable ? 1/e.dest.regionIntensity : e.dest.regionIntensity;
+				double edist = currentDistance + priorityCoeff * e.length / (1-e.heat) ;
+				if (!processing.contains(e.dest) || e.dest.currentDistance > edist || 
+						(current != source && e.dest.currentDistance == edist && sameDirection(e.dest, current))) {
+					processing.remove(e.dest);
+					e.dest.currentDistance = edist;
+					e.dest.previous = current;
+					processing.add(e.dest);					
+				}			
+			}
+			distances.put(current, currentDistance);
+		}
+		clearNodes();
+		/* old version
 		HashMap<DaliNode, Double> processing = new HashMap<DaliNode, Double>();
 		HashMap<DaliNode, Double> distances = new HashMap<DaliNode, Double>();
 		Path p_result = new Path(start, destination);
@@ -240,6 +287,7 @@ public class Dali implements PathPlanningAlgorithm {
 			}
 			distances.put(current, currentDistance);
 		}
+		*/
 		if (distances.containsKey(target)) {
 			double totalLength = 0;
 			List<Node> path = new ArrayList<Node>();

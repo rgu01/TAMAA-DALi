@@ -9,9 +9,12 @@ import java.net.SocketTimeoutException;
 import java.io.File;
 
 public class TransferFile extends Socket {
+	public boolean timeOut;
+	
     public TransferFile(String ip, int port) throws Exception {
         super(ip, port);
-        this.setSoTimeout(10000);
+        timeOut = false;
+        this.setSoTimeout(60*60*1000);// 1 hour
 
         System.out.println("Cliect[port:" + this.getLocalPort() + "] connect to the Server.");
     }
@@ -79,7 +82,6 @@ public class TransferFile extends Socket {
 		{
 			try 
 			{
-
                 System.out.println("r: Socket close? " + this.isClosed());
 				dis = new DataInputStream(this.getInputStream());
 				File f = new File(filePath);
@@ -96,6 +98,7 @@ public class TransferFile extends Socket {
 					fos.write(inputByte, 0, length);
 					fos.flush();    
 				}
+				this.timeOut = false;
 				System.out.println("Complete receiving result data: " + filePath);
 			} 
 			finally 
@@ -108,6 +111,7 @@ public class TransferFile extends Socket {
 			}
 		} 
 		catch(SocketTimeoutException e){  
+			this.timeOut = true;
             System.out.println("Time out, No response from the server.");  
         } 
 		catch (Exception e) 

@@ -93,7 +93,8 @@ public class UPPAgentGenerator {
     	String iterationString = "int iteration[AgentNum] = {";
     	String channelString = "chan move[AgentNum], initialize;\r\n";
 	    UPPAgentEventMonitor monitor=null;
-	    UPPAgentTaskCoverage tcq = new UPPAgentTaskCoverage(fleet);
+	    //UPPAgentTaskCoverage tcq = new UPPAgentTaskCoverage(fleet);
+	    UPPAgentTaskTimedIteration tcq = new UPPAgentTaskTimedIteration(fleet);
 	    queries.addQuery(tcq);  
 	    agentNum = fleet.agents.size();
 	    

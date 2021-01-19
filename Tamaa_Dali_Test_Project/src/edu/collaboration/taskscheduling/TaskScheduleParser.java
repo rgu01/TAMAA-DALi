@@ -64,12 +64,15 @@ public class TaskScheduleParser
 	
 	public static TaskSchedulePlan parse()
 	{
+		String satisfied;
         File inputXml = new File(planPath);
         SAXReader saxReader = new SAXReader();
         TaskSchedulePlan result = new TaskSchedulePlan();
         try {
             Document document = saxReader.read(inputXml);
             Element traceNode = document.getRootElement(), newNode, agentNode, stateNode, actionNode;
+            satisfied = traceNode.attribute("result").getText();
+            result.satisfied = satisfied.equals("1");
             for (Iterator<Element> itNew = traceNode.elementIterator(); itNew.hasNext(); ) 
             {
             	newNode = (Element) itNew.next();

@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class TaskSchedulePlan {
+	public boolean satisfied;
 	public List<TaskScheduleState> states = new ArrayList<TaskScheduleState>();
 	public List<TaskScheduleAction> actions = new ArrayList<TaskScheduleAction>();
 	

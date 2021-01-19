@@ -13,6 +13,7 @@ import edu.collaboration.pathplanning.Path;
 
 public class UPPAgentVehicle {
 	public int ID;
+	public int missionTimeLimit;
 	public Vehicle vehicle;
 	public List<Path> paths = new ArrayList<Path>();
 	public List<UPPAgentMission> missions = new ArrayList<UPPAgentMission>();

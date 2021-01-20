@@ -28,9 +28,10 @@ public class Dali implements PathPlanningAlgorithm {
 	List<Obstacle> permanentObstacles;
 	HashMap<Integer, Double> heatNodes = new HashMap<Integer, Double>();
 	
-	public double vehicleSpeed = 1;
+	//public double vehicleSpeed = 1;
 	//double startTime =0;
 	boolean checkAnomalies = false;
+	boolean usePreferedAreas = true; 
 	
 	public Dali(NavigationArea nArea) {
 		generateGraph(nArea);
@@ -207,6 +208,10 @@ public class Dali implements PathPlanningAlgorithm {
 	public void setCheckAnomalies(boolean val) {
 		this.checkAnomalies = val;
 	}
+	
+	public void setUsePreferedAreas(boolean val) {
+		this.usePreferedAreas = val;
+	}
 
 ///////////////////////////////////////////	
 	
@@ -253,7 +258,9 @@ public class Dali implements PathPlanningAlgorithm {
 			for (DaliEdge e : current.edges) {	
 				if (distances.containsKey(e.dest) || e.heat == 1) continue;
 				if (checkAnomalies && blockedByAnomalies(e.dest.id, currentDistance / vehicleSpeed + startTime)) continue;
-				double priorityCoeff = e.dest.isDesirable ? 1/e.dest.regionIntensity : e.dest.regionIntensity;
+				double priorityCoeff = 1;
+				if (usePreferedAreas) 
+					priorityCoeff = e.dest.isDesirable ? 1/e.dest.regionIntensity : e.dest.regionIntensity;
 				double edist = currentDistance + priorityCoeff * e.length / (1-e.heat) ;
 				if (!processing.contains(e.dest) || e.dest.currentDistance > edist || 
 						(current != source && e.dest.currentDistance == edist && sameDirection(e.dest, current))) {
@@ -332,5 +339,5 @@ public class Dali implements PathPlanningAlgorithm {
 		}
 		return false;
 	}
-
+	
 }

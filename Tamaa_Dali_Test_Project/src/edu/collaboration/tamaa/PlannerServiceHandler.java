@@ -39,7 +39,10 @@ public class PlannerServiceHandler implements PlannerService.Iface {
 	private int uppaalPort;
 	private NavigationArea nArea = null;
 	private List<UPPAgentVehicle> agents = new ArrayList<UPPAgentVehicle>();
-
+	
+	private int NbRecomputeUnsuccess = 1;
+	private int NbRecomputeTimedAnomalies =5;
+	
 	public PlannerServiceHandler() {
 	}
 
@@ -120,54 +123,50 @@ public class PlannerServiceHandler implements PlannerService.Iface {
 			 * If no server is running, and only path planning is needed, please comment the
 			 * code below
 			 */
-			boolean success = callUppaal();
-			if (!success) {
-				String show = "Time out: server does not respond!";
-				JOptionPane.showMessageDialog(null, show, "Error: Time Out", JOptionPane.PLAIN_MESSAGE);
-			} else {
-				// parse the result xml
-				List<Path> passAnomalyPaths = new ArrayList<Path>();
-				List<Integer> passAnomalyPathsTime = new ArrayList<Integer>();
-				success = parseXML(plan, as, passAnomalyPaths, passAnomalyPathsTime);
-				if (!success) {
-					String show = "No mission plan is found!";
-					JOptionPane.showMessageDialog(null, show, "Warning: Dissatisfied", JOptionPane.PLAIN_MESSAGE);
-				}
-				else
-				{
-					while (success && passAnomalyPaths.size() != 0) {
-						success = recomputePlan(plan, as, passAnomalyPaths, passAnomalyPathsTime);
-					}
+			List<Path> passAnomalyPaths = new ArrayList<Path>();
+			List<Integer> passAnomalyPathsTime = new ArrayList<Integer>();
+			boolean success = generatePlan(plan, as, passAnomalyPaths, passAnomalyPathsTime);
+			
+			while ((!success && NbRecomputeUnsuccess >0)  || 
+					(passAnomalyPaths.size() != 0 && NbRecomputeTimedAnomalies >0)) {
+				if 	(passAnomalyPaths.size() != 0 && NbRecomputeTimedAnomalies >0) 			
+					success = recomputePlan(plan, as, passAnomalyPaths, passAnomalyPathsTime);
+				else 
+					success = recomputeWithoutPreferedLocations(plan, as, passAnomalyPaths, passAnomalyPathsTime);
+			}
 	
-					String commandsLog = "";
-					Position ppp1 = new Position(), ppp2 = new Position();
-					Node s1, s2;
-					for (int i = 0; i < plan.getCommands().size() - 1; i++) {
-						ppp1.latitude = plan.getCommands().get(i).params.get(4);
-						ppp1.longitude = plan.getCommands().get(i).params.get(5);
-						ppp2.latitude = plan.getCommands().get(i + 1).params.get(4);
-						ppp2.longitude = plan.getCommands().get(i + 1).params.get(5);
-						s1 = new Node(ppp1);
-						s2 = new Node(ppp2);
-						if (i == 58) {
-							i = i + 0;
-						}
-						if (nArea.collide(s1, s2)) {
-							i = i + 0;
-						}
-						commandsLog += plan.getCommands().get(i).endTime + ": " + new Node(ppp1).toString() + "\r\n";
-						// commandsLog += plan.getCommands().get(i+1).endTime + ": " + new
-						// Node(ppp2).toString() + "\r\n";
+			if (success && passAnomalyPaths.size() ==0) {
+				String commandsLog = "";
+				Position ppp1 = new Position(), ppp2 = new Position();
+				Node s1, s2;
+				for (int i = 0; i < plan.getCommands().size() - 1; i++) {
+					ppp1.latitude = plan.getCommands().get(i).params.get(4);
+					ppp1.longitude = plan.getCommands().get(i).params.get(5);
+					ppp2.latitude = plan.getCommands().get(i + 1).params.get(4);
+					ppp2.longitude = plan.getCommands().get(i + 1).params.get(5);
+					s1 = new Node(ppp1);
+					s2 = new Node(ppp2);
+					if (i == 58) {
+						i = i + 0;
 					}
-					System.out.println(commandsLog);
-	
-					client.sendPlan(requestId, plan);
-					// System.out.println("Mission Plan Sent!");
-					String show = "A plan with " + plan.tasks.size() + " tasks, and " + plan.commands.size()
-							+ " commands has been sent!";
-					JOptionPane.showMessageDialog(null, show, "Done", JOptionPane.PLAIN_MESSAGE);
+					if (nArea.collide(s1, s2)) {
+						i = i + 0;
+					}
+					commandsLog += plan.getCommands().get(i).endTime + ": " + new Node(ppp1).toString() + "\r\n";
+					// commandsLog += plan.getCommands().get(i+1).endTime + ": " + new
+					// Node(ppp2).toString() + "\r\n";
 				}
+				System.out.println(commandsLog);
 
+				client.sendPlan(requestId, plan);
+				// System.out.println("Mission Plan Sent!");
+				String show = "A plan with " + plan.tasks.size() + " tasks, and " + plan.commands.size()
+						+ " commands has been sent!";
+				JOptionPane.showMessageDialog(null, show, "Done", JOptionPane.PLAIN_MESSAGE);
+			}
+			else {
+				String show = "No mission plan is found! Recomputation limit is reached";
+				JOptionPane.showMessageDialog(null, show, "Warning: Dissatisfied", JOptionPane.PLAIN_MESSAGE);
 			}
 		} catch (TTransportException e) {
 			System.out.println("final error");
@@ -187,12 +186,31 @@ public class PlannerServiceHandler implements PlannerService.Iface {
 		}
 	}
 
+	private boolean recomputeWithoutPreferedLocations(Mission plan, PathPlanningAlgorithm as, List<Path> passAnomalyPaths,
+			List<Integer> passAnomalyPathsTime) throws Exception {
+		NbRecomputeUnsuccess--;
+		NbRecomputeTimedAnomalies = 5;
+		if (!(as instanceof Dali)) {
+			return false;
+		}
+		Dali dali = (Dali) as;
+		dali.setUsePreferedAreas(false);
+		for (UPPAgentVehicle agent : this.agents) {
+			for (int i = 0; i < agent.paths.size(); i++) {
+				Path path = agent.paths.get(i);
+				Path newPath = dali.calculate(path.start, path.end, agent.vehicle.maxSpeed, 0);
+				agent.paths.set(i, newPath);
+			}
+		}
+		return generatePlan(plan, as, passAnomalyPaths, passAnomalyPathsTime);
+	}
+	
 	private boolean recomputePlan(Mission plan, PathPlanningAlgorithm as, List<Path> passAnomalyPaths, 
 			List<Integer> passAnomalyPathsTime) throws Exception {
-		boolean success = false;
+		NbRecomputeTimedAnomalies--;
 		if (!(as instanceof Dali)) {
 			passAnomalyPaths.clear();
-			return success;
+			return false;
 		}
 		Dali dali = (Dali) as;
 		dali.setCheckAnomalies(true);
@@ -207,10 +225,15 @@ public class PlannerServiceHandler implements PlannerService.Iface {
 				agent.paths.add(newPath);
 			}
 		}
-		success = callUppaal();
+		return generatePlan(plan, as, passAnomalyPaths, passAnomalyPathsTime);
+	}
+
+	private boolean generatePlan(Mission plan, PathPlanningAlgorithm as, List<Path> passAnomalyPaths,
+			List<Integer> passAnomalyPathsTime) throws Exception {
+	    boolean success = callUppaal();
 		if (!success) {
 			String show = "Time out: server does not respond!";
-			JOptionPane.showMessageDialog(null, show, "Error: Time Out", JOptionPane.PLAIN_MESSAGE);
+			//JOptionPane.showMessageDialog(null, show, "Error: Time Out", JOptionPane.PLAIN_MESSAGE);
 		}
 		else
 		{
@@ -219,11 +242,13 @@ public class PlannerServiceHandler implements PlannerService.Iface {
 			success = parseXML(plan, as, passAnomalyPaths, passAnomalyPathsTime);
 			if (!success) {
 				String show = "No mission plan is found!";
-				JOptionPane.showMessageDialog(null, show, "Warning: Dissatisfied", JOptionPane.PLAIN_MESSAGE);
+				//JOptionPane.showMessageDialog(null, show, "Warning: Dissatisfied", JOptionPane.PLAIN_MESSAGE);
 			}
 		}
 		return success;
 	}
+	
+
 
 	private void cleanPlan(Mission plan) {
 		plan.commands.clear();

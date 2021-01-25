@@ -23,6 +23,7 @@ import edu.collaboration.model.structure.UPPAgentVehicle;
 import edu.collaboration.pathplanning.*;
 import edu.collaboration.pathplanning.dali.Dali;
 import edu.collaboration.pathplanning.dali.DaliRegionConstraint;
+import edu.collaboration.pathplanning.dali.DaliStar;
 import edu.collaboration.pathplanning.xstar.*;
 import edu.collaboration.taskscheduling.*;
 
@@ -40,6 +41,13 @@ public class PlannerServiceHandler implements PlannerService.Iface {
 	private NavigationArea nArea = null;
 	private List<UPPAgentVehicle> agents = new ArrayList<UPPAgentVehicle>();
 	
+	public enum Algo {
+		AStar,
+		Dali,
+		DaliStar
+	}
+	public Algo algo = Algo.DaliStar;
+	
 	private int NbRecomputeUnsuccess = 1;
 	private int NbRecomputeTimedAnomalies =5;
 	
@@ -55,7 +63,6 @@ public class PlannerServiceHandler implements PlannerService.Iface {
 
 	@Override
 	public void computePlan(int requestId, Mission plan) throws TException {
-		boolean useDali = true;
 		// boolean pathExist = false;
 		// Communication with MMT
 		TTransport transport = null;
@@ -115,8 +122,18 @@ public class PlannerServiceHandler implements PlannerService.Iface {
 				}
 				obsVertices.clear();
 			}
-
-			as = useDali ? new Dali(nArea, regionPreferences) : new AStar(nArea);
+			
+			switch (this.algo) {
+				case AStar:
+					as = new AStar(nArea);
+					break;
+				case Dali:
+					as = new Dali(nArea, regionPreferences);
+					break;
+				case DaliStar:
+					as = new DaliStar(nArea, regionPreferences);
+					break;
+			}
 			computePaths(plan, as);
 
 			/*****************************************************************
@@ -190,7 +207,7 @@ public class PlannerServiceHandler implements PlannerService.Iface {
 			List<Integer> passAnomalyPathsTime) throws Exception {
 		NbRecomputeUnsuccess--;
 		NbRecomputeTimedAnomalies = 5;
-		if (!(as instanceof Dali)) {
+		if (this.algo == Algo.AStar) {
 			return false;
 		}
 		Dali dali = (Dali) as;
@@ -208,7 +225,7 @@ public class PlannerServiceHandler implements PlannerService.Iface {
 	private boolean recomputePlan(Mission plan, PathPlanningAlgorithm as, List<Path> passAnomalyPaths, 
 			List<Integer> passAnomalyPathsTime) throws Exception {
 		NbRecomputeTimedAnomalies--;
-		if (!(as instanceof Dali)) {
+		if (this.algo == Algo.AStar) {
 			passAnomalyPaths.clear();
 			return false;
 		}

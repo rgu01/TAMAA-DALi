@@ -154,7 +154,8 @@ public class Dali implements PathPlanningAlgorithm {
 						}
 					}
 					else { 
-						double localIntencity = 1 + (rc.priority -1)/ newNode.distanceToPoint(rc.center.lat, rc.center.lon);
+						//double localIntencity = 1 + (rc.priority -1)/ newNode.distanceToPoint(rc.center.lat, rc.center.lon);
+						double localIntencity = rc.priority;
 						if (newNode.regionIntensity < localIntencity) {
 							newNode.regionIntensity = localIntencity;
 							newNode.isDesirable = rc.regionType == RegionType.PREFERRED;
@@ -173,7 +174,7 @@ public class Dali implements PathPlanningAlgorithm {
 		}
 	}
 	
-	private boolean blockedByAnomalies(int node_id, double time) {
+	protected boolean blockedByAnomalies(int node_id, double time) {
 		for (DaliAnomaly anomaly : anomalies) {
 			if (anomaly.isBlocking(node_id , time)) {
 				return true;
@@ -223,10 +224,11 @@ public class Dali implements PathPlanningAlgorithm {
 	void clearNodes() {
 		for (DaliNode n : this.nodes.values()) {
 			n.currentDistance = Double.POSITIVE_INFINITY;
+			n.currentEstimation = Double.POSITIVE_INFINITY;
 		}
 	}
 	
-	private Boolean sameDirection(DaliNode next, DaliNode cur) {
+	protected Boolean sameDirection(DaliNode next, DaliNode cur) {
 		DaliNode prev = cur.previous;
 		return (next.lat - cur.lat == cur.lat -prev.lat) && (next.lon - cur.lon == cur.lon -prev.lon);
 	}

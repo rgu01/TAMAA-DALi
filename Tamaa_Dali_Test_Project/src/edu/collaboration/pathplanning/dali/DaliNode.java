@@ -12,6 +12,7 @@ public class DaliNode extends Node {
 	boolean isDesirable = true;
 	double regionIntensity = 1;
 	double currentDistance = Double.POSITIVE_INFINITY;
+	double currentEstimation = Double.POSITIVE_INFINITY;
 	
 	DaliNode previous = null; //for backtracking
 

@@ -35,6 +35,10 @@ public class DaliNode extends Node {
 		return Math.sqrt((this.lat - x)*(this.lat - x) + (this.lon - y)*(this.lon - y));
 	}
 	
+	public double distanceManhToOther(Node other) {
+		return Double.max(Math.abs(this.lat - other.lat), Math.abs(this.lon - other.lon));
+	}
+	
 	public DaliEdge findOutEdge(Node dest) {
 		return this.edges.stream().filter(x -> x.dest == dest).findFirst().orElse(null);
 	}

@@ -9,7 +9,12 @@ import org.apache.thrift.transport.TTransport;
 import org.apache.thrift.transport.TTransportException;
 import com.afarcloud.thrift.*;
 
+import java.io.FileWriter;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.nio.file.StandardOpenOption;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 
@@ -40,6 +45,11 @@ public class PlannerServiceHandler implements PlannerService.Iface {
 	private int uppaalPort;
 	private NavigationArea nArea = null;
 	private List<UPPAgentVehicle> agents = new ArrayList<UPPAgentVehicle>();
+	
+	public static String timeLogFile = "./results/time.log";
+	public static String logFileDali = "./results/dali.log";
+	public static String logFileDaliStar = "./results/dalistar.log";
+	private ArrayList<Long> execTimes = new ArrayList<Long>(); 
 	
 	public enum Algo {
 		AStar,
@@ -134,6 +144,10 @@ public class PlannerServiceHandler implements PlannerService.Iface {
 					as = new DaliStar(nArea, regionPreferences);
 					break;
 			}
+			
+			long startTime = System.nanoTime();
+			
+			
 			computePaths(plan, as);
 
 			/*****************************************************************
@@ -153,6 +167,19 @@ public class PlannerServiceHandler implements PlannerService.Iface {
 			}
 	
 			if (success && passAnomalyPaths.size() ==0) {
+				long stopTime = System.nanoTime();
+				
+				try {
+					FileWriter fw = new FileWriter(timeLogFile, true);
+					String log = String.valueOf((stopTime - startTime) / 1000000)+ ' ' + algo.toString() +
+							" total time\n";
+					fw.write(log);
+					//for (Long l : execTimes) {
+						//fw.write(String.valueOf(l / 1000000) + '\n');
+					//}
+					fw.close();
+				}catch (Exception e) {}
+				
 				String commandsLog = "";
 				Position ppp1 = new Position(), ppp2 = new Position();
 				Node s1, s2;
@@ -215,7 +242,9 @@ public class PlannerServiceHandler implements PlannerService.Iface {
 		for (UPPAgentVehicle agent : this.agents) {
 			for (int i = 0; i < agent.paths.size(); i++) {
 				Path path = agent.paths.get(i);
+				long startTime1 = System.nanoTime();
 				Path newPath = dali.calculate(path.start, path.end, agent.vehicle.maxSpeed, 0);
+				execTimes.add(System.nanoTime() - startTime1);
 				agent.paths.set(i, newPath);
 			}
 		}
@@ -238,7 +267,9 @@ public class PlannerServiceHandler implements PlannerService.Iface {
 				int startTime = passAnomalyPathsTime.get(i);
 				agent.missionTimeLimit = nArea.missionTimeLimit;
 				agent.paths.removeIf(oldpath -> oldpath.start == path.start && oldpath.end == path.end);
+				long startTime1 = System.nanoTime();
 				Path newPath = dali.calculate(path.start, path.end, agent.vehicle.maxSpeed, startTime);
+				execTimes.add(System.nanoTime() - startTime1);
 				agent.paths.add(newPath);
 			}
 		}
@@ -378,6 +409,7 @@ public class PlannerServiceHandler implements PlannerService.Iface {
 
 	private void computePaths(Mission plan, PathPlanningAlgorithm as) {
 		int agentID = 0, milestoneID = 1;// 0 is for the starting position
+		HashMap<Node, HashMap<Node,Path>> computedPaths = new HashMap<Node, HashMap<Node,Path>>();
 		for (Vehicle v : plan.getVehicles()) {
 			milestoneID = 1;
 			List<Node> milestones = new ArrayList<Node>();
@@ -405,7 +437,18 @@ public class PlannerServiceHandler implements PlannerService.Iface {
 					if (!n1.equals(n2)) {
 						Path path = new Path(n1, n2);
 						if (!agent.isPathExist(path)) {
-							path = as.calculate(n1, n2, v.maxSpeed);
+							if (computedPaths.containsKey(n1) && computedPaths.get(n1).containsKey(n2)) {
+								path = computedPaths.get(n1).get(n2);
+							}
+							else {
+								long startTime1 = System.nanoTime();
+								path = as.calculate(n1, n2, v.maxSpeed);
+								execTimes.add(System.nanoTime() - startTime1);
+								if (!computedPaths.containsKey(n1)) {
+									computedPaths.put(n1, new HashMap<Node, Path>());
+								}
+								computedPaths.get(n1).put(n2, path);
+							}
 						}
 
 						if (path != null && !paths.contains(path)) {

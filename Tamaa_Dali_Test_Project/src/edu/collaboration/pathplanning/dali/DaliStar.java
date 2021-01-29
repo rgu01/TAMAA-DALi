@@ -1,5 +1,6 @@
 package edu.collaboration.pathplanning.dali;
 
+import java.io.FileWriter;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -17,6 +18,7 @@ import edu.collaboration.pathplanning.Node;
 import edu.collaboration.pathplanning.Obstacle;
 import edu.collaboration.pathplanning.Path;
 import edu.collaboration.pathplanning.PathPlanningAlgorithm;
+import edu.collaboration.tamaa.PlannerServiceHandler;
 
 public class DaliStar extends Dali{
 
@@ -53,7 +55,7 @@ public class DaliStar extends Dali{
 		Path p_result = new Path(start, destination);
 		source.currentDistance = 0;
 		processing.add(source);
-		while(!processing.isEmpty() || !distances.containsKey(target)) {
+		while(!processing.isEmpty() && !distances.containsKey(target)) {
 			DaliNode current = processing.remove();
 			double currentDistance = current.currentDistance;
 			for (DaliEdge e : current.edges) {	
@@ -92,6 +94,13 @@ public class DaliStar extends Dali{
 			p_result.segments = path;
 			p_result.setLength(totalLength);
 			System.out.println("Done");
+			try {
+				FileWriter fw = new FileWriter(PlannerServiceHandler.logFileDaliStar, true);
+				String log = String.valueOf(distances.size())+ "\n";
+				fw.write(log);
+				fw.close();
+			}catch (Exception ex) {}
+			
 			return p_result;
 		}
 		else

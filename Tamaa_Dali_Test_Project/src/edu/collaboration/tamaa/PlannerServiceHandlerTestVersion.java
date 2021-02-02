@@ -26,6 +26,7 @@ import edu.collaboration.communication.TransferFile;
 import edu.collaboration.model.structure.UPPAgentGenerator;
 import edu.collaboration.model.structure.UPPAgentVehicle;
 import edu.collaboration.pathplanning.*;
+import edu.collaboration.pathplanning.dali.AStar2;
 import edu.collaboration.pathplanning.dali.Dali;
 import edu.collaboration.pathplanning.dali.DaliRegionConstraint;
 import edu.collaboration.pathplanning.dali.DaliStar;
@@ -46,7 +47,7 @@ public class PlannerServiceHandlerTestVersion implements PlannerService.Iface {
 	private NavigationArea nArea = null;
 	private List<UPPAgentVehicle> agents = new ArrayList<UPPAgentVehicle>();
 	
-	public static String timeLogFile = "./results/time.log";
+	public static String timeLogFile = "./results/testtime.log";
 	public static String logFileDali = "./results/dali.log";
 	public static String logFileDaliStar = "./results/dalistar.log";
 	private ArrayList<Long> execTimes = new ArrayList<Long>(); 
@@ -54,7 +55,8 @@ public class PlannerServiceHandlerTestVersion implements PlannerService.Iface {
 	public enum Algo {
 		AStar,
 		Dali,
-		DaliStar
+		DaliStar,
+		AStar2
 	}
 	public Algo algo = Algo.DaliStar;
 	
@@ -87,7 +89,7 @@ public class PlannerServiceHandlerTestVersion implements PlannerService.Iface {
 			client = new MmtService.Client(protocol);
 			System.out.println("msg from MMT: " + client.ping());
 			
-			double[] steps = {10,9,8,7,6,5,4,3,2,1,0.5}; 
+			double[] steps = {10,9,8,7,6,5,4,3,2}; 
 			for (double i : steps) {
 				algo = Algo.AStar;
 				resetVars();
@@ -97,6 +99,9 @@ public class PlannerServiceHandlerTestVersion implements PlannerService.Iface {
 				runTest(requestId, plan.deepCopy(), client, sphericalMercator, i);	
 				resetVars();
 				algo = Algo.DaliStar;
+				runTest(requestId, plan.deepCopy(), client, sphericalMercator, i);	
+				resetVars();
+				algo = Algo.AStar2;
 				runTest(requestId, plan.deepCopy(), client, sphericalMercator, i);	
 			}
 			
@@ -133,6 +138,8 @@ public class PlannerServiceHandlerTestVersion implements PlannerService.Iface {
 				bot_right_lat = 0, bot_left_lon = 0, bot_left_lat = 0;
 		nArea = new NavigationArea(plan);
 		
+		
+		int NTasks = plan.getTasksSize();
 		/*
 		 * nArea.boundry.add(top_left); nArea.boundry.add(bot_left);
 		 * nArea.boundry.add(bot_right); nArea.boundry.add(top_right);
@@ -187,6 +194,9 @@ public class PlannerServiceHandlerTestVersion implements PlannerService.Iface {
 			case DaliStar:
 				as = new DaliStar(nArea, regionPreferences);
 				break;
+			case AStar2:
+				as = new AStar2(nArea);
+				break;
 		}
 		
 		long startTime = System.nanoTime();
@@ -215,7 +225,8 @@ public class PlannerServiceHandlerTestVersion implements PlannerService.Iface {
 			try {
 				FileWriter fw = new FileWriter(timeLogFile, true);
 				String log = String.valueOf((stopTime - startTime) / 1000000)+ ' ' + algo.toString() +
-						" Threshold " + String.valueOf(step) + "\n";
+						" Threshold " + String.valueOf(step) + " Tasks " + String.valueOf(NTasks) + 
+						" Forbidden " + String.valueOf(plan.getForbiddenArea().size()) +  "\n";
 				fw.write(log);
 				//for (Long l : execTimes) {
 					//fw.write(String.valueOf(l / 1000000) + '\n');
@@ -233,7 +244,7 @@ public class PlannerServiceHandlerTestVersion implements PlannerService.Iface {
 			List<Integer> passAnomalyPathsTime) throws Exception {
 		NbRecomputeUnsuccess--;
 		NbRecomputeTimedAnomalies = 5;
-		if (this.algo == Algo.AStar) {
+		if (this.algo == Algo.AStar || this.algo == Algo.AStar2) {
 			return false;
 		}
 		Dali dali = (Dali) as;
@@ -253,7 +264,7 @@ public class PlannerServiceHandlerTestVersion implements PlannerService.Iface {
 	private boolean recomputePlan(Mission plan, PathPlanningAlgorithm as, List<Path> passAnomalyPaths, 
 			List<Integer> passAnomalyPathsTime) throws Exception {
 		NbRecomputeTimedAnomalies--;
-		if (this.algo == Algo.AStar) {
+		if (this.algo == Algo.AStar || this.algo == Algo.AStar2) {
 			passAnomalyPaths.clear();
 			return false;
 		}

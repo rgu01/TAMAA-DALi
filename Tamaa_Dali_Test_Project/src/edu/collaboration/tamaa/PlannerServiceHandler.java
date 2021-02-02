@@ -26,10 +26,12 @@ import edu.collaboration.communication.TransferFile;
 import edu.collaboration.model.structure.UPPAgentGenerator;
 import edu.collaboration.model.structure.UPPAgentVehicle;
 import edu.collaboration.pathplanning.*;
+import edu.collaboration.pathplanning.dali.AStar2;
 import edu.collaboration.pathplanning.dali.Dali;
 import edu.collaboration.pathplanning.dali.DaliRegionConstraint;
 import edu.collaboration.pathplanning.dali.DaliStar;
 import edu.collaboration.pathplanning.xstar.*;
+import edu.collaboration.tamaa.PlannerServiceHandlerTestVersion.Algo;
 import edu.collaboration.taskscheduling.*;
 
 public class PlannerServiceHandler implements PlannerService.Iface {
@@ -54,7 +56,8 @@ public class PlannerServiceHandler implements PlannerService.Iface {
 	public enum Algo {
 		AStar,
 		Dali,
-		DaliStar
+		DaliStar,
+		AStar2
 	}
 	public Algo algo = Algo.DaliStar;
 	
@@ -91,6 +94,7 @@ public class PlannerServiceHandler implements PlannerService.Iface {
 			System.out.println("msg from MMT: " + client.ping());
 			nArea = new NavigationArea(plan);
 			
+			int NTasks = plan.getTasksSize();
 			/*
 			 * nArea.boundry.add(top_left); nArea.boundry.add(bot_left);
 			 * nArea.boundry.add(bot_right); nArea.boundry.add(top_right);
@@ -143,6 +147,9 @@ public class PlannerServiceHandler implements PlannerService.Iface {
 				case DaliStar:
 					as = new DaliStar(nArea, regionPreferences);
 					break;
+				case AStar2:
+					as = new AStar2(nArea);
+					break;
 			}
 			
 			long startTime = System.nanoTime();
@@ -172,7 +179,8 @@ public class PlannerServiceHandler implements PlannerService.Iface {
 				try {
 					FileWriter fw = new FileWriter(timeLogFile, true);
 					String log = String.valueOf((stopTime - startTime) / 1000000)+ ' ' + algo.toString() +
-							" total time\n";
+							" Threshold " + String.valueOf(NavigationArea.threshold) + " Tasks " + String.valueOf(NTasks) + 
+							" Forbidden " + String.valueOf(plan.getForbiddenArea().size()) +  "\n";
 					fw.write(log);
 					//for (Long l : execTimes) {
 						//fw.write(String.valueOf(l / 1000000) + '\n');
@@ -234,7 +242,7 @@ public class PlannerServiceHandler implements PlannerService.Iface {
 			List<Integer> passAnomalyPathsTime) throws Exception {
 		NbRecomputeUnsuccess--;
 		NbRecomputeTimedAnomalies = 5;
-		if (this.algo == Algo.AStar) {
+		if (this.algo == Algo.AStar || this.algo == Algo.AStar2) {
 			return false;
 		}
 		Dali dali = (Dali) as;
@@ -254,7 +262,7 @@ public class PlannerServiceHandler implements PlannerService.Iface {
 	private boolean recomputePlan(Mission plan, PathPlanningAlgorithm as, List<Path> passAnomalyPaths, 
 			List<Integer> passAnomalyPathsTime) throws Exception {
 		NbRecomputeTimedAnomalies--;
-		if (this.algo == Algo.AStar) {
+		if (this.algo == Algo.AStar || this.algo == Algo.AStar2) {
 			passAnomalyPaths.clear();
 			return false;
 		}

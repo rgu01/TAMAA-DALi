@@ -61,7 +61,7 @@ public class AStar2 extends Dali{
 						(current != source && e.dest.currentDistance == edist && sameDirection(e.dest, current))) {
 					processing.remove(e.dest);
 					e.dest.currentDistance = edist;
-					e.dest.currentEstimation = e.dest.currentDistance + e.dest.distanceManhToOther(target);
+					e.dest.currentEstimation = e.dest.currentDistance + e.dest.distanceToOther(target);
 					e.dest.previous = current;
 					processing.add(e.dest);					
 				}			

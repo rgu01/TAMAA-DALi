@@ -61,19 +61,12 @@ public class Dali implements PathPlanningAlgorithm {
 	int eid;
 	List<DaliNode> processing = new ArrayList<DaliNode>();
 	
-	//TODO move to Navigation area 
-	//TODO assume square area
-	//TODO assume order of corners: tl, bl, br, tr
 	boolean isInNavigationArea(NavigationArea nArea, CoordinatesTuple coordinates) {
-		Node topLeft = nArea.boundry.get(0);
-		Node botRight = nArea.boundry.get(2);
-		if (!Utils.isInside(coordinates.lat, coordinates.lon, topLeft, botRight)) {
+		if (!Utils.isInsidePolygon(coordinates.lat, coordinates.lon, nArea.boundry)) {
 			return false;
 		}
 		for (Obstacle obs : permanentObstacles) {
-			Node obsTL =  obs.vertices.get(0);
-			Node obsBR = obs.vertices.get(2);
-			if (Utils.isInside(coordinates.lat, coordinates.lon, obsTL, obsBR)) {
+			if (Utils.isInsidePolygon(coordinates.lat, coordinates.lon, obs.vertices)) {
 				return false;
 			}
 		}
@@ -146,7 +139,7 @@ public class Dali implements PathPlanningAlgorithm {
 	private void processPriorityRegion(List<DaliRegionConstraint> regionPreferences, DaliNode newNode) {
 		if (regionPreferences != null) {
 			for(DaliRegionConstraint rc : regionPreferences) {
-				if (Utils.isInside(newNode.lat, newNode.lon, rc.topLeft, rc.bottomRight)) {
+				if (Utils.isInsidePolygon(newNode.lat, newNode.lon, rc.corners)) {
 					if (rc.regionType == RegionType.HEAT_REGION) {
 						if (heatNodes.containsKey(newNode.id)) {
 							heatNodes.put(newNode.id, Double.max(heatNodes.get(newNode.id), rc.priority));

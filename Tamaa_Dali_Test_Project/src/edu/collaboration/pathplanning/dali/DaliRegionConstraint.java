@@ -19,12 +19,14 @@ public class DaliRegionConstraint {
 	double priority;
 	boolean isDesirable;
 	RegionType regionType;
+	List<Node> corners;
 	
 	public DaliRegionConstraint(List<Node> corners, double priority, double start, double end, RegionType rt) {
+		this.corners = corners;
 		selectVertices(corners);
 		setPriority(priority, rt);
 		this.startTime = start;
-		this.endTime = end;
+		this.endTime = end;		
 	}
 	
 	public DaliRegionConstraint(List<Node> corners, double priority, RegionType rt) {

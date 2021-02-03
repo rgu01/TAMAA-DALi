@@ -26,7 +26,7 @@ public class Obstacle {
 	{
 		for(int i = 0; i < vertices.size(); i++)
 		{
-			this.vertices.add(vertices.get(0));
+			this.vertices.add(vertices.get(i));
 		}
 		/*Node temp = null;
 		double maxLat = vertices.get(0).lat, minLat = vertices.get(0).lat, 

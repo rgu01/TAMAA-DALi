@@ -9,8 +9,8 @@ import com.afarcloud.thrift.Task;
 import MercatoerProjection.SphericalMercator;
 
 public class Node {
-	public double lat;
 	public double lon;
+	public double lat;
 	public Node parent;
 	public Task task;
 	public int id;
@@ -102,7 +102,7 @@ public class Node {
 	
 	public String toString()
 	{
-		return "Node " + this.id + " :(" + this.lat + ", " + this.lon + ")";
+		return "Node " + this.id + " :(" + this.lon + ", " + this.lat + ")";
 	}
 	
 	public boolean near(Node ns)

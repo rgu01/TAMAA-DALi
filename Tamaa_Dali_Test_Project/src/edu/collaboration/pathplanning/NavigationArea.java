@@ -7,6 +7,7 @@ import com.afarcloud.thrift.Mission;
 import com.afarcloud.thrift.Vehicle;
 
 import MercatoerProjection.SphericalMercator;
+import edu.collaboration.pathplanning.dali.CoordinatesTuple;
 
 public class NavigationArea {
 	public static double threshold;
@@ -104,5 +105,4 @@ public class NavigationArea {
 		}
 		return false;
 	}
-	
 }

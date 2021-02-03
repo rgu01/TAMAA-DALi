@@ -47,23 +47,21 @@ public class PlannerServiceHandler implements PlannerService.Iface {
 	private int uppaalPort;
 	private NavigationArea nArea = null;
 	private List<UPPAgentVehicle> agents = new ArrayList<UPPAgentVehicle>();
-	
+
 	public static String timeLogFile = "./results/time.log";
 	public static String logFileDali = "./results/dali.log";
 	public static String logFileDaliStar = "./results/dalistar.log";
-	private ArrayList<Long> execTimes = new ArrayList<Long>(); 
-	
+	private ArrayList<Long> execTimes = new ArrayList<Long>();
+
 	public enum Algo {
-		AStar,
-		Dali,
-		DaliStar,
-		AStar2
+		AStar, Dali, DaliStar, AStar2
 	}
+
 	public Algo algo = Algo.DaliStar;
-	
+
 	private int NbRecomputeUnsuccess = 1;
-	private int NbRecomputeTimedAnomalies =5;
-	
+	private int NbRecomputeTimedAnomalies = 5;
+
 	public PlannerServiceHandler() {
 	}
 
@@ -82,8 +80,10 @@ public class PlannerServiceHandler implements PlannerService.Iface {
 		TProtocol protocol = null;
 		MmtService.Client client = null;
 		PathPlanningAlgorithm as = null;
-		double top_left_lon = 0, top_left_lat = 0, top_right_lon = 0, top_right_lat = 0, bot_right_lon = 0,
-				bot_right_lat = 0, bot_left_lon = 0, bot_left_lat = 0;
+		// double top_left_lon = 0, top_left_lat = 0, top_right_lon = 0, top_right_lat =
+		// 0, bot_right_lon = 0,
+		// bot_right_lat = 0, bot_left_lon = 0, bot_left_lat = 0;
+		double lat[] = { 0.0, 0.0, 0.0, 0.0 }, lon[] = { 0.0, 0.0, 0.0, 0.0 };
 		SphericalMercator sphericalMercator = new SphericalMercator();
 
 		try {
@@ -93,7 +93,7 @@ public class PlannerServiceHandler implements PlannerService.Iface {
 			client = new MmtService.Client(protocol);
 			System.out.println("msg from MMT: " + client.ping());
 			nArea = new NavigationArea(plan);
-			
+
 			int NTasks = plan.getTasksSize();
 			/*
 			 * nArea.boundry.add(top_left); nArea.boundry.add(bot_left);
@@ -103,18 +103,18 @@ public class PlannerServiceHandler implements PlannerService.Iface {
 			List<Node> obsVertices = new ArrayList<Node>();
 			List<DaliRegionConstraint> regionPreferences = new ArrayList<DaliRegionConstraint>();
 			for (Region forbidden : plan.getForbiddenArea()) {
-				top_left_lon = sphericalMercator.xAxisProjection(forbidden.getArea().get(3).longitude);
-				top_left_lat = sphericalMercator.yAxisProjection(forbidden.getArea().get(3).latitude);
-				top_right_lon = sphericalMercator.xAxisProjection(forbidden.getArea().get(2).longitude);
-				top_right_lat = sphericalMercator.yAxisProjection(forbidden.getArea().get(2).latitude);
-				bot_right_lon = sphericalMercator.xAxisProjection(forbidden.getArea().get(1).longitude);
-				bot_right_lat = sphericalMercator.yAxisProjection(forbidden.getArea().get(1).latitude);
-				bot_left_lon = sphericalMercator.xAxisProjection(forbidden.getArea().get(0).longitude);
-				bot_left_lat = sphericalMercator.yAxisProjection(forbidden.getArea().get(0).latitude);
-				obsVertices.add(new Node(top_right_lat, top_right_lon));
-				obsVertices.add(new Node(bot_left_lat, bot_left_lon));
-				obsVertices.add(new Node(top_left_lat, top_left_lon));
-				obsVertices.add(new Node(bot_right_lat, bot_right_lon));
+				lon[3] = sphericalMercator.xAxisProjection(forbidden.getArea().get(3).longitude);
+				lat[3] = sphericalMercator.yAxisProjection(forbidden.getArea().get(3).latitude);
+				lon[2] = sphericalMercator.xAxisProjection(forbidden.getArea().get(2).longitude);
+				lat[2] = sphericalMercator.yAxisProjection(forbidden.getArea().get(2).latitude);
+				lon[1] = sphericalMercator.xAxisProjection(forbidden.getArea().get(1).longitude);
+				lat[1] = sphericalMercator.yAxisProjection(forbidden.getArea().get(1).latitude);
+				lon[0] = sphericalMercator.xAxisProjection(forbidden.getArea().get(0).longitude);
+				lat[0] = sphericalMercator.yAxisProjection(forbidden.getArea().get(0).latitude);
+				obsVertices.add(new Node(lat[0], lon[0]));
+				obsVertices.add(new Node(lat[1], lon[1]));
+				obsVertices.add(new Node(lat[2], lon[2]));
+				obsVertices.add(new Node(lat[3], lon[3]));
 				switch (forbidden.regionType) {
 				case FORBIDDEN:
 					nArea.obstacles
@@ -136,25 +136,24 @@ public class PlannerServiceHandler implements PlannerService.Iface {
 				}
 				obsVertices.clear();
 			}
-			
+
 			switch (this.algo) {
-				case AStar:
-					as = new AStar(nArea);
-					break;
-				case Dali:
-					as = new Dali(nArea, regionPreferences);
-					break;
-				case DaliStar:
-					as = new DaliStar(nArea, regionPreferences);
-					break;
-				case AStar2:
-					as = new AStar2(nArea);
-					break;
+			case AStar:
+				as = new AStar(nArea);
+				break;
+			case Dali:
+				as = new Dali(nArea, regionPreferences);
+				break;
+			case DaliStar:
+				as = new DaliStar(nArea, regionPreferences);
+				break;
+			case AStar2:
+				as = new AStar2(nArea);
+				break;
 			}
-			
+
 			long startTime = System.nanoTime();
-			
-			
+
 			computePaths(plan, as);
 
 			/*****************************************************************
@@ -164,30 +163,32 @@ public class PlannerServiceHandler implements PlannerService.Iface {
 			List<Path> passAnomalyPaths = new ArrayList<Path>();
 			List<Integer> passAnomalyPathsTime = new ArrayList<Integer>();
 			boolean success = generatePlan(plan, as, passAnomalyPaths, passAnomalyPathsTime);
-			
-			while ((!success && NbRecomputeUnsuccess >0)  || 
-					(passAnomalyPaths.size() != 0 && NbRecomputeTimedAnomalies >0)) {
-				if 	(passAnomalyPaths.size() != 0 && NbRecomputeTimedAnomalies >0) 			
+
+			while ((!success && NbRecomputeUnsuccess > 0)
+					|| (passAnomalyPaths.size() != 0 && NbRecomputeTimedAnomalies > 0)) {
+				if (passAnomalyPaths.size() != 0 && NbRecomputeTimedAnomalies > 0)
 					success = recomputePlan(plan, as, passAnomalyPaths, passAnomalyPathsTime);
-				else 
+				else
 					success = recomputeWithoutPreferedLocations(plan, as, passAnomalyPaths, passAnomalyPathsTime);
 			}
-	
-			if (success && passAnomalyPaths.size() ==0) {
+
+			if (success && passAnomalyPaths.size() == 0) {
 				long stopTime = System.nanoTime();
-				
+
 				try {
 					FileWriter fw = new FileWriter(timeLogFile, true);
-					String log = String.valueOf((stopTime - startTime) / 1000000)+ ' ' + algo.toString() +
-							" Threshold " + String.valueOf(NavigationArea.threshold) + " Tasks " + String.valueOf(NTasks) + 
-							" Forbidden " + String.valueOf(plan.getForbiddenArea().size()) +  "\n";
+					String log = String.valueOf((stopTime - startTime) / 1000000) + ' ' + algo.toString()
+							+ " Threshold " + String.valueOf(NavigationArea.threshold) + " Tasks "
+							+ String.valueOf(NTasks) + " Forbidden " + String.valueOf(plan.getForbiddenArea().size())
+							+ "\n";
 					fw.write(log);
-					//for (Long l : execTimes) {
-						//fw.write(String.valueOf(l / 1000000) + '\n');
-					//}
+					// for (Long l : execTimes) {
+					// fw.write(String.valueOf(l / 1000000) + '\n');
+					// }
 					fw.close();
-				}catch (Exception e) {}
-				
+				} catch (Exception e) {
+				}
+
 				String commandsLog = "";
 				Position ppp1 = new Position(), ppp2 = new Position();
 				Node s1, s2;
@@ -215,8 +216,7 @@ public class PlannerServiceHandler implements PlannerService.Iface {
 				String show = "A plan with " + plan.tasks.size() + " tasks, and " + plan.commands.size()
 						+ " commands has been sent!";
 				JOptionPane.showMessageDialog(null, show, "Done", JOptionPane.PLAIN_MESSAGE);
-			}
-			else {
+			} else {
 				String show = "No mission plan is found! Recomputation limit is reached";
 				JOptionPane.showMessageDialog(null, show, "Warning: Dissatisfied", JOptionPane.PLAIN_MESSAGE);
 			}
@@ -238,8 +238,8 @@ public class PlannerServiceHandler implements PlannerService.Iface {
 		}
 	}
 
-	private boolean recomputeWithoutPreferedLocations(Mission plan, PathPlanningAlgorithm as, List<Path> passAnomalyPaths,
-			List<Integer> passAnomalyPathsTime) throws Exception {
+	private boolean recomputeWithoutPreferedLocations(Mission plan, PathPlanningAlgorithm as,
+			List<Path> passAnomalyPaths, List<Integer> passAnomalyPathsTime) throws Exception {
 		NbRecomputeUnsuccess--;
 		NbRecomputeTimedAnomalies = 5;
 		if (this.algo == Algo.AStar || this.algo == Algo.AStar2) {
@@ -258,8 +258,8 @@ public class PlannerServiceHandler implements PlannerService.Iface {
 		}
 		return generatePlan(plan, as, passAnomalyPaths, passAnomalyPathsTime);
 	}
-	
-	private boolean recomputePlan(Mission plan, PathPlanningAlgorithm as, List<Path> passAnomalyPaths, 
+
+	private boolean recomputePlan(Mission plan, PathPlanningAlgorithm as, List<Path> passAnomalyPaths,
 			List<Integer> passAnomalyPathsTime) throws Exception {
 		NbRecomputeTimedAnomalies--;
 		if (this.algo == Algo.AStar || this.algo == Algo.AStar2) {
@@ -286,32 +286,31 @@ public class PlannerServiceHandler implements PlannerService.Iface {
 
 	private boolean generatePlan(Mission plan, PathPlanningAlgorithm as, List<Path> passAnomalyPaths,
 			List<Integer> passAnomalyPathsTime) throws Exception {
-	    boolean success = callUppaal();
+		boolean success = callUppaal();
 		if (!success) {
 			String show = "Time out: server does not respond!";
-			//JOptionPane.showMessageDialog(null, show, "Error: Time Out", JOptionPane.PLAIN_MESSAGE);
-		}
-		else
-		{
+			// JOptionPane.showMessageDialog(null, show, "Error: Time Out",
+			// JOptionPane.PLAIN_MESSAGE);
+		} else {
 			passAnomalyPaths.clear();
 			passAnomalyPathsTime.clear();
 			success = parseXML(plan, as, passAnomalyPaths, passAnomalyPathsTime);
 			if (!success) {
 				String show = "No mission plan is found!";
-				//JOptionPane.showMessageDialog(null, show, "Warning: Dissatisfied", JOptionPane.PLAIN_MESSAGE);
+				// JOptionPane.showMessageDialog(null, show, "Warning: Dissatisfied",
+				// JOptionPane.PLAIN_MESSAGE);
 			}
 		}
 		return success;
 	}
-	
-
 
 	private void cleanPlan(Mission plan) {
 		plan.commands.clear();
 		plan.tasks.removeIf(x -> x.getTaskTemplate().getTaskType().name() == "TRANSIT");
 	}
 
-	private boolean parseXML(Mission plan, PathPlanningAlgorithm as, List<Path> passAnomalyPaths, List<Integer> passAnomalyPathsTime) {
+	private boolean parseXML(Mission plan, PathPlanningAlgorithm as, List<Path> passAnomalyPaths,
+			List<Integer> passAnomalyPathsTime) {
 		TaskSchedulePlan taskPlan = TaskScheduleParser.parse();
 		TaskScheduleState states;
 		AgentState agentState;
@@ -326,9 +325,8 @@ public class PlannerServiceHandler implements PlannerService.Iface {
 		Node[] waypoint = new Node[this.agents.size()];
 		Node[] lastPosition = new Node[this.agents.size()];
 		Integer[] lastPostionTime = new Integer[this.agents.size()];
-		
-		if(taskPlan.satisfied)
-		{
+
+		if (taskPlan.satisfied) {
 			for (int index = 0; index < taskPlan.length(); index++) {
 				states = taskPlan.states.get(index);
 				action = taskPlan.actions.get(index);
@@ -417,7 +415,7 @@ public class PlannerServiceHandler implements PlannerService.Iface {
 
 	private void computePaths(Mission plan, PathPlanningAlgorithm as) {
 		int agentID = 0, milestoneID = 1;// 0 is for the starting position
-		HashMap<Node, HashMap<Node,Path>> computedPaths = new HashMap<Node, HashMap<Node,Path>>();
+		HashMap<Node, HashMap<Node, Path>> computedPaths = new HashMap<Node, HashMap<Node, Path>>();
 		for (Vehicle v : plan.getVehicles()) {
 			milestoneID = 1;
 			List<Node> milestones = new ArrayList<Node>();
@@ -447,8 +445,7 @@ public class PlannerServiceHandler implements PlannerService.Iface {
 						if (!agent.isPathExist(path)) {
 							if (computedPaths.containsKey(n1) && computedPaths.get(n1).containsKey(n2)) {
 								path = computedPaths.get(n1).get(n2);
-							}
-							else {
+							} else {
 								long startTime1 = System.nanoTime();
 								path = as.calculate(n1, n2, v.maxSpeed);
 								execTimes.add(System.nanoTime() - startTime1);

@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Obstacle {
-	public List<Node> vertices;
+	public List<Node> vertices = new ArrayList<Node>();
 	public double startTime;
 	public double endTime;
 	
@@ -24,7 +24,11 @@ public class Obstacle {
 	
 	private void orderVertices(List<Node> vertices)
 	{
-		Node temp = null;
+		for(int i = 0; i < vertices.size(); i++)
+		{
+			this.vertices.add(vertices.get(0));
+		}
+		/*Node temp = null;
 		double maxLat = vertices.get(0).lat, minLat = vertices.get(0).lat, 
 			   maxLon = vertices.get(0).lon, minLon = vertices.get(0).lon;
 
@@ -49,7 +53,7 @@ public class Obstacle {
 		this.vertices.add(topLeft);// top left
 		this.vertices.add(botLeft);// bottom left
 		this.vertices.add(botRight);// bottom right
-		this.vertices.add(topRight);// top right
+		this.vertices.add(topRight);// top right*/
 	}
 
 	public boolean block(Node start, Node goal)

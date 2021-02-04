@@ -98,7 +98,7 @@ public class UPPAgentVehicle {
 		Node node = null;
 
 		if (posiStr.contains("P")) {
-			id = Integer.parseInt(posiStr.substring(1, 2));
+			id = Integer.parseInt(posiStr.substring(1, posiStr.length()));
 			if (id == 0) {
 				node = this.getStartNode();
 			} else {

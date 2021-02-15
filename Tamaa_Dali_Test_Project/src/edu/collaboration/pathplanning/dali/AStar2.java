@@ -85,7 +85,7 @@ public class AStar2 extends Dali{
 			path.add(0, source);
 			p_result.segments = path;
 			p_result.setLength(totalLength);
-			System.out.println("Done");
+			//System.out.println("Done");
 			return p_result;
 		}
 		else

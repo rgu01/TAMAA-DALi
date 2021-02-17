@@ -1,5 +1,6 @@
 package edu.collaboration.pathplanning.dali;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map.Entry;
 
@@ -11,8 +12,6 @@ import edu.collaboration.pathplanning.Node;
 
 public class DaliRegionConstraint {
 
-	CoordinatesTuple topLeft;
-	CoordinatesTuple bottomRight;
 	CoordinatesTuple center;
 	public static double startTime;
 	public static double endTime;
@@ -22,7 +21,7 @@ public class DaliRegionConstraint {
 	List<Node> corners;
 	
 	public DaliRegionConstraint(List<Node> corners, double priority, double start, double end, RegionType rt) {
-		this.corners = corners;
+		this.corners = new ArrayList<Node>(corners);
 		selectVertices(corners);
 		setPriority(priority, rt);
 		this.startTime = start;
@@ -30,6 +29,7 @@ public class DaliRegionConstraint {
 	}
 	
 	public DaliRegionConstraint(List<Node> corners, double priority, RegionType rt) {
+		this.corners = new ArrayList<Node>(corners);
 		selectVertices(corners);
 		setPriority(priority, rt);
 		this.startTime = -1;
@@ -64,9 +64,6 @@ public class DaliRegionConstraint {
 			}
 		}
 
-		
-		topLeft = new CoordinatesTuple(maxLat, minLon);
-		bottomRight = new CoordinatesTuple(minLat, maxLon);
 		center = new CoordinatesTuple((maxLat + minLat)/2, (maxLon + minLon)/2);
 	}
 

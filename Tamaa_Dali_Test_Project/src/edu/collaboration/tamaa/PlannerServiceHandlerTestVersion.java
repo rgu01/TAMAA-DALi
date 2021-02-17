@@ -46,6 +46,9 @@ public class PlannerServiceHandlerTestVersion implements PlannerService.Iface {
 	private int uppaalPort;
 	private NavigationArea nArea = null;
 	private List<UPPAgentVehicle> agents = new ArrayList<UPPAgentVehicle>();
+	private int uppCalls =0;
+	private int algCalls =0;
+	private long uppTime =0;
 	
 	public static String timeLogFile = "./results/testtime.log";
 	public static String logFileDali = "./results/dali.log";
@@ -90,19 +93,31 @@ public class PlannerServiceHandlerTestVersion implements PlannerService.Iface {
 			System.out.println("msg from MMT: " + client.ping());
 			
 			double[] steps = {10,9,8,7,6,5,4,3,2}; 
+			//double[] steps = {2}; 
+			int[] tasks = {1,2,3,4,5,6,7,8,9,10};
+			//int[] tasks = {7,8,9,10};
+			//int[] obstacles = {1,2,3,4,5,6,7,8,9,10};
+			int[] obstacles = {10};
+			int[] heatmaps = {0,1,2,3,4,5};
 			for (double i : steps) {
-				algo = Algo.AStar;
-				resetVars();
-				runTest(requestId, plan.deepCopy(), client, sphericalMercator, i);	
-				resetVars();
-				algo = Algo.Dali;
-				runTest(requestId, plan.deepCopy(), client, sphericalMercator, i);	
-				resetVars();
-				algo = Algo.DaliStar;
-				runTest(requestId, plan.deepCopy(), client, sphericalMercator, i);	
-				resetVars();
-				algo = Algo.AStar2;
-				runTest(requestId, plan.deepCopy(), client, sphericalMercator, i);	
+				for (int j : tasks) {
+					for (int k : obstacles) {
+						for (int l : heatmaps) {
+							//algo = Algo.AStar;
+							//resetVars();
+							//runTest(requestId, plan.deepCopy(), client, sphericalMercator, i,j,k,l);	
+							resetVars();
+							algo = Algo.Dali;
+							runTest(requestId, plan.deepCopy(), client, sphericalMercator, i,j,k,l);	
+							resetVars();
+							algo = Algo.DaliStar;
+							runTest(requestId, plan.deepCopy(), client, sphericalMercator, i,j,k,l);	
+							//resetVars();
+							//algo = Algo.AStar2;
+							//runTest(requestId, plan.deepCopy(), client, sphericalMercator, i,j,k,l);			
+						}
+					}
+				}
 			}
 			
 		} catch (TTransportException e) {
@@ -128,18 +143,19 @@ public class PlannerServiceHandlerTestVersion implements PlannerService.Iface {
 		InitialTaskID = 21;
 		NbRecomputeTimedAnomalies =5;
 		agents.clear();
+		this.uppCalls =0;
+		this.algCalls =0;
+		this.uppTime = 0;
 	}
 	
 	private void runTest(int requestId, Mission plan, MmtService.Client client,
-			SphericalMercator sphericalMercator, double step) throws Exception, TException {
+			SphericalMercator sphericalMercator, double step, int tasks, int obsts, int heat) throws Exception, TException {
 		
 		PathPlanningAlgorithm as = null;
 		double top_left_lon = 0, top_left_lat = 0, top_right_lon = 0, top_right_lat = 0, bot_right_lon = 0,
 				bot_right_lat = 0, bot_left_lon = 0, bot_left_lat = 0;
 		nArea = new NavigationArea(plan);
 		
-		
-		int NTasks = plan.getTasksSize();
 		/*
 		 * nArea.boundry.add(top_left); nArea.boundry.add(bot_left);
 		 * nArea.boundry.add(bot_right); nArea.boundry.add(top_right);
@@ -162,8 +178,11 @@ public class PlannerServiceHandlerTestVersion implements PlannerService.Iface {
 			obsVertices.add(new Node(bot_right_lat, bot_right_lon));
 			switch (forbidden.regionType) {
 			case FORBIDDEN:
-				nArea.obstacles
+				if (obsts > 0) {
+					nArea.obstacles
 						.add(new Obstacle(obsVertices, (double) forbidden.startTime, (double) forbidden.endTime));
+					obsts--;
+				}
 				break;
 			case PREFERRED:
 				regionPreferences
@@ -174,16 +193,27 @@ public class PlannerServiceHandlerTestVersion implements PlannerService.Iface {
 						.add(new DaliRegionConstraint(obsVertices, forbidden.intensity, RegionType.LESS_PREFERRED));
 				break;
 			case HEAT_REGION:
-				regionPreferences
+				if (heat > 0) {
+					regionPreferences
 						.add(new DaliRegionConstraint(obsVertices, forbidden.intensity, RegionType.HEAT_REGION));
+					heat --;
+				}
 				break;
 			default:
 			}
 			obsVertices.clear();
 		}
 		
-		
+		int[] taskorder = {6,3,4,8,0,1,2,9,7,5}; // exp1 {2,3,9,0,1,8,6,7,4,5};
+		List<Task> tlist = new ArrayList<Task>();
+		for (int i = 0; i<tasks; i++) {
+			tlist.add(plan.getTasks().get(taskorder[i]));
+		}
+		plan.tasks = tlist;
+
 		NavigationArea.threshold = step;
+		
+		long startTimeGen = System.nanoTime();
 		switch (this.algo) {
 			case AStar:
 				as = new AStar(nArea);
@@ -198,6 +228,7 @@ public class PlannerServiceHandlerTestVersion implements PlannerService.Iface {
 				as = new AStar2(nArea);
 				break;
 		}
+		long genTime = System.nanoTime() - startTimeGen;
 		
 		long startTime = System.nanoTime();
 
@@ -225,8 +256,11 @@ public class PlannerServiceHandlerTestVersion implements PlannerService.Iface {
 			try {
 				FileWriter fw = new FileWriter(timeLogFile, true);
 				String log = String.valueOf((stopTime - startTime) / 1000000)+ ' ' + algo.toString() +
-						" Threshold " + String.valueOf(step) + " Tasks " + String.valueOf(NTasks) + 
-						" Forbidden " + String.valueOf(plan.getForbiddenArea().size()) +  "\n";
+						" Threshold " + String.valueOf(step) + " Tasks " + String.valueOf(tasks) + 
+						" Forbidden " + String.valueOf(nArea.obstacles.size()) + " GenTime " +  
+						String.valueOf(genTime / 1000000) + " UppCalls " + String.valueOf(this.uppCalls) + 
+						" AlgCalls " + String.valueOf(this.algCalls) + " UppTime " + 
+						String.valueOf(this.uppTime / 1000000) + " Heat " + String.valueOf(regionPreferences.size())  +"\n";
 				fw.write(log);
 				//for (Long l : execTimes) {
 					//fw.write(String.valueOf(l / 1000000) + '\n');
@@ -253,6 +287,7 @@ public class PlannerServiceHandlerTestVersion implements PlannerService.Iface {
 			for (int i = 0; i < agent.paths.size(); i++) {
 				Path path = agent.paths.get(i);
 				long startTime1 = System.nanoTime();
+				this.algCalls +=1;
 				Path newPath = dali.calculate(path.start, path.end, agent.vehicle.maxSpeed, 0);
 				execTimes.add(System.nanoTime() - startTime1);
 				agent.paths.set(i, newPath);
@@ -278,6 +313,7 @@ public class PlannerServiceHandlerTestVersion implements PlannerService.Iface {
 				agent.missionTimeLimit = nArea.missionTimeLimit;
 				agent.paths.removeIf(oldpath -> oldpath.start == path.start && oldpath.end == path.end);
 				long startTime1 = System.nanoTime();
+				this.algCalls +=1;
 				Path newPath = dali.calculate(path.start, path.end, agent.vehicle.maxSpeed, startTime);
 				execTimes.add(System.nanoTime() - startTime1);
 				agent.paths.add(newPath);
@@ -403,6 +439,8 @@ public class PlannerServiceHandlerTestVersion implements PlannerService.Iface {
 	}
 
 	private boolean callUppaal() throws Exception {
+		long startTime = System.nanoTime();
+		this.uppCalls +=1;
 		boolean result = true;
 		UPPAgentGenerator.run(this.agents); // call UPPAAL in the server side to synthesize a mission plan
 		TransferFile trans = new TransferFile(this.uppaalAddress, this.uppaalPort);
@@ -414,6 +452,7 @@ public class PlannerServiceHandlerTestVersion implements PlannerService.Iface {
 			result = false;
 		}
 		trans.close();
+		this.uppTime += System.nanoTime() - startTime;
 		return result;
 	}
 
@@ -452,6 +491,7 @@ public class PlannerServiceHandlerTestVersion implements PlannerService.Iface {
 							}
 							else {
 								long startTime1 = System.nanoTime();
+								this.algCalls +=1;
 								path = as.calculate(n1, n2, v.maxSpeed);
 								execTimes.add(System.nanoTime() - startTime1);
 								if (!computedPaths.containsKey(n1)) {

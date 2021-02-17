@@ -54,6 +54,15 @@ public class UPPAgentStaticMap extends UppaalAutomaton {
 					map[start.id][end.id] = 0;
 				} else {
 					p = this.agent.findPath(start, end);
+					if(p == null)
+					{
+						System.out.println("No Path is found for agent " + this.agent.ID + " from " + start.toString() + "to: " + end.toString());
+						//return;
+					}
+					else
+					{
+						
+					}
 					map[start.id][end.id] = (int) (p.length() / this.agent.vehicle.maxSpeed);
 				}
 			}

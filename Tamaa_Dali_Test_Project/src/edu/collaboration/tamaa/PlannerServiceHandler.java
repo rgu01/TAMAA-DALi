@@ -213,9 +213,9 @@ public class PlannerServiceHandler implements PlannerService.Iface {
 
 				client.sendPlan(requestId, plan);
 				// System.out.println("Mission Plan Sent!");
-				String show = "A plan with " + plan.tasks.size() + " tasks, and " + plan.commands.size()
-						+ " commands has been sent!";
-				JOptionPane.showMessageDialog(null, show, "Done", JOptionPane.PLAIN_MESSAGE);
+				//String show = "A plan with " + plan.tasks.size() + " tasks, and " + plan.commands.size()
+				//		+ " commands has been sent!";
+				//JOptionPane.showMessageDialog(null, show, "Done", JOptionPane.PLAIN_MESSAGE);
 			} else {
 				String show = "No mission plan is found! Recomputation limit is reached";
 				JOptionPane.showMessageDialog(null, show, "Warning: Dissatisfied", JOptionPane.PLAIN_MESSAGE);

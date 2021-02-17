@@ -83,7 +83,7 @@ public class UPPAgentMission {
 		if (precondition.equals("")) {
 			result = milestoneStr;
 		} else {
-			result = this.precondition + "&amp;&amp;(" + milestoneStr + ")";
+			result = "(" + this.precondition + ")&amp;&amp;(" + milestoneStr + ")";
 		}
 
 		return result;

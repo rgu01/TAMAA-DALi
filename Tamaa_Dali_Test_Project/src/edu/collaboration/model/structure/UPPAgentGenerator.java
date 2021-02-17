@@ -183,7 +183,7 @@ public class UPPAgentGenerator {
 				+ missionNum + ", eventNum: " + eventNum + ".";
 
 		try {
-			int maxTime = agents.get(0).missionTimeLimit > 0 ? agents.get(0).missionTimeLimit*5 : 5000;
+			int maxTime = agents.get(0).missionTimeLimit > 0 ? agents.get(0).missionTimeLimit * 5 : 5000;
 			TAMAAParser parse = new TAMAAParser(agents.size(), maxTime, missionNum, outputXML, outputMCRL);
 			parse.create(parse.parse());
 		} catch (Exception ex) {
@@ -200,15 +200,20 @@ public class UPPAgentGenerator {
 		String constMilestone = "const int MilestoneNum = " + mapScale + ";\r\n";
 		String constNum = "const int TaskNum = " + (taskNum + 1) + ";\r\n" + "const int EventNum = " + eventNum
 				+ ";\r\n";
-		String constMax = "const int MaxIteration = 2;";
+		String constMax = "const int MaxIteration = 1;";
+		String isBusy = "\r\n" + "\r\n" + "bool isBusy(int taskID)\r\n" + "{\r\n" + "    int id = 0;\r\n"
+				+ "    bool busy = false;\r\n" + "\r\n" + "    for(id = 0; id < AgentNum; id++)\r\n" + "    {\r\n"
+				+ "        if(ts[id][taskID])\r\n" + "        {\r\n" + "            busy = true;\r\n"
+				+ "            return busy;\r\n" + "        }\r\n" + "    }\r\n" + "\r\n" + "    return busy;\r\n"
+				+ "}\r\n";
 
-		// String finish = "",start = "",visit = "";
+		String finish = "", start = "", visit = "";
 		String events = "", position = "", declaration = "";
 
 		if (agentNum != 0) {
 			if (taskNum != 0) {
-				// finish = "bool tf[AgentNum][TaskNum]={";
-				// start = "bool ts[AgentNum][TaskNum]={";
+				finish = "bool tf[AgentNum][TaskNum]={";
+				start = "bool ts[AgentNum][TaskNum]={";
 			} else {
 				throw new Exception("Agents number must be larger than 0!");
 			}
@@ -243,17 +248,17 @@ public class UPPAgentGenerator {
 			}
 			for (int j = 0; j < taskNum; j++) {
 				if (j == 0) {
-					// finish += "{true,";
-					// start += "{true,";
+					finish += "{true,";
+					start += "{true,";
 				}
-				// finish += "false";
-				// start += "false";
+				finish += "false";
+				start += "false";
 				if (j != taskNum - 1) {
-					// finish += ",";
-					// start += ",";
+					finish += ",";
+					start += ",";
 				} else {
-					// finish += "}";
-					// start += "}";
+					finish += "}";
+					start += "}";
 				}
 			}
 			for (int k = 0; k < eventNum; k++) {
@@ -270,26 +275,24 @@ public class UPPAgentGenerator {
 			if (i == agentNum - 1) {
 				position += "};\r\n";
 				// visit += "};\r\n";
-				// finish += "};\r\n";
-				// start += "};\r\n";
+				finish += "};\r\n";
+				start += "};\r\n";
 				if (events != "") {
 					events += "};\r\n";
 				}
 			} else {
 				position += ",";
 				// visit += ",";
-				// finish += ",";
-				// start += ",";
+				finish += ",";
+				start += ",";
 				if (events != "") {
 					events += ",";
 				}
 			}
 		}
 
-		declaration = constAgentsNum + constNum + constMilestone + constMax + "\r\n" + "\r\n" + events + position +
-		// visit +
-		// finish + start+
-				"\r\n";
+		declaration = constAgentsNum + constNum + constMilestone + constMax + "\r\n" + "\r\n" + events + position
+				+ finish + start + isBusy + "\r\n";
 
 		return declaration;
 	}

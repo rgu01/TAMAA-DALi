@@ -14,10 +14,10 @@ public class UPPAgentTaskTimedIteration extends UPPAgentUppaalQuery {
 		super();
 		this.agent = null;
 		this.listAgentID = fleet.agents;
-		String sFormula = "E<>  iteration[" + this.listAgentID.get(0).ID + "]>=1";
+		String sFormula = "E<>  iteration[" + this.listAgentID.get(0).ID + "]>=MaxIteration";
 		for(int i = 1; i < this.listAgentID.size(); i++)
 		{
-			sFormula += " &amp;&amp; iteration[" + this.listAgentID.get(i).ID + "]>=1";
+			sFormula += " &amp;&amp; iteration[" + this.listAgentID.get(i).ID + "]>=MaxIteration";
 		}
 		if(this.listAgentID.get(0).missionTimeLimit != 0)
 		{

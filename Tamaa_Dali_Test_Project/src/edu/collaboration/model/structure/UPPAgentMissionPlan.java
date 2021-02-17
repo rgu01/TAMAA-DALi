@@ -104,8 +104,7 @@ public class UPPAgentMissionPlan extends UppaalAutomaton {
 			//	assignmentOfEvents += ",E[" + um.getEventsToTrigger().get(j) + "]=true";
 			//}
 			//label.setValue("t=0,MS["+id+"]=true,MF["+id+"]=false" + assignmentOfEvents);
-			label.setValue("t=0,ts["+um.ID+"]=true,tf["+um.ID+"]=false");
-			//label.setValue("t=0,tf["+id+"]=false");
+			label.setValue("t=0,ts[id]["+um.ID+"]=true,tf[id]["+um.ID+"]=false");
 			transition.addOrReplaceLabel(label);
 			label = new UppaalLabel();
 			label.setKind("guard");
@@ -165,8 +164,7 @@ public class UPPAgentMissionPlan extends UppaalAutomaton {
 			//	assignmentOfEvents += ",E[" + um.getEventsToReset().get(j) + "]=false";
 			//}
 			//label.setValue("t=0,MS["+id+"]=false,MF["+id+"]=true" + assignmentOfEvents);
-			label.setValue("t=0,ts["+um.ID+"]=false,tf["+um.ID+"]=true,\r\nupdateIteration()");
-			//label.setValue("t=0,tf["+id+"]=true,\r\nupdateIteration()");
+			label.setValue("t=0,ts[id]["+um.ID+"]=false,tf[id]["+um.ID+"]=true,\r\nupdateIteration()");
 			label.setCoordinate("x", nx+30+"");
 			label.setCoordinate("y", ny+30+"");
 			transition.addOrReplaceLabel(label);
@@ -198,7 +196,7 @@ public class UPPAgentMissionPlan extends UppaalAutomaton {
 
 		this.setName(SystemName+agent.ID);
 		mParameters = "const AgentScale id";
-		String tfString = "";
+		/*String tfString = "";
 		String tsString = "";
 		for(int i = 0; i < agent.missions.size(); i++)
 		{
@@ -220,28 +218,29 @@ public class UPPAgentMissionPlan extends UppaalAutomaton {
 				tsString += "};\r\n";
 			}
 			
-		}
+		}*/
 		mDeclaration += "clock t;\r\n" + 
-				tfString + tsString + "\r\n" + 
+				//tfString + tsString + 
+				"\r\n" + 
 				"void updateIteration()\r\n" +
 				"{\r\n" +
 				"	int i=0;\r\n" +
 				"	bool finish = true;\r\n" +
 				"	for(i=1;i<=RegularTaskNum[id];i++)\r\n" +
 				"	{\r\n" +
-				"		finish &amp;= tf[i];\r\n" +
+				"		finish &amp;= tf[id][i];\r\n" +
     			"	}\r\n" +
     			"	if(finish)\r\n" +
     			"	{\r\n" +
     			"		for(i=1;i<=RegularTaskNum[id];i++)\r\n" +
     			"		{\r\n" +
-    			"			tf[i]=false;\r\n" +
+    			"			tf[id][i]=false;\r\n" +
         		"		}\r\n" +
     			"		\r\n" +
     			"		iteration[id]+=1;\r\n" +
-    			"		if(iteration[id]==MaxIteration)\r\n" +
+    			"		if(iteration[id]>=MaxIteration)\r\n" +
     			"		{\r\n" +
-    			"			iteration[id]=0;\r\n" +
+    			"			iteration[id]=MaxIteration;\r\n" +
         		"		}\r\n" +
     			"	}\r\n" + 
     			"	else\r\n" +

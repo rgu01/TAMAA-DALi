@@ -184,7 +184,7 @@ public class UPPAgentGenerator {
 
 		try {
 			int maxTime = agents.get(0).missionTimeLimit > 0 ? agents.get(0).missionTimeLimit * 5 : 5000;
-			TAMAAParser parse = new TAMAAParser(agents.size(), maxTime, missionNum, outputXML, outputMCRL);
+			TAMAAParser parse = new TAMAAParser(agents.size(), maxTime, (missionNum + 1), outputXML, outputMCRL);
 			parse.create(parse.parse());
 		} catch (Exception ex) {
 			show = ex.getMessage();

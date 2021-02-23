@@ -62,34 +62,34 @@ bool isReady()&#13;
 </location>
 <location id="id2" x="-150" y="-100">
 <name>F0T1</name>
-<label kind="invariant">t&lt;=117</label>
+<label kind="invariant">t&lt;=163</label>
 </location>
 <location id="id3" x="0" y="-100">
 <name>F0T2</name>
-<label kind="invariant">t&lt;=129</label>
+<label kind="invariant">t&lt;=133</label>
 </location>
 <location id="id4" x="150" y="-100">
 <name>F0T3</name>
-<label kind="invariant">t&lt;=95</label>
+<label kind="invariant">t&lt;=85</label>
 </location>
 <location id="id5" x="300" y="-100">
 <name>F0T4</name>
-<label kind="invariant">t&lt;=87</label>
+<label kind="invariant">t&lt;=66</label>
 </location>
 <location id="id6" x="450" y="-100">
 <name>F0T5</name>
-<label kind="invariant">t&lt;=98</label>
+<label kind="invariant">t&lt;=68</label>
 </location>
 <location id="id7" x="600" y="-100">
 <name>F0T6</name>
-<label kind="invariant">t&lt;=137</label>
+<label kind="invariant">t&lt;=107</label>
 </location>
 <location id="id8" x="-250" y="-50">
 <name>P1</name>
 </location>
 <location id="id9" x="-300" y="50">
 <name>F1T0</name>
-<label kind="invariant">t&lt;=117</label>
+<label kind="invariant">t&lt;=163</label>
 </location>
 <location id="id10" x="0" y="50">
 <name>F1T2</name>
@@ -116,7 +116,7 @@ bool isReady()&#13;
 </location>
 <location id="id16" x="-300" y="200">
 <name>F2T0</name>
-<label kind="invariant">t&lt;=129</label>
+<label kind="invariant">t&lt;=133</label>
 </location>
 <location id="id17" x="-150" y="200">
 <name>F2T1</name>
@@ -143,7 +143,7 @@ bool isReady()&#13;
 </location>
 <location id="id23" x="-300" y="350">
 <name>F3T0</name>
-<label kind="invariant">t&lt;=95</label>
+<label kind="invariant">t&lt;=85</label>
 </location>
 <location id="id24" x="-150" y="350">
 <name>F3T1</name>
@@ -170,7 +170,7 @@ bool isReady()&#13;
 </location>
 <location id="id30" x="-300" y="500">
 <name>F4T0</name>
-<label kind="invariant">t&lt;=87</label>
+<label kind="invariant">t&lt;=66</label>
 </location>
 <location id="id31" x="-150" y="500">
 <name>F4T1</name>
@@ -197,7 +197,7 @@ bool isReady()&#13;
 </location>
 <location id="id37" x="-300" y="650">
 <name>F5T0</name>
-<label kind="invariant">t&lt;=98</label>
+<label kind="invariant">t&lt;=68</label>
 </location>
 <location id="id38" x="-150" y="650">
 <name>F5T1</name>
@@ -224,7 +224,7 @@ bool isReady()&#13;
 </location>
 <location id="id44" x="-300" y="800">
 <name>F6T0</name>
-<label kind="invariant">t&lt;=137</label>
+<label kind="invariant">t&lt;=107</label>
 </location>
 <location id="id45" x="-150" y="800">
 <name>F6T1</name>
@@ -262,7 +262,7 @@ bool isReady()&#13;
 <source ref="id2"/>
 <target ref="id8"/>
 <label kind="assignment">t=0,position[id][1]=true</label>
-<label kind="guard">t&gt;=117</label>
+<label kind="guard">t&gt;=163</label>
 </transition>
 <transition>
 <source ref="id1"/>
@@ -274,7 +274,7 @@ bool isReady()&#13;
 <source ref="id3"/>
 <target ref="id15"/>
 <label kind="assignment">t=0,position[id][2]=true</label>
-<label kind="guard">t&gt;=129</label>
+<label kind="guard">t&gt;=133</label>
 </transition>
 <transition>
 <source ref="id1"/>
@@ -286,7 +286,7 @@ bool isReady()&#13;
 <source ref="id4"/>
 <target ref="id22"/>
 <label kind="assignment">t=0,position[id][3]=true</label>
-<label kind="guard">t&gt;=95</label>
+<label kind="guard">t&gt;=85</label>
 </transition>
 <transition>
 <source ref="id1"/>
@@ -298,7 +298,7 @@ bool isReady()&#13;
 <source ref="id5"/>
 <target ref="id29"/>
 <label kind="assignment">t=0,position[id][4]=true</label>
-<label kind="guard">t&gt;=87</label>
+<label kind="guard">t&gt;=66</label>
 </transition>
 <transition>
 <source ref="id1"/>
@@ -310,7 +310,7 @@ bool isReady()&#13;
 <source ref="id6"/>
 <target ref="id36"/>
 <label kind="assignment">t=0,position[id][5]=true</label>
-<label kind="guard">t&gt;=98</label>
+<label kind="guard">t&gt;=68</label>
 </transition>
 <transition>
 <source ref="id1"/>
@@ -322,7 +322,7 @@ bool isReady()&#13;
 <source ref="id7"/>
 <target ref="id43"/>
 <label kind="assignment">t=0,position[id][6]=true</label>
-<label kind="guard">t&gt;=137</label>
+<label kind="guard">t&gt;=107</label>
 </transition>
 <transition>
 <source ref="id8"/>
@@ -334,7 +334,7 @@ bool isReady()&#13;
 <source ref="id9"/>
 <target ref="id1"/>
 <label kind="assignment">t=0,position[id][0]=true</label>
-<label kind="guard">t&gt;=117</label>
+<label kind="guard">t&gt;=163</label>
 </transition>
 <transition>
 <source ref="id8"/>
@@ -406,7 +406,7 @@ bool isReady()&#13;
 <source ref="id16"/>
 <target ref="id1"/>
 <label kind="assignment">t=0,position[id][0]=true</label>
-<label kind="guard">t&gt;=129</label>
+<label kind="guard">t&gt;=133</label>
 </transition>
 <transition>
 <source ref="id15"/>
@@ -478,7 +478,7 @@ bool isReady()&#13;
 <source ref="id23"/>
 <target ref="id1"/>
 <label kind="assignment">t=0,position[id][0]=true</label>
-<label kind="guard">t&gt;=95</label>
+<label kind="guard">t&gt;=85</label>
 </transition>
 <transition>
 <source ref="id22"/>
@@ -550,7 +550,7 @@ bool isReady()&#13;
 <source ref="id30"/>
 <target ref="id1"/>
 <label kind="assignment">t=0,position[id][0]=true</label>
-<label kind="guard">t&gt;=87</label>
+<label kind="guard">t&gt;=66</label>
 </transition>
 <transition>
 <source ref="id29"/>
@@ -622,7 +622,7 @@ bool isReady()&#13;
 <source ref="id37"/>
 <target ref="id1"/>
 <label kind="assignment">t=0,position[id][0]=true</label>
-<label kind="guard">t&gt;=98</label>
+<label kind="guard">t&gt;=68</label>
 </transition>
 <transition>
 <source ref="id36"/>
@@ -694,7 +694,7 @@ bool isReady()&#13;
 <source ref="id44"/>
 <target ref="id1"/>
 <label kind="assignment">t=0,position[id][0]=true</label>
-<label kind="guard">t&gt;=137</label>
+<label kind="guard">t&gt;=107</label>
 </transition>
 <transition>
 <source ref="id43"/>
@@ -897,34 +897,34 @@ bool isReady()&#13;
 </location>
 <location id="id2" x="-150" y="-100">
 <name>F0T1</name>
-<label kind="invariant">t&lt;=71</label>
+<label kind="invariant">t&lt;=117</label>
 </location>
 <location id="id3" x="0" y="-100">
 <name>F0T2</name>
-<label kind="invariant">t&lt;=117</label>
+<label kind="invariant">t&lt;=129</label>
 </location>
 <location id="id4" x="150" y="-100">
 <name>F0T3</name>
-<label kind="invariant">t&lt;=141</label>
+<label kind="invariant">t&lt;=95</label>
 </location>
 <location id="id5" x="300" y="-100">
 <name>F0T4</name>
-<label kind="invariant">t&lt;=134</label>
+<label kind="invariant">t&lt;=87</label>
 </location>
 <location id="id6" x="450" y="-100">
 <name>F0T5</name>
-<label kind="invariant">t&lt;=145</label>
+<label kind="invariant">t&lt;=98</label>
 </location>
 <location id="id7" x="600" y="-100">
 <name>F0T6</name>
-<label kind="invariant">t&lt;=172</label>
+<label kind="invariant">t&lt;=137</label>
 </location>
 <location id="id8" x="-250" y="-50">
 <name>P1</name>
 </location>
 <location id="id9" x="-300" y="50">
 <name>F1T0</name>
-<label kind="invariant">t&lt;=71</label>
+<label kind="invariant">t&lt;=117</label>
 </location>
 <location id="id10" x="0" y="50">
 <name>F1T2</name>
@@ -951,7 +951,7 @@ bool isReady()&#13;
 </location>
 <location id="id16" x="-300" y="200">
 <name>F2T0</name>
-<label kind="invariant">t&lt;=117</label>
+<label kind="invariant">t&lt;=129</label>
 </location>
 <location id="id17" x="-150" y="200">
 <name>F2T1</name>
@@ -978,7 +978,7 @@ bool isReady()&#13;
 </location>
 <location id="id23" x="-300" y="350">
 <name>F3T0</name>
-<label kind="invariant">t&lt;=141</label>
+<label kind="invariant">t&lt;=95</label>
 </location>
 <location id="id24" x="-150" y="350">
 <name>F3T1</name>
@@ -1005,7 +1005,7 @@ bool isReady()&#13;
 </location>
 <location id="id30" x="-300" y="500">
 <name>F4T0</name>
-<label kind="invariant">t&lt;=134</label>
+<label kind="invariant">t&lt;=87</label>
 </location>
 <location id="id31" x="-150" y="500">
 <name>F4T1</name>
@@ -1032,7 +1032,7 @@ bool isReady()&#13;
 </location>
 <location id="id37" x="-300" y="650">
 <name>F5T0</name>
-<label kind="invariant">t&lt;=145</label>
+<label kind="invariant">t&lt;=98</label>
 </location>
 <location id="id38" x="-150" y="650">
 <name>F5T1</name>
@@ -1059,7 +1059,7 @@ bool isReady()&#13;
 </location>
 <location id="id44" x="-300" y="800">
 <name>F6T0</name>
-<label kind="invariant">t&lt;=172</label>
+<label kind="invariant">t&lt;=137</label>
 </location>
 <location id="id45" x="-150" y="800">
 <name>F6T1</name>
@@ -1097,7 +1097,7 @@ bool isReady()&#13;
 <source ref="id2"/>
 <target ref="id8"/>
 <label kind="assignment">t=0,position[id][1]=true</label>
-<label kind="guard">t&gt;=71</label>
+<label kind="guard">t&gt;=117</label>
 </transition>
 <transition>
 <source ref="id1"/>
@@ -1109,7 +1109,7 @@ bool isReady()&#13;
 <source ref="id3"/>
 <target ref="id15"/>
 <label kind="assignment">t=0,position[id][2]=true</label>
-<label kind="guard">t&gt;=117</label>
+<label kind="guard">t&gt;=129</label>
 </transition>
 <transition>
 <source ref="id1"/>
@@ -1121,7 +1121,7 @@ bool isReady()&#13;
 <source ref="id4"/>
 <target ref="id22"/>
 <label kind="assignment">t=0,position[id][3]=true</label>
-<label kind="guard">t&gt;=141</label>
+<label kind="guard">t&gt;=95</label>
 </transition>
 <transition>
 <source ref="id1"/>
@@ -1133,7 +1133,7 @@ bool isReady()&#13;
 <source ref="id5"/>
 <target ref="id29"/>
 <label kind="assignment">t=0,position[id][4]=true</label>
-<label kind="guard">t&gt;=134</label>
+<label kind="guard">t&gt;=87</label>
 </transition>
 <transition>
 <source ref="id1"/>
@@ -1145,7 +1145,7 @@ bool isReady()&#13;
 <source ref="id6"/>
 <target ref="id36"/>
 <label kind="assignment">t=0,position[id][5]=true</label>
-<label kind="guard">t&gt;=145</label>
+<label kind="guard">t&gt;=98</label>
 </transition>
 <transition>
 <source ref="id1"/>
@@ -1157,7 +1157,7 @@ bool isReady()&#13;
 <source ref="id7"/>
 <target ref="id43"/>
 <label kind="assignment">t=0,position[id][6]=true</label>
-<label kind="guard">t&gt;=172</label>
+<label kind="guard">t&gt;=137</label>
 </transition>
 <transition>
 <source ref="id8"/>
@@ -1169,7 +1169,7 @@ bool isReady()&#13;
 <source ref="id9"/>
 <target ref="id1"/>
 <label kind="assignment">t=0,position[id][0]=true</label>
-<label kind="guard">t&gt;=71</label>
+<label kind="guard">t&gt;=117</label>
 </transition>
 <transition>
 <source ref="id8"/>
@@ -1241,7 +1241,7 @@ bool isReady()&#13;
 <source ref="id16"/>
 <target ref="id1"/>
 <label kind="assignment">t=0,position[id][0]=true</label>
-<label kind="guard">t&gt;=117</label>
+<label kind="guard">t&gt;=129</label>
 </transition>
 <transition>
 <source ref="id15"/>
@@ -1313,7 +1313,7 @@ bool isReady()&#13;
 <source ref="id23"/>
 <target ref="id1"/>
 <label kind="assignment">t=0,position[id][0]=true</label>
-<label kind="guard">t&gt;=141</label>
+<label kind="guard">t&gt;=95</label>
 </transition>
 <transition>
 <source ref="id22"/>
@@ -1385,7 +1385,7 @@ bool isReady()&#13;
 <source ref="id30"/>
 <target ref="id1"/>
 <label kind="assignment">t=0,position[id][0]=true</label>
-<label kind="guard">t&gt;=134</label>
+<label kind="guard">t&gt;=87</label>
 </transition>
 <transition>
 <source ref="id29"/>
@@ -1457,7 +1457,7 @@ bool isReady()&#13;
 <source ref="id37"/>
 <target ref="id1"/>
 <label kind="assignment">t=0,position[id][0]=true</label>
-<label kind="guard">t&gt;=145</label>
+<label kind="guard">t&gt;=98</label>
 </transition>
 <transition>
 <source ref="id36"/>
@@ -1529,7 +1529,7 @@ bool isReady()&#13;
 <source ref="id44"/>
 <target ref="id1"/>
 <label kind="assignment">t=0,position[id][0]=true</label>
-<label kind="guard">t&gt;=172</label>
+<label kind="guard">t&gt;=137</label>
 </transition>
 <transition>
 <source ref="id43"/>
@@ -1725,7 +1725,7 @@ system movement0, taskExe0, movement1, taskExe1;</system>
 <comment>Task Coverage</comment>
 </query>
 <query>
-<formula>strategy opt = minE(globalTime)[&lt;=MAXTIME]{movement0.location, taskExe0.location, movement1.location, taskExe1.location, iteration[0], iteration[1], tf[0][0],tf[0][1],tf[0][2],tf[0][3],tf[1][0],tf[1][1],tf[1][2],tf[1][3]}-&gt;{}:&lt;&gt; ((forall(i:int[0,AgentNum-1]) iteration[i]&gt;=MaxIteration))</formula>
+<formula>strategy opt = minE(globalTime)[&lt;=MAXTIME]{movement0.location, taskExe0.location, movement1.location, taskExe1.location, iteration[0], iteration[1], tf[0][0],tf[0][1],tf[0][2],tf[0][3],tf[0][4],tf[1][0],tf[1][1],tf[1][2],tf[1][3],tf[1][4]}-&gt;{}:&lt;&gt; ((forall(i:int[0,AgentNum-1]) iteration[i]&gt;=MaxIteration))</formula>
 <comment>Task Coverage</comment>
 </query><query>
 <formula>saveStrategy("output/path.out", opt)</formula>

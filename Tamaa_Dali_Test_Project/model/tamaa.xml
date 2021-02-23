@@ -53,34 +53,34 @@ clock globalTime;
 </location>
 <location id ="F0T1" x ="-150" y ="-100">
 <name >F0T1</name>
-<label kind ="invariant">t&lt;=117</label>
+<label kind ="invariant">t&lt;=163</label>
 </location>
 <location id ="F0T2" x ="0" y ="-100">
 <name >F0T2</name>
-<label kind ="invariant">t&lt;=129</label>
+<label kind ="invariant">t&lt;=133</label>
 </location>
 <location id ="F0T3" x ="150" y ="-100">
 <name >F0T3</name>
-<label kind ="invariant">t&lt;=95</label>
+<label kind ="invariant">t&lt;=85</label>
 </location>
 <location id ="F0T4" x ="300" y ="-100">
 <name >F0T4</name>
-<label kind ="invariant">t&lt;=87</label>
+<label kind ="invariant">t&lt;=66</label>
 </location>
 <location id ="F0T5" x ="450" y ="-100">
 <name >F0T5</name>
-<label kind ="invariant">t&lt;=98</label>
+<label kind ="invariant">t&lt;=68</label>
 </location>
 <location id ="F0T6" x ="600" y ="-100">
 <name >F0T6</name>
-<label kind ="invariant">t&lt;=137</label>
+<label kind ="invariant">t&lt;=107</label>
 </location>
 <location id ="P1" x ="-250" y ="-50">
 <name >P1</name>
 </location>
 <location id ="F1T0" x ="-300" y ="50">
 <name >F1T0</name>
-<label kind ="invariant">t&lt;=117</label>
+<label kind ="invariant">t&lt;=163</label>
 </location>
 <location id ="F1T2" x ="0" y ="50">
 <name >F1T2</name>
@@ -107,7 +107,7 @@ clock globalTime;
 </location>
 <location id ="F2T0" x ="-300" y ="200">
 <name >F2T0</name>
-<label kind ="invariant">t&lt;=129</label>
+<label kind ="invariant">t&lt;=133</label>
 </location>
 <location id ="F2T1" x ="-150" y ="200">
 <name >F2T1</name>
@@ -134,7 +134,7 @@ clock globalTime;
 </location>
 <location id ="F3T0" x ="-300" y ="350">
 <name >F3T0</name>
-<label kind ="invariant">t&lt;=95</label>
+<label kind ="invariant">t&lt;=85</label>
 </location>
 <location id ="F3T1" x ="-150" y ="350">
 <name >F3T1</name>
@@ -161,7 +161,7 @@ clock globalTime;
 </location>
 <location id ="F4T0" x ="-300" y ="500">
 <name >F4T0</name>
-<label kind ="invariant">t&lt;=87</label>
+<label kind ="invariant">t&lt;=66</label>
 </location>
 <location id ="F4T1" x ="-150" y ="500">
 <name >F4T1</name>
@@ -188,7 +188,7 @@ clock globalTime;
 </location>
 <location id ="F5T0" x ="-300" y ="650">
 <name >F5T0</name>
-<label kind ="invariant">t&lt;=98</label>
+<label kind ="invariant">t&lt;=68</label>
 </location>
 <location id ="F5T1" x ="-150" y ="650">
 <name >F5T1</name>
@@ -215,7 +215,7 @@ clock globalTime;
 </location>
 <location id ="F6T0" x ="-300" y ="800">
 <name >F6T0</name>
-<label kind ="invariant">t&lt;=137</label>
+<label kind ="invariant">t&lt;=107</label>
 </location>
 <location id ="F6T1" x ="-150" y ="800">
 <name >F6T1</name>
@@ -253,7 +253,7 @@ clock globalTime;
 <source ref ="F0T1" />
 <target ref ="P1" />
 <label kind ="assignment">t=0,position[id][1]=true</label>
-<label kind ="guard">t&gt;=117</label>
+<label kind ="guard">t&gt;=163</label>
 </transition>
 <transition >
 <source ref ="P0" />
@@ -265,7 +265,7 @@ clock globalTime;
 <source ref ="F0T2" />
 <target ref ="P2" />
 <label kind ="assignment">t=0,position[id][2]=true</label>
-<label kind ="guard">t&gt;=129</label>
+<label kind ="guard">t&gt;=133</label>
 </transition>
 <transition >
 <source ref ="P0" />
@@ -277,7 +277,7 @@ clock globalTime;
 <source ref ="F0T3" />
 <target ref ="P3" />
 <label kind ="assignment">t=0,position[id][3]=true</label>
-<label kind ="guard">t&gt;=95</label>
+<label kind ="guard">t&gt;=85</label>
 </transition>
 <transition >
 <source ref ="P0" />
@@ -289,7 +289,7 @@ clock globalTime;
 <source ref ="F0T4" />
 <target ref ="P4" />
 <label kind ="assignment">t=0,position[id][4]=true</label>
-<label kind ="guard">t&gt;=87</label>
+<label kind ="guard">t&gt;=66</label>
 </transition>
 <transition >
 <source ref ="P0" />
@@ -301,7 +301,7 @@ clock globalTime;
 <source ref ="F0T5" />
 <target ref ="P5" />
 <label kind ="assignment">t=0,position[id][5]=true</label>
-<label kind ="guard">t&gt;=98</label>
+<label kind ="guard">t&gt;=68</label>
 </transition>
 <transition >
 <source ref ="P0" />
@@ -313,7 +313,7 @@ clock globalTime;
 <source ref ="F0T6" />
 <target ref ="P6" />
 <label kind ="assignment">t=0,position[id][6]=true</label>
-<label kind ="guard">t&gt;=137</label>
+<label kind ="guard">t&gt;=107</label>
 </transition>
 <transition >
 <source ref ="P1" />
@@ -325,7 +325,7 @@ clock globalTime;
 <source ref ="F1T0" />
 <target ref ="P0" />
 <label kind ="assignment">t=0,position[id][0]=true</label>
-<label kind ="guard">t&gt;=117</label>
+<label kind ="guard">t&gt;=163</label>
 </transition>
 <transition >
 <source ref ="P1" />
@@ -397,7 +397,7 @@ clock globalTime;
 <source ref ="F2T0" />
 <target ref ="P0" />
 <label kind ="assignment">t=0,position[id][0]=true</label>
-<label kind ="guard">t&gt;=129</label>
+<label kind ="guard">t&gt;=133</label>
 </transition>
 <transition >
 <source ref ="P2" />
@@ -469,7 +469,7 @@ clock globalTime;
 <source ref ="F3T0" />
 <target ref ="P0" />
 <label kind ="assignment">t=0,position[id][0]=true</label>
-<label kind ="guard">t&gt;=95</label>
+<label kind ="guard">t&gt;=85</label>
 </transition>
 <transition >
 <source ref ="P3" />
@@ -541,7 +541,7 @@ clock globalTime;
 <source ref ="F4T0" />
 <target ref ="P0" />
 <label kind ="assignment">t=0,position[id][0]=true</label>
-<label kind ="guard">t&gt;=87</label>
+<label kind ="guard">t&gt;=66</label>
 </transition>
 <transition >
 <source ref ="P4" />
@@ -613,7 +613,7 @@ clock globalTime;
 <source ref ="F5T0" />
 <target ref ="P0" />
 <label kind ="assignment">t=0,position[id][0]=true</label>
-<label kind ="guard">t&gt;=98</label>
+<label kind ="guard">t&gt;=68</label>
 </transition>
 <transition >
 <source ref ="P5" />
@@ -685,7 +685,7 @@ clock globalTime;
 <source ref ="F6T0" />
 <target ref ="P0" />
 <label kind ="assignment">t=0,position[id][0]=true</label>
-<label kind ="guard">t&gt;=137</label>
+<label kind ="guard">t&gt;=107</label>
 </transition>
 <transition >
 <source ref ="P6" />
@@ -878,34 +878,34 @@ updateIteration()</label>
 </location>
 <location id ="F0T1" x ="-150" y ="-100">
 <name >F0T1</name>
-<label kind ="invariant">t&lt;=71</label>
+<label kind ="invariant">t&lt;=117</label>
 </location>
 <location id ="F0T2" x ="0" y ="-100">
 <name >F0T2</name>
-<label kind ="invariant">t&lt;=117</label>
+<label kind ="invariant">t&lt;=129</label>
 </location>
 <location id ="F0T3" x ="150" y ="-100">
 <name >F0T3</name>
-<label kind ="invariant">t&lt;=141</label>
+<label kind ="invariant">t&lt;=95</label>
 </location>
 <location id ="F0T4" x ="300" y ="-100">
 <name >F0T4</name>
-<label kind ="invariant">t&lt;=134</label>
+<label kind ="invariant">t&lt;=87</label>
 </location>
 <location id ="F0T5" x ="450" y ="-100">
 <name >F0T5</name>
-<label kind ="invariant">t&lt;=145</label>
+<label kind ="invariant">t&lt;=98</label>
 </location>
 <location id ="F0T6" x ="600" y ="-100">
 <name >F0T6</name>
-<label kind ="invariant">t&lt;=172</label>
+<label kind ="invariant">t&lt;=137</label>
 </location>
 <location id ="P1" x ="-250" y ="-50">
 <name >P1</name>
 </location>
 <location id ="F1T0" x ="-300" y ="50">
 <name >F1T0</name>
-<label kind ="invariant">t&lt;=71</label>
+<label kind ="invariant">t&lt;=117</label>
 </location>
 <location id ="F1T2" x ="0" y ="50">
 <name >F1T2</name>
@@ -932,7 +932,7 @@ updateIteration()</label>
 </location>
 <location id ="F2T0" x ="-300" y ="200">
 <name >F2T0</name>
-<label kind ="invariant">t&lt;=117</label>
+<label kind ="invariant">t&lt;=129</label>
 </location>
 <location id ="F2T1" x ="-150" y ="200">
 <name >F2T1</name>
@@ -959,7 +959,7 @@ updateIteration()</label>
 </location>
 <location id ="F3T0" x ="-300" y ="350">
 <name >F3T0</name>
-<label kind ="invariant">t&lt;=141</label>
+<label kind ="invariant">t&lt;=95</label>
 </location>
 <location id ="F3T1" x ="-150" y ="350">
 <name >F3T1</name>
@@ -986,7 +986,7 @@ updateIteration()</label>
 </location>
 <location id ="F4T0" x ="-300" y ="500">
 <name >F4T0</name>
-<label kind ="invariant">t&lt;=134</label>
+<label kind ="invariant">t&lt;=87</label>
 </location>
 <location id ="F4T1" x ="-150" y ="500">
 <name >F4T1</name>
@@ -1013,7 +1013,7 @@ updateIteration()</label>
 </location>
 <location id ="F5T0" x ="-300" y ="650">
 <name >F5T0</name>
-<label kind ="invariant">t&lt;=145</label>
+<label kind ="invariant">t&lt;=98</label>
 </location>
 <location id ="F5T1" x ="-150" y ="650">
 <name >F5T1</name>
@@ -1040,7 +1040,7 @@ updateIteration()</label>
 </location>
 <location id ="F6T0" x ="-300" y ="800">
 <name >F6T0</name>
-<label kind ="invariant">t&lt;=172</label>
+<label kind ="invariant">t&lt;=137</label>
 </location>
 <location id ="F6T1" x ="-150" y ="800">
 <name >F6T1</name>
@@ -1078,7 +1078,7 @@ updateIteration()</label>
 <source ref ="F0T1" />
 <target ref ="P1" />
 <label kind ="assignment">t=0,position[id][1]=true</label>
-<label kind ="guard">t&gt;=71</label>
+<label kind ="guard">t&gt;=117</label>
 </transition>
 <transition >
 <source ref ="P0" />
@@ -1090,7 +1090,7 @@ updateIteration()</label>
 <source ref ="F0T2" />
 <target ref ="P2" />
 <label kind ="assignment">t=0,position[id][2]=true</label>
-<label kind ="guard">t&gt;=117</label>
+<label kind ="guard">t&gt;=129</label>
 </transition>
 <transition >
 <source ref ="P0" />
@@ -1102,7 +1102,7 @@ updateIteration()</label>
 <source ref ="F0T3" />
 <target ref ="P3" />
 <label kind ="assignment">t=0,position[id][3]=true</label>
-<label kind ="guard">t&gt;=141</label>
+<label kind ="guard">t&gt;=95</label>
 </transition>
 <transition >
 <source ref ="P0" />
@@ -1114,7 +1114,7 @@ updateIteration()</label>
 <source ref ="F0T4" />
 <target ref ="P4" />
 <label kind ="assignment">t=0,position[id][4]=true</label>
-<label kind ="guard">t&gt;=134</label>
+<label kind ="guard">t&gt;=87</label>
 </transition>
 <transition >
 <source ref ="P0" />
@@ -1126,7 +1126,7 @@ updateIteration()</label>
 <source ref ="F0T5" />
 <target ref ="P5" />
 <label kind ="assignment">t=0,position[id][5]=true</label>
-<label kind ="guard">t&gt;=145</label>
+<label kind ="guard">t&gt;=98</label>
 </transition>
 <transition >
 <source ref ="P0" />
@@ -1138,7 +1138,7 @@ updateIteration()</label>
 <source ref ="F0T6" />
 <target ref ="P6" />
 <label kind ="assignment">t=0,position[id][6]=true</label>
-<label kind ="guard">t&gt;=172</label>
+<label kind ="guard">t&gt;=137</label>
 </transition>
 <transition >
 <source ref ="P1" />
@@ -1150,7 +1150,7 @@ updateIteration()</label>
 <source ref ="F1T0" />
 <target ref ="P0" />
 <label kind ="assignment">t=0,position[id][0]=true</label>
-<label kind ="guard">t&gt;=71</label>
+<label kind ="guard">t&gt;=117</label>
 </transition>
 <transition >
 <source ref ="P1" />
@@ -1222,7 +1222,7 @@ updateIteration()</label>
 <source ref ="F2T0" />
 <target ref ="P0" />
 <label kind ="assignment">t=0,position[id][0]=true</label>
-<label kind ="guard">t&gt;=117</label>
+<label kind ="guard">t&gt;=129</label>
 </transition>
 <transition >
 <source ref ="P2" />
@@ -1294,7 +1294,7 @@ updateIteration()</label>
 <source ref ="F3T0" />
 <target ref ="P0" />
 <label kind ="assignment">t=0,position[id][0]=true</label>
-<label kind ="guard">t&gt;=141</label>
+<label kind ="guard">t&gt;=95</label>
 </transition>
 <transition >
 <source ref ="P3" />
@@ -1366,7 +1366,7 @@ updateIteration()</label>
 <source ref ="F4T0" />
 <target ref ="P0" />
 <label kind ="assignment">t=0,position[id][0]=true</label>
-<label kind ="guard">t&gt;=134</label>
+<label kind ="guard">t&gt;=87</label>
 </transition>
 <transition >
 <source ref ="P4" />
@@ -1438,7 +1438,7 @@ updateIteration()</label>
 <source ref ="F5T0" />
 <target ref ="P0" />
 <label kind ="assignment">t=0,position[id][0]=true</label>
-<label kind ="guard">t&gt;=145</label>
+<label kind ="guard">t&gt;=98</label>
 </transition>
 <transition >
 <source ref ="P5" />
@@ -1510,7 +1510,7 @@ updateIteration()</label>
 <source ref ="F6T0" />
 <target ref ="P0" />
 <label kind ="assignment">t=0,position[id][0]=true</label>
-<label kind ="guard">t&gt;=172</label>
+<label kind ="guard">t&gt;=137</label>
 </transition>
 <transition >
 <source ref ="P6" />

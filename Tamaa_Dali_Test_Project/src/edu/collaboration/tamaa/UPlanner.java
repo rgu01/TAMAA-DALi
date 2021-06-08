@@ -36,6 +36,7 @@ public class UPlanner {
 	private int uppaalPort;
 
 	public void StartServer(PlannerService.Processor<PlannerServiceHandler> processor) {
+	//public void StartServer(PlannerService.Processor<PlannerServiceHandlerTestVersion> processor) {
 		try {
 			TServerTransport serverTransport = new TServerSocket(this.tamaaPort);
 			TServer server = new TSimpleServer(new Args(serverTransport).processor(processor));
@@ -107,5 +108,7 @@ public class UPlanner {
 		System.out.println("============" + new Date().toString() + "============");
 		planner.StartServer(new PlannerService.Processor<PlannerServiceHandler>(
 				new PlannerServiceHandler(planner.mmtAddress, planner.mmtPort, planner.uppaalAddress, planner.uppaalPort)));
+		//planner.StartServer(new PlannerService.Processor<PlannerServiceHandlerTestVersion>(
+		//		new PlannerServiceHandlerTestVersion(planner.mmtAddress, planner.mmtPort, planner.uppaalAddress, planner.uppaalPort)));
 	}
 }

@@ -92,29 +92,38 @@ public class PlannerServiceHandlerTestVersion implements PlannerService.Iface {
 			client = new MmtService.Client(protocol);
 			System.out.println("msg from MMT: " + client.ping());
 			
-			double[] steps = {10,9,8,7,6,5,4,3,2}; 
-			//double[] steps = {2}; 
-			int[] tasks = {1,2,3,4,5,6,7,8,9,10};
+			//double[] steps = {10,9,8,7,6,5,4,3,2}; 
+			double[] steps = {4}; 
+			//int[] tasks = {1,2,3,4,5,6,7,8,9,10};
+			int[] tasks = {1,2};
 			//int[] tasks = {7,8,9,10};
 			//int[] obstacles = {1,2,3,4,5,6,7,8,9,10};
 			int[] obstacles = {10};
-			int[] heatmaps = {0,1,2,3,4,5};
-			for (double i : steps) {
-				for (int j : tasks) {
-					for (int k : obstacles) {
-						for (int l : heatmaps) {
-							//algo = Algo.AStar;
-							//resetVars();
-							//runTest(requestId, plan.deepCopy(), client, sphericalMercator, i,j,k,l);	
-							resetVars();
-							algo = Algo.Dali;
-							runTest(requestId, plan.deepCopy(), client, sphericalMercator, i,j,k,l);	
-							resetVars();
-							algo = Algo.DaliStar;
-							runTest(requestId, plan.deepCopy(), client, sphericalMercator, i,j,k,l);	
-							//resetVars();
-							//algo = Algo.AStar2;
-							//runTest(requestId, plan.deepCopy(), client, sphericalMercator, i,j,k,l);			
+			//int[] heatmaps = {0,1,2,3,4,5};
+			int[] heatmaps = {0};
+			//int[] agents = {1,2,3,4};
+			for(int round = 0; round < 5; round++)
+			{
+				for (double i : steps) {
+					for (int j : tasks) {
+						for (int k : obstacles) {
+							for (int l : heatmaps) {
+								//for(int a : agents)
+								//{
+									//algo = Algo.AStar;
+									//resetVars();
+									//runTest(requestId, plan.deepCopy(), client, sphericalMercator, i,j,k,l);	
+									//resetVars();
+									//algo = Algo.Dali;
+									//runTest(requestId, plan.deepCopy(), client, sphericalMercator, i,j,k,l);	
+									resetVars();
+									algo = Algo.DaliStar;
+									runTest(requestId, plan.deepCopy(), client, sphericalMercator, i,j,k,l);	
+									resetVars();
+									algo = Algo.AStar2;
+									runTest(requestId, plan.deepCopy(), client, sphericalMercator, i,j,k,l);		
+								//}
+							}
 						}
 					}
 				}
@@ -269,8 +278,8 @@ public class PlannerServiceHandlerTestVersion implements PlannerService.Iface {
 			}catch (Exception e) {}
 		}
 		else {
-			String show = "No mission plan is found! Recomputation limit is reached";
-			JOptionPane.showMessageDialog(null, show, "Warning: Dissatisfied", JOptionPane.PLAIN_MESSAGE);
+			//String show = "No mission plan is found! Recomputation limit is reached";
+			//JOptionPane.showMessageDialog(null, show, "Warning: Dissatisfied", JOptionPane.PLAIN_MESSAGE);
 		}
 	}
 
@@ -390,6 +399,10 @@ public class PlannerServiceHandlerTestVersion implements PlannerService.Iface {
 						// finish a move
 						else if (action.type.equals(TaskScheduleAction.StrMoveFinish)) {
 							targetNode[agent.ID] = agent.getMilestone(action.target);
+							if(targetNode[agent.ID] == null)
+							{
+								int mmm = 0;
+							}
 							segments[agent.ID] = this.finishMove(movement[agent.ID], agent, targetNode[agent.ID],
 									(int) action.time);
 							if (as instanceof Dali) {

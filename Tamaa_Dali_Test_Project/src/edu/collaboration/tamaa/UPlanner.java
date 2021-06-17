@@ -108,6 +108,7 @@ public class UPlanner {
 		System.out.println("============" + new Date().toString() + "============");
 		planner.StartServer(new PlannerService.Processor<PlannerServiceHandler>(
 				new PlannerServiceHandler(planner.mmtAddress, planner.mmtPort, planner.uppaalAddress, planner.uppaalPort)));
+		//The following is for experiments
 		//planner.StartServer(new PlannerService.Processor<PlannerServiceHandlerTestVersion>(
 		//		new PlannerServiceHandlerTestVersion(planner.mmtAddress, planner.mmtPort, planner.uppaalAddress, planner.uppaalPort)));
 	}

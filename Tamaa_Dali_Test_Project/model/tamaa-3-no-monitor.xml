@@ -117,7 +117,7 @@ updateIteration()</label>
 		<transition>
 			<source ref="id1"/>
 			<target ref="id0"/>
-			<label kind="guard" x="-331" y="-272">!tf[id][2]&amp;&amp;
+			<label kind="guard" x="-331" y="-280">!tf[id][2]&amp;&amp;
 (!isBusy(2) &amp;&amp; PCQueue&gt;2)&amp;&amp;
 (position[id][5])</label>
 			<label kind="assignment" x="-331" y="-221">t=0,ts[id][2]=true,tf[id][2]=false</label>
@@ -165,7 +165,7 @@ updateIteration()</label>
 		<transition>
 			<source ref="id1"/>
 			<target ref="id4"/>
-			<label kind="guard" x="-680" y="-272">!tf[id][2]&amp;&amp;
+			<label kind="guard" x="-680" y="-280">!tf[id][2]&amp;&amp;
 (!isBusy(2))&amp;&amp;
 (position[id][4])</label>
 			<label kind="assignment" x="-680" y="-221">t=0,ts[id][2]=true,tf[id][2]=false</label>

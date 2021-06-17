@@ -234,7 +234,9 @@ public class PlannerServiceHandler implements PlannerService.Iface {
 			ex.printStackTrace();
 		} finally {
 			transport.close();
-			System.exit(0);
+			this.agents.clear();
+			//exit:
+			//System.exit(0);
 		}
 	}
 

@@ -62,7 +62,7 @@ public class Information {
 		lblNewLabel.setBounds(10, 10, 350, 50);
 		frmMiddlewareOfMalta.getContentPane().add(lblNewLabel);
 		
-		JLabel lblStatus = new JLabel("...");
+		JLabel lblStatus = new JLabel("started!");
 		lblStatus.setFont(new Font("Tahoma", Font.PLAIN, 15));
 		lblStatus.setBounds(10, 60, 205, 50);
 		frmMiddlewareOfMalta.getContentPane().add(lblStatus);

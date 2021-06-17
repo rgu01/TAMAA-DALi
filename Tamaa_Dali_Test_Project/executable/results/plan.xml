@@ -1,0 +1,1302 @@
+<Traces result="1">
+    <State>
+        <Agent id="0">
+            <Milestone>initial</Milestone>
+            <Task>T0</Task>
+            <Finish>
+                <Task>T0</Task>
+            </Finish>
+            <Iteration>0</Iteration>
+        </Agent>
+    </State>
+    <Action>
+        <Agent id="0">
+            <Type>Move Start</Type>
+            <Target>P0</Target>
+            <Time>0</Time>
+        </Agent>
+    </Action>
+    <State>
+        <Agent id="0">
+            <Milestone>P0</Milestone>
+            <Task>T0</Task>
+            <Finish>
+                <Task>T0</Task>
+            </Finish>
+            <Iteration>0</Iteration>
+        </Agent>
+    </State>
+    <Action>
+        <Agent id="0">
+            <Type>Move Start</Type>
+            <Target>F0T4</Target>
+            <Time>0</Time>
+        </Agent>
+    </Action>
+    <State>
+        <Agent id="0">
+            <Milestone>F0T4</Milestone>
+            <Task>T0</Task>
+            <Finish>
+                <Task>T0</Task>
+            </Finish>
+            <Iteration>0</Iteration>
+        </Agent>
+    </State>
+    <Action>
+        <Agent id="0">
+            <Type>Move Finish</Type>
+            <Target>P4</Target>
+            <Time>35</Time>
+        </Agent>
+    </Action>
+    <State>
+        <Agent id="0">
+            <Milestone>P4</Milestone>
+            <Task>T0</Task>
+            <Finish>
+                <Task>T0</Task>
+            </Finish>
+            <Iteration>0</Iteration>
+        </Agent>
+    </State>
+    <Action>
+        <Agent id="0">
+            <Type>Move Start</Type>
+            <Target>F4T1</Target>
+            <Time>0</Time>
+        </Agent>
+    </Action>
+    <State>
+        <Agent id="0">
+            <Milestone>F4T1</Milestone>
+            <Task>T0</Task>
+            <Finish>
+                <Task>T0</Task>
+            </Finish>
+            <Iteration>0</Iteration>
+        </Agent>
+    </State>
+    <Action>
+        <Agent id="0">
+            <Type>Move Finish</Type>
+            <Target>P1</Target>
+            <Time>47</Time>
+        </Agent>
+    </Action>
+    <State>
+        <Agent id="0">
+            <Milestone>P1</Milestone>
+            <Task>T0</Task>
+            <Finish>
+                <Task>T0</Task>
+            </Finish>
+            <Iteration>0</Iteration>
+        </Agent>
+    </State>
+    <Action>
+        <Agent id="0">
+            <Type>Task Start</Type>
+            <Target>T1</Target>
+            <Time>0</Time>
+        </Agent>
+    </Action>
+    <State>
+        <Agent id="0">
+            <Milestone>P1</Milestone>
+            <Task>T1</Task>
+            <Finish>
+                <Task>T0</Task>
+            </Finish>
+            <Iteration>0</Iteration>
+        </Agent>
+    </State>
+    <Action>
+        <Agent id="0">
+            <Type>Task Finish</Type>
+            <Target>T0</Target>
+            <Time>80</Time>
+        </Agent>
+    </Action>
+    <State>
+        <Agent id="0">
+            <Milestone>P1</Milestone>
+            <Task>T0</Task>
+            <Finish>
+                <Task>T0</Task>
+                <Task>T1</Task>
+            </Finish>
+            <Iteration>0</Iteration>
+        </Agent>
+    </State>
+    <Action>
+        <Agent id="0">
+            <Type>Move Start</Type>
+            <Target>F1T0</Target>
+            <Time>0</Time>
+        </Agent>
+    </Action>
+    <State>
+        <Agent id="0">
+            <Milestone>F1T0</Milestone>
+            <Task>T0</Task>
+            <Finish>
+                <Task>T0</Task>
+                <Task>T1</Task>
+            </Finish>
+            <Iteration>0</Iteration>
+        </Agent>
+    </State>
+    <Action>
+        <Agent id="0">
+            <Type>Move Finish</Type>
+            <Target>P0</Target>
+            <Time>50</Time>
+        </Agent>
+    </Action>
+    <State>
+        <Agent id="0">
+            <Milestone>P0</Milestone>
+            <Task>T0</Task>
+            <Finish>
+                <Task>T0</Task>
+                <Task>T1</Task>
+            </Finish>
+            <Iteration>0</Iteration>
+        </Agent>
+    </State>
+    <Action>
+        <Agent id="0">
+            <Type>Move Start</Type>
+            <Target>F0T6</Target>
+            <Time>0</Time>
+        </Agent>
+    </Action>
+    <State>
+        <Agent id="0">
+            <Milestone>F0T6</Milestone>
+            <Task>T0</Task>
+            <Finish>
+                <Task>T0</Task>
+                <Task>T1</Task>
+            </Finish>
+            <Iteration>0</Iteration>
+        </Agent>
+    </State>
+    <Action>
+        <Agent id="0">
+            <Type>Move Finish</Type>
+            <Target>P6</Target>
+            <Time>70</Time>
+        </Agent>
+    </Action>
+    <State>
+        <Agent id="0">
+            <Milestone>P6</Milestone>
+            <Task>T0</Task>
+            <Finish>
+                <Task>T0</Task>
+                <Task>T1</Task>
+            </Finish>
+            <Iteration>0</Iteration>
+        </Agent>
+    </State>
+    <Action>
+        <Agent id="0">
+            <Type>Move Start</Type>
+            <Target>F6T3</Target>
+            <Time>0</Time>
+        </Agent>
+    </Action>
+    <State>
+        <Agent id="0">
+            <Milestone>F6T3</Milestone>
+            <Task>T0</Task>
+            <Finish>
+                <Task>T0</Task>
+                <Task>T1</Task>
+            </Finish>
+            <Iteration>0</Iteration>
+        </Agent>
+    </State>
+    <Action>
+        <Agent id="0">
+            <Type>Move Finish</Type>
+            <Target>P3</Target>
+            <Time>75</Time>
+        </Agent>
+    </Action>
+    <State>
+        <Agent id="0">
+            <Milestone>P3</Milestone>
+            <Task>T0</Task>
+            <Finish>
+                <Task>T0</Task>
+                <Task>T1</Task>
+            </Finish>
+            <Iteration>0</Iteration>
+        </Agent>
+    </State>
+    <Action>
+        <Agent id="0">
+            <Type>Move Start</Type>
+            <Target>F3T2</Target>
+            <Time>0</Time>
+        </Agent>
+    </Action>
+    <State>
+        <Agent id="0">
+            <Milestone>F3T2</Milestone>
+            <Task>T0</Task>
+            <Finish>
+                <Task>T0</Task>
+                <Task>T1</Task>
+            </Finish>
+            <Iteration>0</Iteration>
+        </Agent>
+    </State>
+    <Action>
+        <Agent id="0">
+            <Type>Move Finish</Type>
+            <Target>P2</Target>
+            <Time>37</Time>
+        </Agent>
+    </Action>
+    <State>
+        <Agent id="0">
+            <Milestone>P2</Milestone>
+            <Task>T0</Task>
+            <Finish>
+                <Task>T0</Task>
+                <Task>T1</Task>
+            </Finish>
+            <Iteration>0</Iteration>
+        </Agent>
+    </State>
+    <Action>
+        <Agent id="0">
+            <Type>Task Start</Type>
+            <Target>T2</Target>
+            <Time>0</Time>
+        </Agent>
+    </Action>
+    <State>
+        <Agent id="0">
+            <Milestone>P2</Milestone>
+            <Task>T2</Task>
+            <Finish>
+                <Task>T0</Task>
+                <Task>T1</Task>
+            </Finish>
+            <Iteration>0</Iteration>
+        </Agent>
+    </State>
+    <Action>
+        <Agent id="0">
+            <Type>Task Finish</Type>
+            <Target>T0</Target>
+            <Time>0</Time>
+        </Agent>
+    </Action>
+    <State>
+        <Agent id="0">
+            <Milestone>P2</Milestone>
+            <Task>T0</Task>
+            <Finish>
+                <Task>T0</Task>
+                <Task>T1</Task>
+                <Task>T2</Task>
+            </Finish>
+            <Iteration>0</Iteration>
+        </Agent>
+    </State>
+    <Action>
+        <Agent id="0">
+            <Type>Move Start</Type>
+            <Target>F2T0</Target>
+            <Time>0</Time>
+        </Agent>
+    </Action>
+    <State>
+        <Agent id="0">
+            <Milestone>F2T0</Milestone>
+            <Task>T0</Task>
+            <Finish>
+                <Task>T0</Task>
+                <Task>T1</Task>
+                <Task>T2</Task>
+            </Finish>
+            <Iteration>0</Iteration>
+        </Agent>
+    </State>
+    <Action>
+        <Agent id="0">
+            <Type>Move Finish</Type>
+            <Target>P0</Target>
+            <Time>12</Time>
+        </Agent>
+    </Action>
+    <State>
+        <Agent id="0">
+            <Milestone>P0</Milestone>
+            <Task>T0</Task>
+            <Finish>
+                <Task>T0</Task>
+                <Task>T1</Task>
+                <Task>T2</Task>
+            </Finish>
+            <Iteration>0</Iteration>
+        </Agent>
+    </State>
+    <Action>
+        <Agent id="0">
+            <Type>Move Start</Type>
+            <Target>F0T4</Target>
+            <Time>0</Time>
+        </Agent>
+    </Action>
+    <State>
+        <Agent id="0">
+            <Milestone>F0T4</Milestone>
+            <Task>T0</Task>
+            <Finish>
+                <Task>T0</Task>
+                <Task>T1</Task>
+                <Task>T2</Task>
+            </Finish>
+            <Iteration>0</Iteration>
+        </Agent>
+    </State>
+    <Action>
+        <Agent id="0">
+            <Type>Move Finish</Type>
+            <Target>P4</Target>
+            <Time>35</Time>
+        </Agent>
+    </Action>
+    <State>
+        <Agent id="0">
+            <Milestone>P4</Milestone>
+            <Task>T0</Task>
+            <Finish>
+                <Task>T0</Task>
+                <Task>T1</Task>
+                <Task>T2</Task>
+            </Finish>
+            <Iteration>0</Iteration>
+        </Agent>
+    </State>
+    <Action>
+        <Agent id="0">
+            <Type>Move Start</Type>
+            <Target>F4T5</Target>
+            <Time>0</Time>
+        </Agent>
+    </Action>
+    <State>
+        <Agent id="0">
+            <Milestone>F4T5</Milestone>
+            <Task>T0</Task>
+            <Finish>
+                <Task>T0</Task>
+                <Task>T1</Task>
+                <Task>T2</Task>
+            </Finish>
+            <Iteration>0</Iteration>
+        </Agent>
+    </State>
+    <Action>
+        <Agent id="0">
+            <Type>Move Finish</Type>
+            <Target>P5</Target>
+            <Time>91</Time>
+        </Agent>
+    </Action>
+    <State>
+        <Agent id="0">
+            <Milestone>P5</Milestone>
+            <Task>T0</Task>
+            <Finish>
+                <Task>T0</Task>
+                <Task>T1</Task>
+                <Task>T2</Task>
+            </Finish>
+            <Iteration>0</Iteration>
+        </Agent>
+    </State>
+    <Action>
+        <Agent id="0">
+            <Type>Move Start</Type>
+            <Target>F5T3</Target>
+            <Time>0</Time>
+        </Agent>
+    </Action>
+    <State>
+        <Agent id="0">
+            <Milestone>F5T3</Milestone>
+            <Task>T0</Task>
+            <Finish>
+                <Task>T0</Task>
+                <Task>T1</Task>
+                <Task>T2</Task>
+            </Finish>
+            <Iteration>0</Iteration>
+        </Agent>
+    </State>
+    <Action>
+        <Agent id="0">
+            <Type>Move Finish</Type>
+            <Target>P3</Target>
+            <Time>59</Time>
+        </Agent>
+    </Action>
+    <State>
+        <Agent id="0">
+            <Milestone>P3</Milestone>
+            <Task>T0</Task>
+            <Finish>
+                <Task>T0</Task>
+                <Task>T1</Task>
+                <Task>T2</Task>
+            </Finish>
+            <Iteration>0</Iteration>
+        </Agent>
+    </State>
+    <Action>
+        <Agent id="0">
+            <Type>Task Start</Type>
+            <Target>T3</Target>
+            <Time>0</Time>
+        </Agent>
+    </Action>
+    <State>
+        <Agent id="0">
+            <Milestone>P3</Milestone>
+            <Task>T3</Task>
+            <Finish>
+                <Task>T0</Task>
+                <Task>T1</Task>
+                <Task>T2</Task>
+            </Finish>
+            <Iteration>0</Iteration>
+        </Agent>
+    </State>
+    <Action>
+        <Agent id="0">
+            <Type>Task Finish</Type>
+            <Target>T0</Target>
+            <Time>100</Time>
+        </Agent>
+    </Action>
+    <State>
+        <Agent id="0">
+            <Milestone>P3</Milestone>
+            <Task>T0</Task>
+            <Finish>
+                <Task>T0</Task>
+                <Task>T1</Task>
+                <Task>T2</Task>
+                <Task>T3</Task>
+            </Finish>
+            <Iteration>0</Iteration>
+        </Agent>
+    </State>
+    <Action>
+        <Agent id="0">
+            <Type>Move Start</Type>
+            <Target>F3T2</Target>
+            <Time>0</Time>
+        </Agent>
+    </Action>
+    <State>
+        <Agent id="0">
+            <Milestone>F3T2</Milestone>
+            <Task>T0</Task>
+            <Finish>
+                <Task>T0</Task>
+                <Task>T1</Task>
+                <Task>T2</Task>
+                <Task>T3</Task>
+            </Finish>
+            <Iteration>0</Iteration>
+        </Agent>
+    </State>
+    <Action>
+        <Agent id="0">
+            <Type>Move Finish</Type>
+            <Target>P2</Target>
+            <Time>37</Time>
+        </Agent>
+    </Action>
+    <State>
+        <Agent id="0">
+            <Milestone>P2</Milestone>
+            <Task>T0</Task>
+            <Finish>
+                <Task>T0</Task>
+                <Task>T1</Task>
+                <Task>T2</Task>
+                <Task>T3</Task>
+            </Finish>
+            <Iteration>0</Iteration>
+        </Agent>
+    </State>
+    <Action>
+        <Agent id="0">
+            <Type>Move Start</Type>
+            <Target>F2T6</Target>
+            <Time>0</Time>
+        </Agent>
+    </Action>
+    <State>
+        <Agent id="0">
+            <Milestone>F2T6</Milestone>
+            <Task>T0</Task>
+            <Finish>
+                <Task>T0</Task>
+                <Task>T1</Task>
+                <Task>T2</Task>
+                <Task>T3</Task>
+            </Finish>
+            <Iteration>0</Iteration>
+        </Agent>
+    </State>
+    <Action>
+        <Agent id="0">
+            <Type>Move Finish</Type>
+            <Target>P6</Target>
+            <Time>63</Time>
+        </Agent>
+    </Action>
+    <State>
+        <Agent id="0">
+            <Milestone>P6</Milestone>
+            <Task>T0</Task>
+            <Finish>
+                <Task>T0</Task>
+                <Task>T1</Task>
+                <Task>T2</Task>
+                <Task>T3</Task>
+            </Finish>
+            <Iteration>0</Iteration>
+        </Agent>
+    </State>
+    <Action>
+        <Agent id="0">
+            <Type>Move Start</Type>
+            <Target>F6T1</Target>
+            <Time>0</Time>
+        </Agent>
+    </Action>
+    <State>
+        <Agent id="0">
+            <Milestone>F6T1</Milestone>
+            <Task>T0</Task>
+            <Finish>
+                <Task>T0</Task>
+                <Task>T1</Task>
+                <Task>T2</Task>
+                <Task>T3</Task>
+            </Finish>
+            <Iteration>0</Iteration>
+        </Agent>
+    </State>
+    <Action>
+        <Agent id="0">
+            <Type>Move Finish</Type>
+            <Target>P1</Target>
+            <Time>91</Time>
+        </Agent>
+    </Action>
+    <State>
+        <Agent id="0">
+            <Milestone>P1</Milestone>
+            <Task>T0</Task>
+            <Finish>
+                <Task>T0</Task>
+                <Task>T1</Task>
+                <Task>T2</Task>
+                <Task>T3</Task>
+            </Finish>
+            <Iteration>0</Iteration>
+        </Agent>
+    </State>
+    <Action>
+        <Agent id="0">
+            <Type>Move Start</Type>
+            <Target>F1T5</Target>
+            <Time>0</Time>
+        </Agent>
+    </Action>
+    <State>
+        <Agent id="0">
+            <Milestone>F1T5</Milestone>
+            <Task>T0</Task>
+            <Finish>
+                <Task>T0</Task>
+                <Task>T1</Task>
+                <Task>T2</Task>
+                <Task>T3</Task>
+            </Finish>
+            <Iteration>0</Iteration>
+        </Agent>
+    </State>
+    <Action>
+        <Agent id="0">
+            <Type>Move Finish</Type>
+            <Target>P5</Target>
+            <Time>71</Time>
+        </Agent>
+    </Action>
+    <State>
+        <Agent id="0">
+            <Milestone>P5</Milestone>
+            <Task>T0</Task>
+            <Finish>
+                <Task>T0</Task>
+                <Task>T1</Task>
+                <Task>T2</Task>
+                <Task>T3</Task>
+            </Finish>
+            <Iteration>0</Iteration>
+        </Agent>
+    </State>
+    <Action>
+        <Agent id="0">
+            <Type>Move Start</Type>
+            <Target>F5T0</Target>
+            <Time>0</Time>
+        </Agent>
+    </Action>
+    <State>
+        <Agent id="0">
+            <Milestone>F5T0</Milestone>
+            <Task>T0</Task>
+            <Finish>
+                <Task>T0</Task>
+                <Task>T1</Task>
+                <Task>T2</Task>
+                <Task>T3</Task>
+            </Finish>
+            <Iteration>0</Iteration>
+        </Agent>
+    </State>
+    <Action>
+        <Agent id="0">
+            <Type>Move Finish</Type>
+            <Target>P0</Target>
+            <Time>109</Time>
+        </Agent>
+    </Action>
+    <State>
+        <Agent id="0">
+            <Milestone>P0</Milestone>
+            <Task>T0</Task>
+            <Finish>
+                <Task>T0</Task>
+                <Task>T1</Task>
+                <Task>T2</Task>
+                <Task>T3</Task>
+            </Finish>
+            <Iteration>0</Iteration>
+        </Agent>
+    </State>
+    <Action>
+        <Agent id="0">
+            <Type>Move Start</Type>
+            <Target>F0T4</Target>
+            <Time>0</Time>
+        </Agent>
+    </Action>
+    <State>
+        <Agent id="0">
+            <Milestone>F0T4</Milestone>
+            <Task>T0</Task>
+            <Finish>
+                <Task>T0</Task>
+                <Task>T1</Task>
+                <Task>T2</Task>
+                <Task>T3</Task>
+            </Finish>
+            <Iteration>0</Iteration>
+        </Agent>
+    </State>
+    <Action>
+        <Agent id="0">
+            <Type>Move Finish</Type>
+            <Target>P4</Target>
+            <Time>35</Time>
+        </Agent>
+    </Action>
+    <State>
+        <Agent id="0">
+            <Milestone>P4</Milestone>
+            <Task>T0</Task>
+            <Finish>
+                <Task>T0</Task>
+                <Task>T1</Task>
+                <Task>T2</Task>
+                <Task>T3</Task>
+            </Finish>
+            <Iteration>0</Iteration>
+        </Agent>
+    </State>
+    <Action>
+        <Agent id="0">
+            <Type>Task Start</Type>
+            <Target>T4</Target>
+            <Time>0</Time>
+        </Agent>
+    </Action>
+    <State>
+        <Agent id="0">
+            <Milestone>P4</Milestone>
+            <Task>T4</Task>
+            <Finish>
+                <Task>T0</Task>
+                <Task>T1</Task>
+                <Task>T2</Task>
+                <Task>T3</Task>
+            </Finish>
+            <Iteration>0</Iteration>
+        </Agent>
+    </State>
+    <Action>
+        <Agent id="0">
+            <Type>Task Finish</Type>
+            <Target>T0</Target>
+            <Time>120</Time>
+        </Agent>
+    </Action>
+    <State>
+        <Agent id="0">
+            <Milestone>P4</Milestone>
+            <Task>T0</Task>
+            <Finish>
+                <Task>T0</Task>
+                <Task>T1</Task>
+                <Task>T2</Task>
+                <Task>T3</Task>
+                <Task>T4</Task>
+            </Finish>
+            <Iteration>0</Iteration>
+        </Agent>
+    </State>
+    <Action>
+        <Agent id="0">
+            <Type>Move Start</Type>
+            <Target>F4T6</Target>
+            <Time>0</Time>
+        </Agent>
+    </Action>
+    <State>
+        <Agent id="0">
+            <Milestone>F4T6</Milestone>
+            <Task>T0</Task>
+            <Finish>
+                <Task>T0</Task>
+                <Task>T1</Task>
+                <Task>T2</Task>
+                <Task>T3</Task>
+                <Task>T4</Task>
+            </Finish>
+            <Iteration>0</Iteration>
+        </Agent>
+    </State>
+    <Action>
+        <Agent id="0">
+            <Type>Move Finish</Type>
+            <Target>P6</Target>
+            <Time>44</Time>
+        </Agent>
+    </Action>
+    <State>
+        <Agent id="0">
+            <Milestone>P6</Milestone>
+            <Task>T0</Task>
+            <Finish>
+                <Task>T0</Task>
+                <Task>T1</Task>
+                <Task>T2</Task>
+                <Task>T3</Task>
+                <Task>T4</Task>
+            </Finish>
+            <Iteration>0</Iteration>
+        </Agent>
+    </State>
+    <Action>
+        <Agent id="0">
+            <Type>Move Start</Type>
+            <Target>F6T1</Target>
+            <Time>0</Time>
+        </Agent>
+    </Action>
+    <State>
+        <Agent id="0">
+            <Milestone>F6T1</Milestone>
+            <Task>T0</Task>
+            <Finish>
+                <Task>T0</Task>
+                <Task>T1</Task>
+                <Task>T2</Task>
+                <Task>T3</Task>
+                <Task>T4</Task>
+            </Finish>
+            <Iteration>0</Iteration>
+        </Agent>
+    </State>
+    <Action>
+        <Agent id="0">
+            <Type>Move Finish</Type>
+            <Target>P1</Target>
+            <Time>91</Time>
+        </Agent>
+    </Action>
+    <State>
+        <Agent id="0">
+            <Milestone>P1</Milestone>
+            <Task>T0</Task>
+            <Finish>
+                <Task>T0</Task>
+                <Task>T1</Task>
+                <Task>T2</Task>
+                <Task>T3</Task>
+                <Task>T4</Task>
+            </Finish>
+            <Iteration>0</Iteration>
+        </Agent>
+    </State>
+    <Action>
+        <Agent id="0">
+            <Type>Move Start</Type>
+            <Target>F1T0</Target>
+            <Time>0</Time>
+        </Agent>
+    </Action>
+    <State>
+        <Agent id="0">
+            <Milestone>F1T0</Milestone>
+            <Task>T0</Task>
+            <Finish>
+                <Task>T0</Task>
+                <Task>T1</Task>
+                <Task>T2</Task>
+                <Task>T3</Task>
+                <Task>T4</Task>
+            </Finish>
+            <Iteration>0</Iteration>
+        </Agent>
+    </State>
+    <Action>
+        <Agent id="0">
+            <Type>Move Finish</Type>
+            <Target>P0</Target>
+            <Time>50</Time>
+        </Agent>
+    </Action>
+    <State>
+        <Agent id="0">
+            <Milestone>P0</Milestone>
+            <Task>T0</Task>
+            <Finish>
+                <Task>T0</Task>
+                <Task>T1</Task>
+                <Task>T2</Task>
+                <Task>T3</Task>
+                <Task>T4</Task>
+            </Finish>
+            <Iteration>0</Iteration>
+        </Agent>
+    </State>
+    <Action>
+        <Agent id="0">
+            <Type>Move Start</Type>
+            <Target>F0T3</Target>
+            <Time>0</Time>
+        </Agent>
+    </Action>
+    <State>
+        <Agent id="0">
+            <Milestone>F0T3</Milestone>
+            <Task>T0</Task>
+            <Finish>
+                <Task>T0</Task>
+                <Task>T1</Task>
+                <Task>T2</Task>
+                <Task>T3</Task>
+                <Task>T4</Task>
+            </Finish>
+            <Iteration>0</Iteration>
+        </Agent>
+    </State>
+    <Action>
+        <Agent id="0">
+            <Type>Move Finish</Type>
+            <Target>P3</Target>
+            <Time>49</Time>
+        </Agent>
+    </Action>
+    <State>
+        <Agent id="0">
+            <Milestone>P3</Milestone>
+            <Task>T0</Task>
+            <Finish>
+                <Task>T0</Task>
+                <Task>T1</Task>
+                <Task>T2</Task>
+                <Task>T3</Task>
+                <Task>T4</Task>
+            </Finish>
+            <Iteration>0</Iteration>
+        </Agent>
+    </State>
+    <Action>
+        <Agent id="0">
+            <Type>Move Start</Type>
+            <Target>F3T2</Target>
+            <Time>0</Time>
+        </Agent>
+    </Action>
+    <State>
+        <Agent id="0">
+            <Milestone>F3T2</Milestone>
+            <Task>T0</Task>
+            <Finish>
+                <Task>T0</Task>
+                <Task>T1</Task>
+                <Task>T2</Task>
+                <Task>T3</Task>
+                <Task>T4</Task>
+            </Finish>
+            <Iteration>0</Iteration>
+        </Agent>
+    </State>
+    <Action>
+        <Agent id="0">
+            <Type>Move Finish</Type>
+            <Target>P2</Target>
+            <Time>37</Time>
+        </Agent>
+    </Action>
+    <State>
+        <Agent id="0">
+            <Milestone>P2</Milestone>
+            <Task>T0</Task>
+            <Finish>
+                <Task>T0</Task>
+                <Task>T1</Task>
+                <Task>T2</Task>
+                <Task>T3</Task>
+                <Task>T4</Task>
+            </Finish>
+            <Iteration>0</Iteration>
+        </Agent>
+    </State>
+    <Action>
+        <Agent id="0">
+            <Type>Move Start</Type>
+            <Target>F2T5</Target>
+            <Time>0</Time>
+        </Agent>
+    </Action>
+    <State>
+        <Agent id="0">
+            <Milestone>F2T5</Milestone>
+            <Task>T0</Task>
+            <Finish>
+                <Task>T0</Task>
+                <Task>T1</Task>
+                <Task>T2</Task>
+                <Task>T3</Task>
+                <Task>T4</Task>
+            </Finish>
+            <Iteration>0</Iteration>
+        </Agent>
+    </State>
+    <Action>
+        <Agent id="0">
+            <Type>Move Finish</Type>
+            <Target>P5</Target>
+            <Time>96</Time>
+        </Agent>
+    </Action>
+    <State>
+        <Agent id="0">
+            <Milestone>P5</Milestone>
+            <Task>T0</Task>
+            <Finish>
+                <Task>T0</Task>
+                <Task>T1</Task>
+                <Task>T2</Task>
+                <Task>T3</Task>
+                <Task>T4</Task>
+            </Finish>
+            <Iteration>0</Iteration>
+        </Agent>
+    </State>
+    <Action>
+        <Agent id="0">
+            <Type>Task Start</Type>
+            <Target>T5</Target>
+            <Time>0</Time>
+        </Agent>
+    </Action>
+    <State>
+        <Agent id="0">
+            <Milestone>P5</Milestone>
+            <Task>T5</Task>
+            <Finish>
+                <Task>T0</Task>
+                <Task>T1</Task>
+                <Task>T2</Task>
+                <Task>T3</Task>
+                <Task>T4</Task>
+            </Finish>
+            <Iteration>0</Iteration>
+        </Agent>
+    </State>
+    <Action>
+        <Agent id="0">
+            <Type>Task Finish</Type>
+            <Target>T0</Target>
+            <Time>145</Time>
+        </Agent>
+    </Action>
+    <State>
+        <Agent id="0">
+            <Milestone>P5</Milestone>
+            <Task>T0</Task>
+            <Finish>
+                <Task>T0</Task>
+                <Task>T1</Task>
+                <Task>T2</Task>
+                <Task>T3</Task>
+                <Task>T4</Task>
+                <Task>T5</Task>
+            </Finish>
+            <Iteration>0</Iteration>
+        </Agent>
+    </State>
+    <Action>
+        <Agent id="0">
+            <Type>Move Start</Type>
+            <Target>F5T2</Target>
+            <Time>0</Time>
+        </Agent>
+    </Action>
+    <State>
+        <Agent id="0">
+            <Milestone>F5T2</Milestone>
+            <Task>T0</Task>
+            <Finish>
+                <Task>T0</Task>
+                <Task>T1</Task>
+                <Task>T2</Task>
+                <Task>T3</Task>
+                <Task>T4</Task>
+                <Task>T5</Task>
+            </Finish>
+            <Iteration>0</Iteration>
+        </Agent>
+    </State>
+    <Action>
+        <Agent id="0">
+            <Type>Move Finish</Type>
+            <Target>P2</Target>
+            <Time>96</Time>
+        </Agent>
+    </Action>
+    <State>
+        <Agent id="0">
+            <Milestone>P2</Milestone>
+            <Task>T0</Task>
+            <Finish>
+                <Task>T0</Task>
+                <Task>T1</Task>
+                <Task>T2</Task>
+                <Task>T3</Task>
+                <Task>T4</Task>
+                <Task>T5</Task>
+            </Finish>
+            <Iteration>0</Iteration>
+        </Agent>
+    </State>
+    <Action>
+        <Agent id="0">
+            <Type>Move Start</Type>
+            <Target>F2T4</Target>
+            <Time>0</Time>
+        </Agent>
+    </Action>
+    <State>
+        <Agent id="0">
+            <Milestone>F2T4</Milestone>
+            <Task>T0</Task>
+            <Finish>
+                <Task>T0</Task>
+                <Task>T1</Task>
+                <Task>T2</Task>
+                <Task>T3</Task>
+                <Task>T4</Task>
+                <Task>T5</Task>
+            </Finish>
+            <Iteration>0</Iteration>
+        </Agent>
+    </State>
+    <Action>
+        <Agent id="0">
+            <Type>Move Finish</Type>
+            <Target>P4</Target>
+            <Time>24</Time>
+        </Agent>
+    </Action>
+    <State>
+        <Agent id="0">
+            <Milestone>P4</Milestone>
+            <Task>T0</Task>
+            <Finish>
+                <Task>T0</Task>
+                <Task>T1</Task>
+                <Task>T2</Task>
+                <Task>T3</Task>
+                <Task>T4</Task>
+                <Task>T5</Task>
+            </Finish>
+            <Iteration>0</Iteration>
+        </Agent>
+    </State>
+    <Action>
+        <Agent id="0">
+            <Type>Move Start</Type>
+            <Target>F4T0</Target>
+            <Time>0</Time>
+        </Agent>
+    </Action>
+    <State>
+        <Agent id="0">
+            <Milestone>F4T0</Milestone>
+            <Task>T0</Task>
+            <Finish>
+                <Task>T0</Task>
+                <Task>T1</Task>
+                <Task>T2</Task>
+                <Task>T3</Task>
+                <Task>T4</Task>
+                <Task>T5</Task>
+            </Finish>
+            <Iteration>0</Iteration>
+        </Agent>
+    </State>
+    <Action>
+        <Agent id="0">
+            <Type>Move Finish</Type>
+            <Target>P0</Target>
+            <Time>35</Time>
+        </Agent>
+    </Action>
+    <State>
+        <Agent id="0">
+            <Milestone>P0</Milestone>
+            <Task>T0</Task>
+            <Finish>
+                <Task>T0</Task>
+                <Task>T1</Task>
+                <Task>T2</Task>
+                <Task>T3</Task>
+                <Task>T4</Task>
+                <Task>T5</Task>
+            </Finish>
+            <Iteration>0</Iteration>
+        </Agent>
+    </State>
+    <Action>
+        <Agent id="0">
+            <Type>Move Start</Type>
+            <Target>F0T6</Target>
+            <Time>0</Time>
+        </Agent>
+    </Action>
+    <State>
+        <Agent id="0">
+            <Milestone>F0T6</Milestone>
+            <Task>T0</Task>
+            <Finish>
+                <Task>T0</Task>
+                <Task>T1</Task>
+                <Task>T2</Task>
+                <Task>T3</Task>
+                <Task>T4</Task>
+                <Task>T5</Task>
+            </Finish>
+            <Iteration>0</Iteration>
+        </Agent>
+    </State>
+    <Action>
+        <Agent id="0">
+            <Type>Move Finish</Type>
+            <Target>P6</Target>
+            <Time>70</Time>
+        </Agent>
+    </Action>
+    <State>
+        <Agent id="0">
+            <Milestone>P6</Milestone>
+            <Task>T0</Task>
+            <Finish>
+                <Task>T0</Task>
+                <Task>T1</Task>
+                <Task>T2</Task>
+                <Task>T3</Task>
+                <Task>T4</Task>
+                <Task>T5</Task>
+            </Finish>
+            <Iteration>0</Iteration>
+        </Agent>
+    </State>
+    <Action>
+        <Agent id="0">
+            <Type>Task Start</Type>
+            <Target>T6</Target>
+            <Time>0</Time>
+        </Agent>
+    </Action>
+    <State>
+        <Agent id="0">
+            <Milestone>P6</Milestone>
+            <Task>T6</Task>
+            <Finish>
+                <Task>T0</Task>
+                <Task>T1</Task>
+                <Task>T2</Task>
+                <Task>T3</Task>
+                <Task>T4</Task>
+                <Task>T5</Task>
+            </Finish>
+            <Iteration>0</Iteration>
+        </Agent>
+    </State>
+    <Action>
+        <Agent id="0">
+            <Type>Task Finish</Type>
+            <Target>T0</Target>
+            <Time>200</Time>
+        </Agent>
+    </Action>
+    <State>
+        <Agent id="0">
+            <Milestone>P6</Milestone>
+            <Task>T0</Task>
+            <Finish>
+                <Task>T0</Task>
+            </Finish>
+            <Iteration>1</Iteration>
+        </Agent>
+    </State>
+    <Action>
+        <Agent id="0">
+            <Type>Task Finish</Type>
+            <Target>T0</Target>
+            <Time>200</Time>
+        </Agent>
+    </Action>
+</Traces>

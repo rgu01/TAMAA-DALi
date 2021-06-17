@@ -4,12 +4,7 @@ import java.awt.EventQueue;
 
 import javax.swing.JFrame;
 import javax.swing.JLabel;
-
-import com.afarcloud.thrift.PlannerService;
-
-import java.awt.BorderLayout;
 import java.awt.Font;
-import java.util.Date;
 import javax.swing.JButton;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
@@ -62,7 +57,7 @@ public class Information {
 		lblNewLabel.setBounds(10, 10, 350, 50);
 		frmMiddlewareOfMalta.getContentPane().add(lblNewLabel);
 		
-		JLabel lblStatus = new JLabel("started!");
+		JLabel lblStatus = new JLabel("started! ");
 		lblStatus.setFont(new Font("Tahoma", Font.PLAIN, 15));
 		lblStatus.setBounds(10, 60, 205, 50);
 		frmMiddlewareOfMalta.getContentPane().add(lblStatus);

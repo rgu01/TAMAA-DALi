@@ -157,9 +157,9 @@ public class PlannerServiceHandler implements PlannerService.Iface {
 			computePaths(plan, as);
 
 			/*****************************************************************
-			 * If no server is running, and only path planning is needed, please comment the
-			 * code below
-			 */
+			 * If no server is running, and only path planning is needed, 
+			 * please comment the code below
+			 *****************************************************************/
 			List<Path> passAnomalyPaths = new ArrayList<Path>();
 			List<Integer> passAnomalyPathsTime = new ArrayList<Integer>();
 			boolean success = generatePlan(plan, as, passAnomalyPaths, passAnomalyPathsTime);
@@ -234,7 +234,9 @@ public class PlannerServiceHandler implements PlannerService.Iface {
 			ex.printStackTrace();
 		} finally {
 			transport.close();
-			System.exit(0);
+			this.agents.clear();
+			//exit:
+			//System.exit(0);
 		}
 	}
 
@@ -287,6 +289,7 @@ public class PlannerServiceHandler implements PlannerService.Iface {
 	private boolean generatePlan(Mission plan, PathPlanningAlgorithm as, List<Path> passAnomalyPaths,
 			List<Integer> passAnomalyPathsTime) throws Exception {
 		boolean success = callUppaal();
+		//boolean success = true;
 		if (!success) {
 			String show = "Time out: server does not respond!";
 			// JOptionPane.showMessageDialog(null, show, "Error: Time Out",
@@ -308,6 +311,20 @@ public class PlannerServiceHandler implements PlannerService.Iface {
 		plan.commands.clear();
 		plan.tasks.removeIf(x -> x.getTaskTemplate().getTaskType().name() == "TRANSIT");
 	}
+	
+	private int newTaskID(Mission plan)
+	{
+		int maxID = 0;
+		
+		for (Task task : plan.tasks) {
+			if(maxID < task.id)
+			{
+				maxID = task.id;
+			}
+		}
+		
+		return maxID + 1;
+	}
 
 	private boolean parseXML(Mission plan, PathPlanningAlgorithm as, List<Path> passAnomalyPaths,
 			List<Integer> passAnomalyPathsTime) {
@@ -317,7 +334,7 @@ public class PlannerServiceHandler implements PlannerService.Iface {
 		TaskScheduleAction action;
 		// multiple vehicles
 		Task[] movement = new Task[this.agents.size()];
-		Task[] execution = new Task[this.agents.size()];
+		//Task[] execution = new Task[this.agents.size()];
 		List<Command>[] segments = new ArrayList[this.agents.size()];
 		Integer[] startTime = new Integer[this.agents.size()];
 		Node[] currentNode = new Node[this.agents.size()];
@@ -366,16 +383,35 @@ public class PlannerServiceHandler implements PlannerService.Iface {
 						// start an execution
 						else if (action.type.equals(TaskScheduleAction.StrTaskStart)) {
 							currentNode[agent.ID] = agent.getMilestone(agentState.currentPosition);
+							Task newTask = null;
 							for (Task task : plan.tasks) {
 								waypoint[agent.ID] = new Node(task.getArea().area.get(0));
 								if (task.taskTemplate.taskType.equals(TaskType.INSPECT)
 										&& waypoint[agent.ID].equals(currentNode[agent.ID])) {
-									task.assignedVehicleId = agent.vehicle.id;
-									task.startTime = startTime[agent.ID];
-									movement[agent.ID].parentTaskId = task.id;
-									execution[agent.ID] = task;
-									break;
+									if(task.endTime == 0)
+									{
+										//this task is not assigned yet
+										task.assignedVehicleId = agent.vehicle.id;
+										task.startTime = startTime[agent.ID];
+										movement[agent.ID].parentTaskId = task.id;
+										//execution[agent.ID] = task;
+										break;
+									}
+									else
+									{
+										newTask = task.deepCopy();
+										newTask.id = this.newTaskID(plan);
+										newTask.assignedVehicleId = agent.vehicle.id;
+										newTask.startTime = startTime[agent.ID];
+										newTask.endTime = 0;
+										movement[agent.ID].parentTaskId = newTask.id;
+										break;
+									}
 								}
+							}
+							if(newTask != null)
+							{
+								plan.addToTasks(newTask);
 							}
 							// add movement going to this task's milestone
 							plan.addToTasks(movement[agent.ID]);
@@ -386,9 +422,20 @@ public class PlannerServiceHandler implements PlannerService.Iface {
 						// finish an execution
 						else if (action.type.equals(TaskScheduleAction.StrTaskFinish)) {
 							currentNode[agent.ID] = agent.getMilestone(agentState.currentPosition);
-							execution[agent.ID].assignedVehicleId = agent.vehicle.id;
-							execution[agent.ID].endTime = startTime[agent.ID] + (int) action.time;
-							// plan.addToTasks(execution);
+							//execution[agent.ID].assignedVehicleId = agent.vehicle.id;
+							//execution[agent.ID].endTime = startTime[agent.ID] + (int) action.time;
+							//newly added
+							for (Task task : plan.tasks) {
+								waypoint[agent.ID] = new Node(task.getArea().area.get(0));
+								if (task.assignedVehicleId == agent.vehicle.id
+										&& task.taskTemplate.taskType.equals(TaskType.INSPECT)
+										&& waypoint[agent.ID].equals(currentNode[agent.ID])
+										&& task.endTime == 0) {
+									task.endTime = startTime[agent.ID] + (int) action.time;
+									startTime[agent.ID] = (int) task.endTime;
+									break;
+								}
+							}
 						}
 					}
 				}
@@ -403,6 +450,7 @@ public class PlannerServiceHandler implements PlannerService.Iface {
 		UPPAgentGenerator.run(this.agents); // call UPPAAL in the server side to synthesize a mission plan
 		TransferFile trans = new TransferFile(this.uppaalAddress, this.uppaalPort);
 		trans.sendFile(UPPAgentGenerator.outputXML);
+		//trans.sendFile("./model/tamaa-3-monitor.xml");
 		trans.close();
 		trans = new TransferFile(this.uppaalAddress, this.uppaalPort);
 		trans.receiveFile(TaskScheduleParser.planPath);

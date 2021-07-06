@@ -237,7 +237,7 @@ public class PlannerServiceHandlerTestVersion implements PlannerService.Iface {
 		long startTime = System.nanoTime();
 
 		computePaths(plan, as);
-
+		
 		/*****************************************************************
 		 * If no server is running, and only path planning is needed, please comment the
 		 * code below
@@ -265,7 +265,7 @@ public class PlannerServiceHandlerTestVersion implements PlannerService.Iface {
 						String.valueOf(genTime / 1000000) + " UppCalls " + String.valueOf(this.uppCalls) + 
 						" AlgCalls " + String.valueOf(this.algCalls) + " UppTime " + 
 						String.valueOf(this.uppTime / 1000000) + " Heat " + String.valueOf(regionPreferences.size())  
-						+ " " + String.valueOf(execTimes.stream().reduce(0l, Long::sum))  +"\n";
+						+ " " + String.valueOf(execTimes.stream().reduce(0l, Long::sum)/ 1000000)  +"\n";
 				fw.write(log);
 				//for (Long l : execTimes) {
 					//fw.write(String.valueOf(l / 1000000) + '\n');
@@ -274,8 +274,8 @@ public class PlannerServiceHandlerTestVersion implements PlannerService.Iface {
 			}catch (Exception e) {}
 		}
 		else {
-			String show = "No mission plan is found! Recomputation limit is reached";
-			JOptionPane.showMessageDialog(null, show, "Warning: Dissatisfied", JOptionPane.PLAIN_MESSAGE);
+			//String show = "No mission plan is found! Recomputation limit is reached";
+			//JOptionPane.showMessageDialog(null, show, "Warning: Dissatisfied", JOptionPane.PLAIN_MESSAGE);
 		}
 	}
 
@@ -395,6 +395,10 @@ public class PlannerServiceHandlerTestVersion implements PlannerService.Iface {
 						// finish a move
 						else if (action.type.equals(TaskScheduleAction.StrMoveFinish)) {
 							targetNode[agent.ID] = agent.getMilestone(action.target);
+							if(targetNode[agent.ID] == null)
+							{
+								int mmm = 0;
+							}
 							segments[agent.ID] = this.finishMove(movement[agent.ID], agent, targetNode[agent.ID],
 									(int) action.time);
 							if (as instanceof Dali) {
@@ -463,7 +467,7 @@ public class PlannerServiceHandlerTestVersion implements PlannerService.Iface {
 
 	private void computePaths(Mission plan, PathPlanningAlgorithm as) {
 		int agentID = 0, milestoneID = 1;// 0 is for the starting position
-		HashMap<Node, HashMap<Node, Path>> computedPaths = new HashMap<Node, HashMap<Node, Path>>();
+		HashMap<Node, HashMap<Node,Path>> computedPaths = new HashMap<Node, HashMap<Node,Path>>();
 		for (Vehicle v : plan.getVehicles()) {
 			milestoneID = 1;
 			List<Node> milestones = new ArrayList<Node>();

@@ -97,10 +97,11 @@ public class PlannerServiceHandlerTestVersion implements PlannerService.Iface {
 			double[] steps = {10,9,8,7,6,5,4,3,2}; 
 			//double[] steps = {2}; 
 			int[] tasks = {1,2,3,4,5,6,7,8,9,10};
-			//int[] tasks = {7,8,9,10};
+			//int[] tasks = {10};
 			//int[] obstacles = {1,2,3,4,5,6,7,8,9,10};
 			int[] obstacles = {10};
-			int[] heatmaps = {0,1,2,3,4,5};
+			//int[] heatmaps = {0,1,2,3,4,5};
+			int[] heatmaps = {0};
 			for (double i : steps) {
 				for (int j : tasks) {
 					for (int k : obstacles) {
@@ -111,9 +112,9 @@ public class PlannerServiceHandlerTestVersion implements PlannerService.Iface {
 							resetVars();
 							algo = Algo.Dali;
 							runTest(requestId, plan.deepCopy(), client, sphericalMercator, i,j,k,l);	
-							resetVars();
-							algo = Algo.DaliStar;
-							runTest(requestId, plan.deepCopy(), client, sphericalMercator, i,j,k,l);	
+							//resetVars();
+							//algo = Algo.DaliStar;
+							//runTest(requestId, plan.deepCopy(), client, sphericalMercator, i,j,k,l);	
 							//resetVars();
 							//algo = Algo.AStar2;
 							//runTest(requestId, plan.deepCopy(), client, sphericalMercator, i,j,k,l);			
@@ -148,6 +149,7 @@ public class PlannerServiceHandlerTestVersion implements PlannerService.Iface {
 		this.uppCalls =0;
 		this.algCalls =0;
 		this.uppTime = 0;
+		this.execTimes.clear();
 	}
 	
 	private void runTest(int requestId, Mission plan, MmtService.Client client,
@@ -262,7 +264,8 @@ public class PlannerServiceHandlerTestVersion implements PlannerService.Iface {
 						" Forbidden " + String.valueOf(nArea.obstacles.size()) + " GenTime " +  
 						String.valueOf(genTime / 1000000) + " UppCalls " + String.valueOf(this.uppCalls) + 
 						" AlgCalls " + String.valueOf(this.algCalls) + " UppTime " + 
-						String.valueOf(this.uppTime / 1000000) + " Heat " + String.valueOf(regionPreferences.size())  +"\n";
+						String.valueOf(this.uppTime / 1000000) + " Heat " + String.valueOf(regionPreferences.size())  
+						+ " " + String.valueOf(execTimes.stream().reduce(0l, Long::sum))  +"\n";
 				fw.write(log);
 				//for (Long l : execTimes) {
 					//fw.write(String.valueOf(l / 1000000) + '\n');

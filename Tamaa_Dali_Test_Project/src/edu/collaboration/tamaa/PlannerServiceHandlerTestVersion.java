@@ -31,6 +31,7 @@ import edu.collaboration.pathplanning.dali.Dali;
 import edu.collaboration.pathplanning.dali.DaliRegionConstraint;
 import edu.collaboration.pathplanning.dali.DaliStar;
 import edu.collaboration.pathplanning.xstar.*;
+import edu.collaboration.tamaa.PlannerServiceHandler.Algo;
 import edu.collaboration.taskscheduling.*;
 
 public class PlannerServiceHandlerTestVersion implements PlannerService.Iface {
@@ -53,6 +54,7 @@ public class PlannerServiceHandlerTestVersion implements PlannerService.Iface {
 	public static String timeLogFile = "./results/testtime.log";
 	public static String logFileDali = "./results/dali.log";
 	public static String logFileDaliStar = "./results/dalistar.log";
+	public static String tmplog = "./results/tmp.log";
 	private ArrayList<Long> execTimes = new ArrayList<Long>(); 
 	
 	public enum Algo {
@@ -458,7 +460,7 @@ public class PlannerServiceHandlerTestVersion implements PlannerService.Iface {
 
 	private void computePaths(Mission plan, PathPlanningAlgorithm as) {
 		int agentID = 0, milestoneID = 1;// 0 is for the starting position
-		HashMap<Node, HashMap<Node,Path>> computedPaths = new HashMap<Node, HashMap<Node,Path>>();
+		HashMap<Node, HashMap<Node, Path>> computedPaths = new HashMap<Node, HashMap<Node, Path>>();
 		for (Vehicle v : plan.getVehicles()) {
 			milestoneID = 1;
 			List<Node> milestones = new ArrayList<Node>();
@@ -482,27 +484,60 @@ public class PlannerServiceHandlerTestVersion implements PlannerService.Iface {
 			}
 			List<Path> paths = new ArrayList<Path>();
 			for (Node n1 : milestones) {
-				for (Node n2 : milestones) {
-					if (!n1.equals(n2)) {
-						Path path = new Path(n1, n2);
-						if (!agent.isPathExist(path)) {
-							if (computedPaths.containsKey(n1) && computedPaths.get(n1).containsKey(n2)) {
-								path = computedPaths.get(n1).get(n2);
-							}
-							else {
-								long startTime1 = System.nanoTime();
-								this.algCalls +=1;
-								path = as.calculate(n1, n2, v.maxSpeed);
-								execTimes.add(System.nanoTime() - startTime1);
-								if (!computedPaths.containsKey(n1)) {
-									computedPaths.put(n1, new HashMap<Node, Path>());
+				if (this.algo == Algo.Dali || this.algo == Algo.DaliStar) {
+					List<Node> destinations = new ArrayList<Node>();
+					for (Node n2 : milestones) {
+						if (!n1.equals(n2)) {
+							Path path = new Path(n1, n2);
+							if (!agent.isPathExist(path)) {
+								if (computedPaths.containsKey(n1) && computedPaths.get(n1).containsKey(n2)) {
+									path = computedPaths.get(n1).get(n2);
+									if (path != null && !paths.contains(path)) {
+										paths.add(path);
+									}
+								} else {
+									destinations.add(n2);
 								}
-								computedPaths.get(n1).put(n2, path);
 							}
 						}
-
-						if (path != null && !paths.contains(path)) {
-							paths.add(path);
+					}
+					if (destinations.size() != 0) {
+						long startTime1 = System.nanoTime();
+						List<Path> pathsFromN = ((Dali)as).calculateSingleSource(n1, destinations, v.maxSpeed);
+						execTimes.add(System.nanoTime() - startTime1);
+						if (!computedPaths.containsKey(n1)) {
+							computedPaths.put(n1, new HashMap<Node, Path>());
+						}
+						for (Path p : pathsFromN) {
+							computedPaths.get(n1).put(p.end, p);
+							if (p != null && !paths.contains(p)) {
+								paths.add(p);
+							}
+						}
+					}
+					
+				}
+				else {
+					for (Node n2 : milestones) {
+						if (!n1.equals(n2)) {
+							Path path = new Path(n1, n2);
+							if (!agent.isPathExist(path)) {
+								if (computedPaths.containsKey(n1) && computedPaths.get(n1).containsKey(n2)) {
+									path = computedPaths.get(n1).get(n2);
+								} else {
+									long startTime1 = System.nanoTime();
+									path = as.calculate(n1, n2, v.maxSpeed);
+									execTimes.add(System.nanoTime() - startTime1);
+									if (!computedPaths.containsKey(n1)) {
+										computedPaths.put(n1, new HashMap<Node, Path>());
+									}
+									computedPaths.get(n1).put(n2, path);
+								}
+							}
+	
+							if (path != null && !paths.contains(path)) {
+								paths.add(path);
+							}
 						}
 					}
 				}

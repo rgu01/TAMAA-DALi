@@ -2,6 +2,7 @@ package edu.collaboration.pathplanning.dali;
 
 import java.io.FileWriter;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -181,7 +182,9 @@ public class Dali implements PathPlanningAlgorithm {
 ////////////////////////////////////////////
 // Methods for updates for heat and anomalies. 
 ///////////////////////////////////////////
-	
+	public int getNodes() {
+		return this.nodes.keySet().size();
+	}
 	//Heat in interval [0,1] with 0 - unoccupied and 1 - unpassable
 	public void updateHeatMap() {
 		for (DaliEdge edge : edges.values()) {
@@ -325,6 +328,88 @@ public class Dali implements PathPlanningAlgorithm {
 			return null;
 		}
 	}
+
+	public List<Path> calculateSingleSource(Node start, List<Node> destinations, double vehicleSpeed) {
+		List<DaliNode> targets = new ArrayList<DaliNode>(); 
+		HashMap<DaliNode, Path> p_result = new HashMap<DaliNode,Path>();
+		for (Node n : destinations) {
+			DaliNode dn = findNearestNode(n.lat, n.lon); 
+			targets.add(dn);
+			p_result.put(dn, new Path(start, n));
+		}
+		DaliNode source = findNearestNode(start.lat, start.lon);
+		if (targets.stream().anyMatch(s -> s ==null)) {
+			System.out.println("At least one target node  not found");
+			return null;
+		}
+		if (source == null) {
+			System.out.println("Source node  not found");
+			return null;
+		}
+		PriorityQueue<DaliNode> processing = new PriorityQueue<DaliNode>(new Comparator<DaliNode>() { 
+			@Override
+		    public int compare(DaliNode a, DaliNode b) {
+				return a.currentDistance < b.currentDistance ? -1 : a.currentDistance == b.currentDistance ? 0 : 1;
+			}
+		});
+		HashMap<DaliNode, Double> distances = new HashMap<DaliNode, Double>();
+		source.currentDistance = 0;
+		processing.add(source);
+		while(!processing.isEmpty() && !targets.stream().allMatch(s-> distances.containsKey(s))) {
+			DaliNode current = processing.remove();
+			double currentDistance = current.currentDistance;
+			for (DaliEdge e : current.edges) {
+				if (distances.containsKey(e.dest) || e.heat == 1) continue;
+				if (checkAnomalies && blockedByAnomalies(e.dest.id, currentDistance / vehicleSpeed)) continue;
+				double priorityCoeff = 1;
+				if (usePreferedAreas) 
+					priorityCoeff = e.dest.isDesirable ? 1/e.dest.regionIntensity : e.dest.regionIntensity;
+				double edist = currentDistance + priorityCoeff * e.length / (1-e.heat) ;
+				if (!processing.contains(e.dest) || e.dest.currentDistance > edist || 
+						(current != source && e.dest.currentDistance == edist && sameDirection(e.dest, current))) {
+					processing.remove(e.dest);
+					e.dest.currentDistance = edist;
+					e.dest.previous = current;
+					processing.add(e.dest);					
+				}			
+			}
+			distances.put(current, currentDistance);
+		}
+		clearNodes();
+		for (DaliNode t: targets) {
+			if (distances.containsKey(t)) {
+				double totalLength = 0;
+				List<Node> path = new ArrayList<Node>();
+				DaliNode current = t;
+				path.add(t);
+				while (current.previous != source) {
+					DaliEdge e = current.previous.findOutEdge(current);
+					totalLength += e.length/(1-e.heat); 
+					current = current.previous;
+					path.add(0, current);
+				}
+				DaliEdge e = current.previous.findOutEdge(current);
+				totalLength += e.length/(1-e.heat);
+				path.add(0, source);
+				p_result.get(t).segments = path;
+				p_result.get(t).setLength(totalLength);
+				System.out.println("Done");
+				
+				try {
+					FileWriter fw = new FileWriter(PlannerServiceHandler.logFileDali, true);
+					String log = String.valueOf(distances.size())+ "\n";
+					fw.write(log);
+					fw.close();
+				}catch (Exception ex) {}
+			}
+			else
+			{
+				System.out.println("No path found" + start.toString() + t.toString());
+			}
+		}
+		return new ArrayList<Path>(p_result.values());
+	}
+
 	
 	public boolean pathEntersAnomaly(Path path, double startTime, double speed) {
 		int i =0;

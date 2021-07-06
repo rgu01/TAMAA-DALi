@@ -31,7 +31,6 @@ import edu.collaboration.pathplanning.dali.Dali;
 import edu.collaboration.pathplanning.dali.DaliRegionConstraint;
 import edu.collaboration.pathplanning.dali.DaliStar;
 import edu.collaboration.pathplanning.xstar.*;
-import edu.collaboration.tamaa.PlannerServiceHandler.Algo;
 import edu.collaboration.taskscheduling.*;
 
 public class PlannerServiceHandlerTestVersion implements PlannerService.Iface {
@@ -54,7 +53,6 @@ public class PlannerServiceHandlerTestVersion implements PlannerService.Iface {
 	public static String timeLogFile = "./results/testtime.log";
 	public static String logFileDali = "./results/dali.log";
 	public static String logFileDaliStar = "./results/dalistar.log";
-	public static String tmplog = "./results/tmp.log";
 	private ArrayList<Long> execTimes = new ArrayList<Long>(); 
 	
 	public enum Algo {
@@ -94,41 +92,14 @@ public class PlannerServiceHandlerTestVersion implements PlannerService.Iface {
 			client = new MmtService.Client(protocol);
 			System.out.println("msg from MMT: " + client.ping());
 			
-<<<<<<< HEAD
 			double[] steps = {10,9,8,7,6,5,4,3,2}; 
 			//double[] steps = {2}; 
 			int[] tasks = {1,2,3,4,5,6,7,8,9,10};
 			//int[] tasks = {10};
-=======
-			//double[] steps = {10,9,8,7,6,5,4,3,2}; 
-			double[] steps = {4}; 
-			//int[] tasks = {1,2,3,4,5,6,7,8,9,10};
-			int[] tasks = {1,2};
-			//int[] tasks = {7,8,9,10};
->>>>>>> 68289ea06f811af9daf65c4deb56f33e4e422248
 			//int[] obstacles = {1,2,3,4,5,6,7,8,9,10};
 			int[] obstacles = {10};
 			//int[] heatmaps = {0,1,2,3,4,5};
 			int[] heatmaps = {0};
-<<<<<<< HEAD
-			for (double i : steps) {
-				for (int j : tasks) {
-					for (int k : obstacles) {
-						for (int l : heatmaps) {
-							//algo = Algo.AStar;
-							//resetVars();
-							//runTest(requestId, plan.deepCopy(), client, sphericalMercator, i,j,k,l);	
-							resetVars();
-							algo = Algo.Dali;
-							runTest(requestId, plan.deepCopy(), client, sphericalMercator, i,j,k,l);	
-							//resetVars();
-							//algo = Algo.DaliStar;
-							//runTest(requestId, plan.deepCopy(), client, sphericalMercator, i,j,k,l);	
-							//resetVars();
-							//algo = Algo.AStar2;
-							//runTest(requestId, plan.deepCopy(), client, sphericalMercator, i,j,k,l);			
-=======
-			//int[] agents = {1,2,3,4};
 			for(int round = 0; round < 5; round++)
 			{
 				for (double i : steps) {
@@ -137,21 +108,20 @@ public class PlannerServiceHandlerTestVersion implements PlannerService.Iface {
 							for (int l : heatmaps) {
 								//for(int a : agents)
 								//{
-									//algo = Algo.AStar;
-									//resetVars();
-									//runTest(requestId, plan.deepCopy(), client, sphericalMercator, i,j,k,l);	
-									//resetVars();
-									//algo = Algo.Dali;
-									//runTest(requestId, plan.deepCopy(), client, sphericalMercator, i,j,k,l);	
-									resetVars();
-									algo = Algo.DaliStar;
-									runTest(requestId, plan.deepCopy(), client, sphericalMercator, i,j,k,l);	
-									resetVars();
-									algo = Algo.AStar2;
-									runTest(requestId, plan.deepCopy(), client, sphericalMercator, i,j,k,l);		
+								//algo = Algo.AStar;
+								//resetVars();
+								//runTest(requestId, plan.deepCopy(), client, sphericalMercator, i,j,k,l);	
+								resetVars();
+								algo = Algo.Dali;
+								runTest(requestId, plan.deepCopy(), client, sphericalMercator, i,j,k,l);	
+								//resetVars();
+								//algo = Algo.DaliStar;
+								//runTest(requestId, plan.deepCopy(), client, sphericalMercator, i,j,k,l);	
+								//resetVars();
+								//algo = Algo.AStar2;
+								//runTest(requestId, plan.deepCopy(), client, sphericalMercator, i,j,k,l);			
 								//}
 							}
->>>>>>> 68289ea06f811af9daf65c4deb56f33e4e422248
 						}
 					}
 				}
@@ -271,7 +241,7 @@ public class PlannerServiceHandlerTestVersion implements PlannerService.Iface {
 		long startTime = System.nanoTime();
 
 		computePaths(plan, as);
-		
+
 		/*****************************************************************
 		 * If no server is running, and only path planning is needed, please comment the
 		 * code below
@@ -298,8 +268,8 @@ public class PlannerServiceHandlerTestVersion implements PlannerService.Iface {
 						" Forbidden " + String.valueOf(nArea.obstacles.size()) + " GenTime " +  
 						String.valueOf(genTime / 1000000) + " UppCalls " + String.valueOf(this.uppCalls) + 
 						" AlgCalls " + String.valueOf(this.algCalls) + " UppTime " + 
-						String.valueOf(this.uppTime / 1000000) + " Heat " + String.valueOf(regionPreferences.size())  
-						+ " " + String.valueOf(execTimes.stream().reduce(0l, Long::sum)/ 1000000)  +"\n";
+						String.valueOf(this.uppTime / 1000000) + " Heat " + String.valueOf(regionPreferences.size())
+						+ " AlgTime " + String.valueOf(execTimes.stream().reduce(0l, Long::sum)/ 1000000)  +"\n";
 				fw.write(log);
 				//for (Long l : execTimes) {
 					//fw.write(String.valueOf(l / 1000000) + '\n');
@@ -501,7 +471,7 @@ public class PlannerServiceHandlerTestVersion implements PlannerService.Iface {
 
 	private void computePaths(Mission plan, PathPlanningAlgorithm as) {
 		int agentID = 0, milestoneID = 1;// 0 is for the starting position
-		HashMap<Node, HashMap<Node,Path>> computedPaths = new HashMap<Node, HashMap<Node,Path>>();
+		HashMap<Node, HashMap<Node, Path>> computedPaths = new HashMap<Node, HashMap<Node, Path>>();
 		for (Vehicle v : plan.getVehicles()) {
 			milestoneID = 1;
 			List<Node> milestones = new ArrayList<Node>();
@@ -579,6 +549,63 @@ public class PlannerServiceHandlerTestVersion implements PlannerService.Iface {
 							if (path != null && !paths.contains(path)) {
 								paths.add(path);
 							}
+						}
+					}
+				}
+			}
+			agent.paths = paths;
+			this.agents.add(agent);
+		}
+	}
+
+	
+	private void computePaths_old(Mission plan, PathPlanningAlgorithm as) {
+		int agentID = 0, milestoneID = 1;// 0 is for the starting position
+		HashMap<Node, HashMap<Node,Path>> computedPaths = new HashMap<Node, HashMap<Node,Path>>();
+		for (Vehicle v : plan.getVehicles()) {
+			milestoneID = 1;
+			List<Node> milestones = new ArrayList<Node>();
+			UPPAgentVehicle agent = new UPPAgentVehicle(agentID++);
+			agent.missionTimeLimit = nArea.missionTimeLimit;
+			agent.vehicle = v;
+			milestones.add(agent.getStartNode());
+			for (Task task : plan.tasks) {
+				// one vehicle assumed begin
+				task.missionId = (int) task.altitude;
+				//
+				if (task.assignedVehicleId == 0) {
+					task.assignedVehicleId = v.id;
+				}
+				// one vehicle assumed over
+				if (agent.canDoTask(task)) {
+					Node milestone = new Node(milestoneID++, task);
+					milestones.add(milestone);
+					agent.addTask(milestone);
+				}
+			}
+			List<Path> paths = new ArrayList<Path>();
+			for (Node n1 : milestones) {
+				for (Node n2 : milestones) {
+					if (!n1.equals(n2)) {
+						Path path = new Path(n1, n2);
+						if (!agent.isPathExist(path)) {
+							if (computedPaths.containsKey(n1) && computedPaths.get(n1).containsKey(n2)) {
+								path = computedPaths.get(n1).get(n2);
+							}
+							else {
+								long startTime1 = System.nanoTime();
+								this.algCalls +=1;
+								path = as.calculate(n1, n2, v.maxSpeed);
+								execTimes.add(System.nanoTime() - startTime1);
+								if (!computedPaths.containsKey(n1)) {
+									computedPaths.put(n1, new HashMap<Node, Path>());
+								}
+								computedPaths.get(n1).put(n2, path);
+							}
+						}
+
+						if (path != null && !paths.contains(path)) {
+							paths.add(path);
 						}
 					}
 				}

@@ -77,7 +77,7 @@ public class UPPAgentStaticMap extends UppaalAutomaton {
 		UppaalLocation initial = new UppaalLocation();
 		initial.setName("initial");
 		initial.setId("initial");
-		initial.setUrgent();
+		initial.setCommitted();
 		setLocationCorrdinates(initial, x - 100, y - 100);
 
 		this.addOrReplaceLocation(initial);

@@ -5,7 +5,10 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import javax.swing.JOptionPane;
 import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -15,12 +18,13 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.xml.sax.SAXException;
 import edu.collaboration.model.queries.*;
+import edu.collaboration.pathplanning.Node;
 import edu.mdh.se.*;
 import edu.mdh.se.parse.TAMAAParser;
 
 public class UPPAgentGenerator {
 	public static String outputXML = "./model/tamaa.xml";
-	public static String outputMCRL = "./model/mcrl.xml";
+	public static String outputMCRL = "./model/mcrl";
 	private static String templateXML = "empty_template.xml"; // under the bin folder
 	private static String gResetString = "int steps = 0;\r\nvoid gReset()\r\n" + "{\r\n" + "   int i,j,k;\r\n"
 			+ "   for(i=0;i<AgentNum;i++)\r\n" + "   {\r\n" + "       tf[i][0]=true;\r\n" + "       ts[i][0]=true;\r\n"
@@ -49,10 +53,6 @@ public class UPPAgentGenerator {
 				Element root = templatedoc.getDocumentElement();
 				doc = new UppaalDocument(root);
 			}
-			/*
-			 * else { JOptionPane.showMessageDialog(null, "Template is missing.", "Error",
-			 * JOptionPane.PLAIN_MESSAGE); }
-			 */
 		} catch (ParserConfigurationException ex) {
 
 			show = ex.getMessage();
@@ -71,19 +71,35 @@ public class UPPAgentGenerator {
 		int eventNum = 0, missionNum = 0;
 		UPPAgentFleet fleet = new UPPAgentFleet(agents);
 		UPPAgentMission m = null;
+		Map<Node, UPPAgentMission> milestonesList = new HashMap<Node, UPPAgentMission>();
 		UPPAgentUppaalQueries queries = new UPPAgentUppaalQueries();
 		String system_declaration = "";
 		String global_declaration = "// Place global declarations here.\r\n";
-		String constBcet = "const int BCET[AgentNum][TaskNum]={";
-		String constWcet = "const int WCET[AgentNum][TaskNum]={";
+		// String constBcet = "const int BCET[AgentNum][TaskNum]={";
+		// String constWcet = "const int WCET[AgentNum][TaskNum]={";
 		String constRegularTask = "const int RegularTaskNum[AgentNum] = {";
 		String iterationString = "int iteration[AgentNum] = {";
 		String channelString = "chan move[AgentNum], initialize;\r\n";
+		String rulesString = "const int rules[MilestoneNum]={";
 		UPPAgentEventMonitor monitor = null;
 		// UPPAgentTaskCoverage tcq = new UPPAgentTaskCoverage(fleet);
 		UPPAgentTaskTimedIteration tcq = new UPPAgentTaskTimedIteration(fleet);
 		queries.addQuery(tcq);
 		agentNum = fleet.agents.size();
+
+		for (UPPAgentMission mission : fleet.agents.get(0).missions) {
+			for (Node milestone : mission.getMilestones()) {
+				milestonesList.put(milestone, mission);
+			}
+		}
+		int[] rulesInt = new int[milestonesList.size() + 1];
+		for (Map.Entry<Node, UPPAgentMission> entry : milestonesList.entrySet()) {
+			rulesInt[entry.getKey().id] = entry.getValue().ID;
+		}
+		for (int i = 0; i < rulesInt.length; i++) {
+			rulesString += rulesInt[i] + ",";
+		}
+		rulesString = rulesString.substring(0, rulesString.length() - 1) + "};\n";
 
 		for (UPPAgentVehicle agent : fleet.agents) {
 			UPPAgentStaticMap map = new UPPAgentStaticMap(agent);
@@ -93,41 +109,30 @@ public class UPPAgentGenerator {
 			monitor.setDeclaration();
 			mapScale = map.Scale;
 
-			for (int i = 0; i < agent.missions.size(); i++) {
-				m = agent.missions.get(i);
-				if (i == 0) {
-					constBcet += "{0,";
-					constWcet += "{0,";
-				}
-				if (i < agent.missions.size()) {
-					constBcet += m.task.bcet;
-					constWcet += m.task.wcet;
-				} else {
-					constBcet += 0;
-					constWcet += 0;
-				}
-				if (i != agent.missions.size() - 1) {
-					constBcet += ",";
-					constWcet += ",";
-				} else {
-					constBcet += "}";
-					constWcet += "}";
-				}
-			}
+			/*
+			 * for (int i = 0; i < agent.missions.size(); i++) { m = agent.missions.get(i);
+			 * if (i == 0) { constBcet += "{0,"; constWcet += "{0,"; } if (i <
+			 * agent.missions.size()) { constBcet += m.task.bcet; constWcet += m.task.wcet;
+			 * } else { constBcet += 0; constWcet += 0; } if (i != agent.missions.size() -
+			 * 1) { constBcet += ","; constWcet += ","; } else { constBcet += "}"; constWcet
+			 * += "}"; } }
+			 */
 
 			constRegularTask += agent.missions.size();
 			iterationString += 0;
 			if (agent.ID != fleet.agents.size() - 1) {
 				constRegularTask += ",";
 				iterationString += ",";
-				constBcet += ",";
-				constWcet += ",";
+				/*
+				 * constBcet += ","; constWcet += ",";
+				 */
 
 			} else {
 				constRegularTask += "};\r\n";
 				iterationString += "};\r\n";
-				constBcet += "};\r\n";
-				constWcet += "};\r\n";
+				/*
+				 * constBcet += "};\r\n"; constWcet += "};\r\n";
+				 */
 			}
 
 			for (UPPAgentEvent e : monitor.events) {
@@ -167,7 +172,12 @@ public class UPPAgentGenerator {
 		system_declaration = system_declaration.substring(0, system_declaration.lastIndexOf(",")) + ";";
 		try {
 			gResetString = "";
-			global_declaration += addDeclaration(mapScale, missionNum, eventNum, agentNum) + constBcet + constWcet
+			global_declaration += addDeclaration(mapScale, missionNum, eventNum, agentNum) + rulesString /*
+																											 * +
+																											 * constBcet
+																											 * +
+																											 * constWcet
+																											 */
 					+ constRegularTask + channelString + "\r\n" + iterationString + "\r\n" + "clock globalTime;\r\n"
 					+ gResetString + updateIterationString;
 		} catch (Exception ex) {
@@ -182,9 +192,11 @@ public class UPPAgentGenerator {
 		show = "Model for " + fleet.agents.size() + " agents has built! MapScale: " + mapScale + ", taskNum: "
 				+ missionNum + ", eventNum: " + eventNum + ".";
 
+		// MCRL
 		try {
 			int maxTime = agents.get(0).missionTimeLimit > 0 ? agents.get(0).missionTimeLimit * 5 : 5000;
-			TAMAAParser parse = new TAMAAParser(agents.size(), maxTime, (missionNum + 1), outputXML, outputMCRL);
+			String mcrlFile = outputMCRL + "_" + agents.size() + "vehicle.xml";
+			TAMAAParser parse = new TAMAAParser(agents.size(), maxTime, (missionNum + 1), outputXML, mcrlFile);
 			parse.create(parse.parse());
 		} catch (Exception ex) {
 			show = ex.getMessage();

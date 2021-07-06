@@ -14,7 +14,7 @@ public class TransferFile extends Socket {
     public TransferFile(String ip, int port) throws Exception {
         super(ip, port);
         timeOut = false;
-        this.setSoTimeout(60*60*1000);// 1 hour
+        this.setSoTimeout(60*60*10000);// 10 hour
 
         System.out.println("Cliect[port:" + this.getLocalPort() + "] connect to the Server.");
     }
@@ -78,6 +78,7 @@ public class TransferFile extends Socket {
 		int length = 0;
 		DataInputStream dis = null;
 		FileOutputStream fos = null;
+		File file = null;
 		try 
 		{
 			try 
@@ -89,17 +90,24 @@ public class TransferFile extends Socket {
 				{
 					f.mkdir();  
 				}
-
-				fos = new FileOutputStream(new File(filePath));    
-				inputByte = new byte[1024];   
-				System.out.println("Start to receive result data...");  
-				while ((length = dis.read(inputByte, 0, inputByte.length)) > 0) 
+				file = new File(filePath);
+				if(file.exists())
 				{
-					fos.write(inputByte, 0, length);
-					fos.flush();    
+					fos = new FileOutputStream(file);    
+					inputByte = new byte[1024];   
+					System.out.println("Start to receive result data...");  
+					while ((length = dis.read(inputByte, 0, inputByte.length)) > 0) 
+					{
+						fos.write(inputByte, 0, length);
+						fos.flush();    
+					}
+					this.timeOut = false;
+					System.out.println("Complete receiving result data: " + filePath);
 				}
-				this.timeOut = false;
-				System.out.println("Complete receiving result data: " + filePath);
+				else
+				{
+					System.out.println("File does not exist: " + filePath);
+				}
 			} 
 			finally 
 			{

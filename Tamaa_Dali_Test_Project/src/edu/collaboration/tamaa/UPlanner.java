@@ -1,8 +1,12 @@
 package edu.collaboration.tamaa;
 
-import org.apache.thrift.transport.TServerSocket;
-import org.apache.thrift.transport.TServerTransport;
+import org.apache.thrift.transport.*;
 
+import java.awt.Button;
+import java.awt.FlowLayout;
+import java.awt.Frame;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileInputStream;
@@ -17,39 +21,65 @@ import java.util.Date;
 import java.util.Scanner;
 
 import javax.swing.JOptionPane;
+
+import org.apache.thrift.protocol.TBinaryProtocol;
 import org.apache.thrift.server.TServer;
 import org.apache.thrift.server.TServer.Args;
 import org.apache.thrift.server.TSimpleServer;
+import org.apache.thrift.server.TThreadPoolServer;
+
 import com.afarcloud.thrift.*;
 
 import edu.collaboration.taskscheduling.TaskScheduleParser;
 import edu.collaboration.taskscheduling.TaskSchedulePlan;
 
-//try
-
-public class UPlanner {
-	private String configPath = "res/config.txt";
-	private String mmtAddress;
-	private int mmtPort;
-	private int tamaaPort;
-	private String uppaalAddress;
-	private int uppaalPort;
+public class UPlanner extends Thread {
+	public String configPath = "res/config.txt";
+	public String mmtAddress;
+	public int mmtPort;
+	public int tamaaPort;
+	public String uppaalAddress;
+	public int uppaalPort;
+	TServer server;
+	
+	public void run()
+	{
+		this.readConfig();
+		this.logtoText();
+		System.out.println("============" + new Date().toString() + "============");
+		this.StartServer(new PlannerService.Processor<PlannerServiceHandler>(
+				new PlannerServiceHandler(this.mmtAddress, this.mmtPort, this.uppaalAddress, this.uppaalPort)));
+		//The following is for experiments
+		//planner.StartServer(new PlannerService.Processor<PlannerServiceHandlerTestVersion>(
+		//		new PlannerServiceHandlerTestVersion(planner.mmtAddress, planner.mmtPort, planner.uppaalAddress, planner.uppaalPort)));
+	}
+	
+	public void exit()
+	{
+		this.server.stop();
+	}
 
 	public void StartServer(PlannerService.Processor<PlannerServiceHandler> processor) {
+	//public void StartServer(PlannerService.Processor<PlannerServiceHandlerTestVersion> processor) {
 		try {
 			TServerTransport serverTransport = new TServerSocket(this.tamaaPort);
-			TServer server = new TSimpleServer(new Args(serverTransport).processor(processor));
-
-			// Use this for a multithreaded server
-			// TServer server = new TThreadPoolServer(new
-			// TThreadPoolServer.Args(serverTransport).processor(processor));
-
-			// System.out.println(UPPAgentGenerator.class.getClassLoader().getResource("empty_template.xml").getPath());
-			// JOptionPane.showMessageDialog(null,
-			// UPPAgentGenerator.class.getClassLoader().getResource("empty_template.xml").getPath(),
-			// "DEBUG", JOptionPane.PLAIN_MESSAGE);
-			// InputStream is = new InputStream("resources/empty_template.xml");
+			// Use this for a multi-thread server
+//			TThreadPoolServer.Args args = new TThreadPoolServer.Args(serverTransport)
+//				    .minWorkerThreads(5)
+//				    .maxWorkerThreads(256)
+//				    .processor(processor)
+//				    .protocolFactory(new TBinaryProtocol.Factory());
+//			this.server = new TThreadPoolServer(args);
+//			System.out.println("Starting the multi-thread server...");
+			
+			// Use the following line for a single-thread server
+			this.server = new TSimpleServer(new Args(serverTransport).processor(processor));
 			System.out.println("Starting the simple server...");
+
+//			System.out.println(UPPAgentGenerator.class.getClassLoader().getResource("empty_template.xml").getPath());
+//			JOptionPane.showMessageDialog(null, UPPAgentGenerator.class.getClassLoader().getResource("empty_template.xml").getPath(), "DEBUG", JOptionPane.PLAIN_MESSAGE);
+//			InputStream is = new InputStream("resources/empty_template.xml");
+			
 			server.serve();
 			System.out.println("Server started...");
 		} catch (Exception e) {
@@ -100,12 +130,18 @@ public class UPlanner {
 		}
 	}
 
-	public static void main(String[] args) {
-		UPlanner planner = new UPlanner();
-		planner.readConfig();
-		planner.logtoText();
-		System.out.println("============" + new Date().toString() + "============");
-		planner.StartServer(new PlannerService.Processor<PlannerServiceHandler>(
-				new PlannerServiceHandler(planner.mmtAddress, planner.mmtPort, planner.uppaalAddress, planner.uppaalPort)));
-	}
+//	public static void main(String[] args) {
+//
+//		
+//		UPlanner planner = new UPlanner();
+//		planner.readConfig();
+//		planner.logtoText();
+//		System.out.println("============" + new Date().toString() + "============");
+//		planner.StartServer(new PlannerService.Processor<PlannerServiceHandler>(
+//				new PlannerServiceHandler(planner.mmtAddress, planner.mmtPort, planner.uppaalAddress, planner.uppaalPort)));
+//		//The following is for experiments
+//		//planner.StartServer(new PlannerService.Processor<PlannerServiceHandlerTestVersion>(
+//		//		new PlannerServiceHandlerTestVersion(planner.mmtAddress, planner.mmtPort, planner.uppaalAddress, planner.uppaalPort)));
+// 
+//	}
 }

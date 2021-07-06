@@ -25,4 +25,9 @@ public class TaskScheduleAction {
 		this.target = target;
 		this.time = time;
 	}
+	
+	public String toString()
+	{
+		return "(" + this.agentID + ", " + this.type + ", " + this.target + ", " + this.time + ")";
+	}
 }

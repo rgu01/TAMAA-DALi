@@ -94,14 +94,23 @@ public class PlannerServiceHandlerTestVersion implements PlannerService.Iface {
 			client = new MmtService.Client(protocol);
 			System.out.println("msg from MMT: " + client.ping());
 			
+<<<<<<< HEAD
 			double[] steps = {10,9,8,7,6,5,4,3,2}; 
 			//double[] steps = {2}; 
 			int[] tasks = {1,2,3,4,5,6,7,8,9,10};
 			//int[] tasks = {10};
+=======
+			//double[] steps = {10,9,8,7,6,5,4,3,2}; 
+			double[] steps = {4}; 
+			//int[] tasks = {1,2,3,4,5,6,7,8,9,10};
+			int[] tasks = {1,2};
+			//int[] tasks = {7,8,9,10};
+>>>>>>> 68289ea06f811af9daf65c4deb56f33e4e422248
 			//int[] obstacles = {1,2,3,4,5,6,7,8,9,10};
 			int[] obstacles = {10};
 			//int[] heatmaps = {0,1,2,3,4,5};
 			int[] heatmaps = {0};
+<<<<<<< HEAD
 			for (double i : steps) {
 				for (int j : tasks) {
 					for (int k : obstacles) {
@@ -118,6 +127,31 @@ public class PlannerServiceHandlerTestVersion implements PlannerService.Iface {
 							//resetVars();
 							//algo = Algo.AStar2;
 							//runTest(requestId, plan.deepCopy(), client, sphericalMercator, i,j,k,l);			
+=======
+			//int[] agents = {1,2,3,4};
+			for(int round = 0; round < 5; round++)
+			{
+				for (double i : steps) {
+					for (int j : tasks) {
+						for (int k : obstacles) {
+							for (int l : heatmaps) {
+								//for(int a : agents)
+								//{
+									//algo = Algo.AStar;
+									//resetVars();
+									//runTest(requestId, plan.deepCopy(), client, sphericalMercator, i,j,k,l);	
+									//resetVars();
+									//algo = Algo.Dali;
+									//runTest(requestId, plan.deepCopy(), client, sphericalMercator, i,j,k,l);	
+									resetVars();
+									algo = Algo.DaliStar;
+									runTest(requestId, plan.deepCopy(), client, sphericalMercator, i,j,k,l);	
+									resetVars();
+									algo = Algo.AStar2;
+									runTest(requestId, plan.deepCopy(), client, sphericalMercator, i,j,k,l);		
+								//}
+							}
+>>>>>>> 68289ea06f811af9daf65c4deb56f33e4e422248
 						}
 					}
 				}

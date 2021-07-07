@@ -47,11 +47,11 @@ public class UPlanner extends Thread {
 		this.readConfig();
 		this.logtoText();
 		System.out.println("============" + new Date().toString() + "============");
-		this.StartServer(new PlannerService.Processor<PlannerServiceHandler>(
-				new PlannerServiceHandler(this.mmtAddress, this.mmtPort, this.uppaalAddress, this.uppaalPort)));
+		//this.StartServer(new PlannerService.Processor<PlannerServiceHandler>(
+		//		new PlannerServiceHandler(this.mmtAddress, this.mmtPort, this.uppaalAddress, this.uppaalPort)));
 		//The following is for experiments
-		//planner.StartServer(new PlannerService.Processor<PlannerServiceHandlerTestVersion>(
-		//		new PlannerServiceHandlerTestVersion(planner.mmtAddress, planner.mmtPort, planner.uppaalAddress, planner.uppaalPort)));
+		this.StartServerTest(new PlannerService.Processor<PlannerServiceHandlerTestVersion>(
+				new PlannerServiceHandlerTestVersion(this.mmtAddress, this.mmtPort, this.uppaalAddress, this.uppaalPort)));
 	}
 	
 	public void exit()
@@ -60,7 +60,35 @@ public class UPlanner extends Thread {
 	}
 
 	public void StartServer(PlannerService.Processor<PlannerServiceHandler> processor) {
-	//public void StartServer(PlannerService.Processor<PlannerServiceHandlerTestVersion> processor) {
+		try {
+			TServerTransport serverTransport = new TServerSocket(this.tamaaPort);
+			// Use this for a multi-thread server
+//			TThreadPoolServer.Args args = new TThreadPoolServer.Args(serverTransport)
+//				    .minWorkerThreads(5)
+//				    .maxWorkerThreads(256)
+//				    .processor(processor)
+//				    .protocolFactory(new TBinaryProtocol.Factory());
+//			this.server = new TThreadPoolServer(args);
+//			System.out.println("Starting the multi-thread server...");
+			
+			// Use the following line for a single-thread server
+			this.server = new TSimpleServer(new Args(serverTransport).processor(processor));
+			System.out.println("Starting the simple server...");
+
+//			System.out.println(UPPAgentGenerator.class.getClassLoader().getResource("empty_template.xml").getPath());
+//			JOptionPane.showMessageDialog(null, UPPAgentGenerator.class.getClassLoader().getResource("empty_template.xml").getPath(), "DEBUG", JOptionPane.PLAIN_MESSAGE);
+//			InputStream is = new InputStream("resources/empty_template.xml");
+			
+			server.serve();
+			System.out.println("Server started...");
+		} catch (Exception e) {
+			System.out.println(e.getMessage());
+			e.printStackTrace();
+			JOptionPane.showMessageDialog(null, e.getMessage(), "ERROR", JOptionPane.PLAIN_MESSAGE);
+		}
+	}
+	
+	public void StartServerTest(PlannerService.Processor<PlannerServiceHandlerTestVersion> processor) {
 		try {
 			TServerTransport serverTransport = new TServerSocket(this.tamaaPort);
 			// Use this for a multi-thread server

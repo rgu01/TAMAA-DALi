@@ -100,7 +100,7 @@ public class PlannerServiceHandlerTestVersion implements PlannerService.Iface {
 			int[] obstacles = {10};
 			//int[] heatmaps = {0,1,2,3,4,5};
 			int[] heatmaps = {0};
-			for(int round = 0; round < 5; round++)
+			for(int round = 0; round < 1; round++)
 			{
 				for (double i : steps) {
 					for (int j : tasks) {
@@ -117,9 +117,9 @@ public class PlannerServiceHandlerTestVersion implements PlannerService.Iface {
 								//resetVars();
 								//algo = Algo.DaliStar;
 								//runTest(requestId, plan.deepCopy(), client, sphericalMercator, i,j,k,l);	
-								//resetVars();
-								//algo = Algo.AStar2;
-								//runTest(requestId, plan.deepCopy(), client, sphericalMercator, i,j,k,l);			
+								resetVars();
+								algo = Algo.AStar2;
+								runTest(requestId, plan.deepCopy(), client, sphericalMercator, i,j,k,l);			
 								//}
 							}
 						}

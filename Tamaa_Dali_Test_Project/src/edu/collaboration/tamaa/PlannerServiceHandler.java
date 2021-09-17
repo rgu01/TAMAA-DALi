@@ -451,7 +451,7 @@ public class PlannerServiceHandler implements PlannerService.Iface {
 		UPPAgentGenerator.run(this.agents); // call UPPAAL in the server side to synthesize a mission plan
 		TransferFile trans = new TransferFile(this.uppaalAddress, this.uppaalPort);
 		trans.sendFile(UPPAgentGenerator.outputXML);
-		//trans.sendFile("./model/tamaa-3-monitor.xml");
+		//trans.sendFile("./model/special use case - no monitors.xml");
 		trans.close();
 		trans = new TransferFile(this.uppaalAddress, this.uppaalPort);
 		trans.receiveFile(TaskScheduleParser.planPath);

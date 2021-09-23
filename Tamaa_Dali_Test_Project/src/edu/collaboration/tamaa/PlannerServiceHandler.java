@@ -368,8 +368,6 @@ public class PlannerServiceHandler implements PlannerService.Iface {
 						// finish a move
 						else if (action.type.equals(TaskScheduleAction.StrMoveFinish)) {
 							targetNode[agent.ID] = agent.getMilestone(action.target);
-							segments[agent.ID] = this.finishMove(movement[agent.ID], agent, targetNode[agent.ID],
-									(int) action.time);
 							if (as instanceof Dali) {
 								Path currentPath = agent.findPath(lastPosition[agent.ID].getPosition(),
 										targetNode[agent.ID].getPosition());
@@ -378,7 +376,10 @@ public class PlannerServiceHandler implements PlannerService.Iface {
 									passAnomalyPaths.add(currentPath);
 									passAnomalyPathsTime.add(lastPostionTime[agent.ID]);
 								}
+								//((Dali) as).pathStraightener(currentPath, lastPostionTime[agent.ID], agent.vehicle.maxSpeed);
 							}
+							segments[agent.ID] = this.finishMove(movement[agent.ID], agent, targetNode[agent.ID],
+									(int) action.time);
 							startTime[agent.ID] += (int) action.time;
 						}
 						// start an execution

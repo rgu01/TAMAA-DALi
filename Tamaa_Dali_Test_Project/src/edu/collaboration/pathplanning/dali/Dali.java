@@ -430,4 +430,104 @@ public class Dali implements PathPlanningAlgorithm {
 		return false;
 	}
 	
+	private List<DaliNode> findLineIntersections(DaliNode start, DaliNode end) {
+		ArrayList<DaliNode> intersections = new ArrayList<DaliNode>();
+		double movingRight = start.lat < end.lat ? 1 : -1;
+		double movingDown = start.lon < end.lon ? 1 : -1;
+		double nextv = start.lat + movingRight* NavigationArea.threshold;
+		double nexth = start.lon + movingDown *NavigationArea.threshold;
+		boolean atend = ((nextv - end.lat)*movingRight >0) && ((nexth - end.lon)*movingDown >0);
+		double coeff = (end.lon-start.lon) /(end.lat-start.lat);
+		
+		DaliNode lastNode = start;
+		while (!atend) {
+			double nextvy = (nextv- start.lat)* coeff + start.lon;
+			if (nextvy == nexth) { //cross corner
+				final DaliNode toadd = findNearestNode(nextv +movingRight* NavigationArea.threshold/2 ,
+						nexth+ movingDown* NavigationArea.threshold/2);
+				if (toadd == null)
+					return null;
+				DaliEdge edge = lastNode.edges.stream().filter(e -> e.dest == toadd).findFirst().orElse(null);
+				if (edge == null || edge.heat != 0) 
+					return null;
+				intersections.add(toadd);				
+				nextv += movingRight* NavigationArea.threshold;
+				nexth += movingDown* NavigationArea.threshold;
+				lastNode = toadd;
+			}
+			else if ((nextvy - nexth) *movingDown > 0) { //cross horizontal
+				final DaliNode toadd = findNearestNode(nextv -movingRight* NavigationArea.threshold/2 ,
+						nexth+ movingDown* NavigationArea.threshold/2);
+				if (toadd == null)
+					return null;
+				DaliEdge edge = lastNode.edges.stream().filter(e -> e.dest == toadd).findFirst().orElse(null);
+				if (edge == null || edge.heat != 0) 
+					return null;
+				intersections.add(toadd);
+				nexth += movingDown* NavigationArea.threshold;
+				lastNode = toadd;
+			}
+			else { //cross vertical
+				final DaliNode toadd = findNearestNode(nextv +movingRight* NavigationArea.threshold/2 ,
+						nexth- movingDown* NavigationArea.threshold/2);
+				if (toadd == null)
+					return null;
+				DaliEdge edge = lastNode.edges.stream().filter(e -> e.dest == toadd).findFirst().orElse(null);
+				if (edge == null || edge.heat != 0) 
+					return null;
+				intersections.add(toadd);
+				nextv += movingRight* NavigationArea.threshold;
+				lastNode = toadd;
+			}
+			atend = ((nextv - end.lat)*movingRight >0) && ((nexth - end.lon)*movingDown >0);
+		}
+		return intersections;
+	}
+	
+	public void pathStraightener(Path path, double startTime, double speed) {
+		if (path.segments.size() <3) {
+			return ;
+		}
+		int i = 1;
+		double time = startTime;
+		HashMap<DaliNode, Double> times = new HashMap<DaliNode, Double>();
+		times.put((DaliNode)path.segments.get(0), startTime);
+		while (i!= path.segments.size()) {
+			final DaliNode tmp = (DaliNode)path.segments.get(i);
+			DaliEdge edge = ((DaliNode)path.segments.get(i-1)).edges.stream().filter(e -> e.dest == tmp).findFirst().orElse(null);
+			time = time + edge.length / (speed * (1-edge.heat));
+			times.put(tmp, time);
+			i++;
+		}
+		ArrayList<Node> newSegments = new ArrayList<Node>();
+		DaliNode currentSegmentStart = (DaliNode)path.segments.get(0);
+		newSegments.add(currentSegmentStart);
+		DaliNode currentSegmentEnd =  (DaliNode)path.segments.get(1);
+		List<DaliNode> crossedNodes;
+		i=2;
+		while (i < path.segments.size()) {
+			DaliNode next = (DaliNode)path.segments.get(i);
+			crossedNodes = findLineIntersections(currentSegmentStart, next);
+			boolean canShorten = true;
+			if (crossedNodes == null) {
+				canShorten = false;
+			}
+			else {
+				for (DaliNode node:crossedNodes) {
+					canShorten = canShorten && (!blockedByAnomalies(node.id, times.get(currentSegmentStart) 
+							                             + currentSegmentStart.distanceToOther(node)/speed));
+				}
+			}
+			if (!canShorten) {
+				newSegments.add(currentSegmentEnd);
+				times.put(currentSegmentEnd, times.get(currentSegmentStart) 
+                        + currentSegmentStart.distanceToOther(currentSegmentEnd)/speed);
+				currentSegmentStart = currentSegmentEnd;
+			}
+			currentSegmentEnd = next;
+			i++;
+		}
+		newSegments.add(currentSegmentEnd);
+		path.segments = newSegments;
+	}
 }

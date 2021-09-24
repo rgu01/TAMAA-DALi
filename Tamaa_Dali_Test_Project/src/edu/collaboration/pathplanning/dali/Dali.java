@@ -484,20 +484,24 @@ public class Dali implements PathPlanningAlgorithm {
 		return intersections;
 	}
 	
-	public void pathStraightener(Path path, double startTime, double speed) {
+	public List<Node> pathStraightener(Path path, double startTime, double speed) {
 		if (path.segments.size() <3) {
-			return ;
+			return path.segments;
 		}
 		int i = 1;
 		double time = startTime;
 		HashMap<DaliNode, Double> times = new HashMap<DaliNode, Double>();
 		times.put((DaliNode)path.segments.get(0), startTime);
-		while (i!= path.segments.size()) {
-			final DaliNode tmp = (DaliNode)path.segments.get(i);
-			DaliEdge edge = ((DaliNode)path.segments.get(i-1)).edges.stream().filter(e -> e.dest == tmp).findFirst().orElse(null);
-			time = time + edge.length / (speed * (1-edge.heat));
-			times.put(tmp, time);
-			i++;
+		try {
+			while (i!= path.segments.size()) {
+				final DaliNode tmp = (DaliNode)path.segments.get(i);
+				DaliEdge edge = ((DaliNode)path.segments.get(i-1)).edges.stream().filter(e -> e.dest == tmp).findFirst().orElse(null);
+				time = time + edge.length / (speed * (1-edge.heat));
+				times.put(tmp, time);
+				i++;
+			}
+		} catch (Exception e) { //already straightened
+			return path.segments; 
 		}
 		ArrayList<Node> newSegments = new ArrayList<Node>();
 		DaliNode currentSegmentStart = (DaliNode)path.segments.get(0);
@@ -528,6 +532,6 @@ public class Dali implements PathPlanningAlgorithm {
 			i++;
 		}
 		newSegments.add(currentSegmentEnd);
-		path.segments = newSegments;
+		return newSegments;
 	}
 }

@@ -60,7 +60,8 @@ public class UPPAgentVehicle {
 				return path;
 			}
 			else if(path.equals(end, start)){
-				return path.reverse();
+				path.reverse();
+				return path;
 			}
 		}
 

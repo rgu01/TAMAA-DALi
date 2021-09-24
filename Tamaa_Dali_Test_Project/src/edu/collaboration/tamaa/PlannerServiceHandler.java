@@ -41,6 +41,7 @@ public class PlannerServiceHandler implements PlannerService.Iface {
 	// public static final String SERVER_IP = "192.168.56.1";
 	// public static final String SERVER_IP = "127.0.0.1";
 	// public static final int SERVER_PORT = 9779;
+	//public String mmtAddress = "192.168.1.2";
 	public String mmtAddress = "127.0.0.1";
 	public int mmtPort = 9096;
 	private String uppaalAddress;
@@ -376,10 +377,10 @@ public class PlannerServiceHandler implements PlannerService.Iface {
 									passAnomalyPaths.add(currentPath);
 									passAnomalyPathsTime.add(lastPostionTime[agent.ID]);
 								}
-								//((Dali) as).pathStraightener(currentPath, lastPostionTime[agent.ID], agent.vehicle.maxSpeed);
+								
 							}
 							segments[agent.ID] = this.finishMove(movement[agent.ID], agent, targetNode[agent.ID],
-									(int) action.time);
+									(int) action.time, as);
 							startTime[agent.ID] += (int) action.time;
 						}
 						// start an execution
@@ -627,16 +628,20 @@ public class PlannerServiceHandler implements PlannerService.Iface {
 
 	private static int moveID = 0;
 
-	private List<Command> finishMove(Task transit, UPPAgentVehicle agent, Node endPoint, int duration) {
+	private List<Command> finishMove(Task transit, UPPAgentVehicle agent, Node endPoint, int duration, PathPlanningAlgorithm as) {
 		Position startPoint = transit.area.area.get(0);
 		Path path = agent.findPath(startPoint, endPoint.getPosition());
 		Node start = path.start;
 		long startTime = transit.startTime;
 		List<Command> movement = new ArrayList<Command>();
-
+		List<Node> segments = path.segments;
+		if (this.algo == Algo.Dali || this.algo == Algo.DaliStar) {
+			segments = ((Dali) as).pathStraightener(path, transit.startTime, agent.vehicle.maxSpeed);
+		}
 		transit.area.area.add(endPoint.getPosition());
 		transit.endTime = transit.startTime + duration;
-		for (Node end : path.segments) {
+		for (Node end : segments) {
+		//for (Node end : path.segments) {
 			if (!end.equals(start)) {
 				Command move = new PathSegment(start, end).createNewMove(moveID++, agent, startTime);
 				move.setRelatedTask(transit);

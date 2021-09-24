@@ -56,9 +56,11 @@ public class UPPAgentVehicle {
 
 	public Path findPath(Node start, Node end) {
 		for (Path path : this.paths) {
-			if ((path.start.equals(start) && path.end.equals(end))
-					|| (path.start.equals(end) && path.end.equals(start))) {
+			if (path.equals(start, end)) {
 				return path;
+			}
+			else if(path.equals(end, start)){
+				return path.reverse();
 			}
 		}
 

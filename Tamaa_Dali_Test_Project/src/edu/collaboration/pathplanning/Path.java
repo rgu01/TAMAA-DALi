@@ -28,6 +28,19 @@ public class Path {
 		this.segments = segs;
 	}
 	
+	public boolean equals(Node s, Node e) {
+		return start.equals(s) && end.equals(e);
+	}
+	
+	public Path reverse() {
+		List<Node> reversedSegments = new ArrayList<Node>();
+		for(int i = this.segments.size() - 1; i > 0; i--) {
+			reversedSegments.add(this.segments.get(i));
+		}
+		
+		return new Path(this.end, this.start, reversedSegments);
+	}
+	
 	public void setLength(double value) {
 		this.length = value;
 	}

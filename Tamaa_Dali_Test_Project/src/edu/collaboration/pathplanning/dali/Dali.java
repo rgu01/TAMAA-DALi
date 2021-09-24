@@ -434,8 +434,8 @@ public class Dali implements PathPlanningAlgorithm {
 		ArrayList<DaliNode> intersections = new ArrayList<DaliNode>();
 		double movingRight = start.lat < end.lat ? 1 : -1;
 		double movingDown = start.lon < end.lon ? 1 : -1;
-		double nextv = start.lat + movingRight* NavigationArea.threshold;
-		double nexth = start.lon + movingDown *NavigationArea.threshold;
+		double nextv = start.lat + movingRight* NavigationArea.threshold/2;
+		double nexth = start.lon + movingDown *NavigationArea.threshold/2;
 		boolean atend = ((nextv - end.lat)*movingRight >0) && ((nexth - end.lon)*movingDown >0);
 		double coeff = (end.lon-start.lon) /(end.lat-start.lat);
 		

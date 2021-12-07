@@ -65,6 +65,12 @@ public class DaliStar extends Dali{
 				if (usePreferedAreas) 
 					priorityCoeff = e.dest.isDesirable ? 1/e.dest.regionIntensity : e.dest.regionIntensity;
 				double edist = currentDistance + priorityCoeff * e.length / (1-e.heat) ;
+				if (current ==source) {
+					edist = currentDistance + priorityCoeff * e.dest.distanceToPoint(start.lat, start.lon) / (1-e.heat);
+				}
+				if (e.dest == target) {
+					edist = currentDistance + priorityCoeff * current.distanceToPoint(destination.lat, destination.lon) / (1-e.heat);
+				}
 				if (!processing.contains(e.dest) || e.dest.currentDistance > edist || 
 						(current != source && e.dest.currentDistance == edist && sameDirection(e.dest, current))) {
 					processing.remove(e.dest);
@@ -84,12 +90,16 @@ public class DaliStar extends Dali{
 			path.add(target);
 			while (current.previous != source) {
 				DaliEdge e = current.previous.findOutEdge(current);
-				totalLength += e.length/(1-e.heat); 
+				if (current ==target) {
+					totalLength += current.previous.distanceToPoint(destination.lat, destination.lon) /(1-e.heat);
+				} else {
+					totalLength += e.length/(1-e.heat);
+				} 
 				current = current.previous;
 				path.add(0, current);
 			}
 			DaliEdge e = current.previous.findOutEdge(current);
-			totalLength += e.length/(1-e.heat);
+			totalLength +=  current.distanceToPoint(start.lat, start.lon)/(1-e.heat);
 			path.add(0, source);
 			p_result.segments = path;
 			p_result.setLength(totalLength);

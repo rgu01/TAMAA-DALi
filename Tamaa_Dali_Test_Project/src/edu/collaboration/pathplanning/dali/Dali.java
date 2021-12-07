@@ -302,16 +302,12 @@ public class Dali implements PathPlanningAlgorithm {
 			path.add(target);
 			while (current.previous != source) {
 				DaliEdge e = current.previous.findOutEdge(current);
-				if (current ==target) {
-					totalLength += current.previous.distanceToPoint(destination.lat, destination.lon) /(1-e.heat);
-				} else {
-					totalLength += e.length/(1-e.heat);
-				}
+				totalLength += e.length/(1-e.heat); 
 				current = current.previous;
 				path.add(0, current);
 			}
 			DaliEdge e = current.previous.findOutEdge(current);
-			totalLength +=  current.distanceToPoint(start.lat, start.lon)/(1-e.heat);
+			totalLength += e.length/(1-e.heat);
 			path.add(0, source);
 			p_result.segments = path;
 			p_result.setLength(totalLength);

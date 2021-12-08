@@ -261,7 +261,13 @@ public class Dali implements PathPlanningAlgorithm {
 				double priorityCoeff = 1;
 				if (usePreferedAreas) 
 					priorityCoeff = e.dest.isDesirable ? 1/e.dest.regionIntensity : e.dest.regionIntensity;
-				double edist = currentDistance + priorityCoeff * e.length / (1-e.heat) ;
+				double edist = currentDistance + priorityCoeff * e.length / (1-e.heat);
+				if (current ==source) {
+					edist = currentDistance + priorityCoeff * e.dest.distanceToPoint(start.lat, start.lon) / (1-e.heat);
+				}
+				if (e.dest == target) {
+					edist = currentDistance + priorityCoeff * current.distanceToPoint(destination.lat, destination.lon) / (1-e.heat);
+				}
 				if (!processing.contains(e.dest) || e.dest.currentDistance > edist || 
 						(current != source && e.dest.currentDistance == edist && sameDirection(e.dest, current))) {
 					processing.remove(e.dest);
@@ -302,12 +308,16 @@ public class Dali implements PathPlanningAlgorithm {
 			path.add(target);
 			while (current.previous != source) {
 				DaliEdge e = current.previous.findOutEdge(current);
-				totalLength += e.length/(1-e.heat); 
+				if (current ==target) {
+					totalLength += current.previous.distanceToPoint(destination.lat, destination.lon) /(1-e.heat);
+				} else {
+					totalLength += e.length/(1-e.heat);
+				}
 				current = current.previous;
 				path.add(0, current);
 			}
 			DaliEdge e = current.previous.findOutEdge(current);
-			totalLength += e.length/(1-e.heat);
+			totalLength +=  current.distanceToPoint(start.lat, start.lon)/(1-e.heat);
 			path.add(0, source);
 			p_result.segments = path;
 			p_result.setLength(totalLength);
@@ -434,8 +444,8 @@ public class Dali implements PathPlanningAlgorithm {
 		ArrayList<DaliNode> intersections = new ArrayList<DaliNode>();
 		double movingRight = start.lat < end.lat ? 1 : -1;
 		double movingDown = start.lon < end.lon ? 1 : -1;
-		double nextv = start.lat + movingRight* NavigationArea.threshold;
-		double nexth = start.lon + movingDown *NavigationArea.threshold;
+		double nextv = start.lat + movingRight* NavigationArea.threshold/2;
+		double nexth = start.lon + movingDown *NavigationArea.threshold/2;
 		boolean atend = ((nextv - end.lat)*movingRight >0) && ((nexth - end.lon)*movingDown >0);
 		double coeff = (end.lon-start.lon) /(end.lat-start.lat);
 		

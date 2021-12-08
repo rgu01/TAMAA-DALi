@@ -82,30 +82,30 @@ bool isReady(int agentID, int currentPosition, int targetPosition)&#13;
 <committed/></location>
 <location id="id2" x="-150" y="-100">
 <name>F0T1</name>
-<label kind="invariant">t&lt;=157</label>
+<label kind="invariant">t&lt;=140</label>
 </location>
 <location id="id3" x="0" y="-100">
 <name>F0T2</name>
-<label kind="invariant">t&lt;=34</label>
+<label kind="invariant">t&lt;=45</label>
 </location>
 <location id="id4" x="150" y="-100">
 <name>F0T3</name>
-<label kind="invariant">t&lt;=18</label>
+<label kind="invariant">t&lt;=51</label>
 </location>
 <location id="id5" x="300" y="-100">
 <name>F0T4</name>
-<label kind="invariant">t&lt;=57</label>
+<label kind="invariant">t&lt;=81</label>
 </location>
 <location id="id6" x="450" y="-100">
 <name>F0T5</name>
-<label kind="invariant">t&lt;=48</label>
+<label kind="invariant">t&lt;=77</label>
 </location>
 <location id="id7" x="-250" y="-50">
 <name>P1</name>
 </location>
 <location id="id8" x="-300" y="50">
 <name>F1T0</name>
-<label kind="invariant">t&lt;=157</label>
+<label kind="invariant">t&lt;=140</label>
 </location>
 <location id="id9" x="0" y="50">
 <name>F1T2</name>
@@ -128,7 +128,7 @@ bool isReady(int agentID, int currentPosition, int targetPosition)&#13;
 </location>
 <location id="id14" x="-300" y="200">
 <name>F2T0</name>
-<label kind="invariant">t&lt;=34</label>
+<label kind="invariant">t&lt;=45</label>
 </location>
 <location id="id15" x="-150" y="200">
 <name>F2T1</name>
@@ -151,7 +151,7 @@ bool isReady(int agentID, int currentPosition, int targetPosition)&#13;
 </location>
 <location id="id20" x="-300" y="350">
 <name>F3T0</name>
-<label kind="invariant">t&lt;=18</label>
+<label kind="invariant">t&lt;=51</label>
 </location>
 <location id="id21" x="-150" y="350">
 <name>F3T1</name>
@@ -174,7 +174,7 @@ bool isReady(int agentID, int currentPosition, int targetPosition)&#13;
 </location>
 <location id="id26" x="-300" y="500">
 <name>F4T0</name>
-<label kind="invariant">t&lt;=57</label>
+<label kind="invariant">t&lt;=81</label>
 </location>
 <location id="id27" x="-150" y="500">
 <name>F4T1</name>
@@ -197,7 +197,7 @@ bool isReady(int agentID, int currentPosition, int targetPosition)&#13;
 </location>
 <location id="id32" x="-300" y="650">
 <name>F5T0</name>
-<label kind="invariant">t&lt;=48</label>
+<label kind="invariant">t&lt;=77</label>
 </location>
 <location id="id33" x="-150" y="650">
 <name>F5T1</name>
@@ -231,7 +231,7 @@ bool isReady(int agentID, int currentPosition, int targetPosition)&#13;
 <source ref="id2"/>
 <target ref="id7"/>
 <label kind="assignment">t=0,position[id][1]=true,idle[id]=true</label>
-<label kind="guard">t&gt;=157</label>
+<label kind="guard">t&gt;=140</label>
 </transition>
 <transition>
 <source ref="id1"/>
@@ -243,7 +243,7 @@ bool isReady(int agentID, int currentPosition, int targetPosition)&#13;
 <source ref="id3"/>
 <target ref="id13"/>
 <label kind="assignment">t=0,position[id][2]=true,idle[id]=true</label>
-<label kind="guard">t&gt;=34</label>
+<label kind="guard">t&gt;=45</label>
 </transition>
 <transition>
 <source ref="id1"/>
@@ -255,7 +255,7 @@ bool isReady(int agentID, int currentPosition, int targetPosition)&#13;
 <source ref="id4"/>
 <target ref="id19"/>
 <label kind="assignment">t=0,position[id][3]=true,idle[id]=true</label>
-<label kind="guard">t&gt;=18</label>
+<label kind="guard">t&gt;=51</label>
 </transition>
 <transition>
 <source ref="id1"/>
@@ -267,7 +267,7 @@ bool isReady(int agentID, int currentPosition, int targetPosition)&#13;
 <source ref="id5"/>
 <target ref="id25"/>
 <label kind="assignment">t=0,position[id][4]=true,idle[id]=true</label>
-<label kind="guard">t&gt;=57</label>
+<label kind="guard">t&gt;=81</label>
 </transition>
 <transition>
 <source ref="id1"/>
@@ -279,7 +279,7 @@ bool isReady(int agentID, int currentPosition, int targetPosition)&#13;
 <source ref="id6"/>
 <target ref="id31"/>
 <label kind="assignment">t=0,position[id][5]=true,idle[id]=true</label>
-<label kind="guard">t&gt;=48</label>
+<label kind="guard">t&gt;=77</label>
 </transition>
 <transition>
 <source ref="id7"/>
@@ -291,7 +291,7 @@ bool isReady(int agentID, int currentPosition, int targetPosition)&#13;
 <source ref="id8"/>
 <target ref="id1"/>
 <label kind="assignment">t=0,position[id][0]=true,idle[id]=true</label>
-<label kind="guard">t&gt;=157</label>
+<label kind="guard">t&gt;=140</label>
 </transition>
 <transition>
 <source ref="id7"/>
@@ -351,7 +351,7 @@ bool isReady(int agentID, int currentPosition, int targetPosition)&#13;
 <source ref="id14"/>
 <target ref="id1"/>
 <label kind="assignment">t=0,position[id][0]=true,idle[id]=true</label>
-<label kind="guard">t&gt;=34</label>
+<label kind="guard">t&gt;=45</label>
 </transition>
 <transition>
 <source ref="id13"/>
@@ -411,7 +411,7 @@ bool isReady(int agentID, int currentPosition, int targetPosition)&#13;
 <source ref="id20"/>
 <target ref="id1"/>
 <label kind="assignment">t=0,position[id][0]=true,idle[id]=true</label>
-<label kind="guard">t&gt;=18</label>
+<label kind="guard">t&gt;=51</label>
 </transition>
 <transition>
 <source ref="id19"/>
@@ -471,7 +471,7 @@ bool isReady(int agentID, int currentPosition, int targetPosition)&#13;
 <source ref="id26"/>
 <target ref="id1"/>
 <label kind="assignment">t=0,position[id][0]=true,idle[id]=true</label>
-<label kind="guard">t&gt;=57</label>
+<label kind="guard">t&gt;=81</label>
 </transition>
 <transition>
 <source ref="id25"/>
@@ -531,7 +531,7 @@ bool isReady(int agentID, int currentPosition, int targetPosition)&#13;
 <source ref="id32"/>
 <target ref="id1"/>
 <label kind="assignment">t=0,position[id][0]=true,idle[id]=true</label>
-<label kind="guard">t&gt;=48</label>
+<label kind="guard">t&gt;=77</label>
 </transition>
 <transition>
 <source ref="id31"/>
@@ -709,30 +709,30 @@ updateIteration(),idle[id]=true</label>
 <committed/></location>
 <location id="id2" x="-150" y="-100">
 <name>F0T1</name>
-<label kind="invariant">t&lt;=154</label>
+<label kind="invariant">t&lt;=165</label>
 </location>
 <location id="id3" x="0" y="-100">
 <name>F0T2</name>
-<label kind="invariant">t&lt;=59</label>
+<label kind="invariant">t&lt;=30</label>
 </location>
 <location id="id4" x="150" y="-100">
 <name>F0T3</name>
-<label kind="invariant">t&lt;=43</label>
+<label kind="invariant">t&lt;=40</label>
 </location>
 <location id="id5" x="300" y="-100">
 <name>F0T4</name>
-<label kind="invariant">t&lt;=82</label>
+<label kind="invariant">t&lt;=66</label>
 </location>
 <location id="id6" x="450" y="-100">
 <name>F0T5</name>
-<label kind="invariant">t&lt;=73</label>
+<label kind="invariant">t&lt;=63</label>
 </location>
 <location id="id7" x="-250" y="-50">
 <name>P1</name>
 </location>
 <location id="id8" x="-300" y="50">
 <name>F1T0</name>
-<label kind="invariant">t&lt;=154</label>
+<label kind="invariant">t&lt;=165</label>
 </location>
 <location id="id9" x="0" y="50">
 <name>F1T2</name>
@@ -755,7 +755,7 @@ updateIteration(),idle[id]=true</label>
 </location>
 <location id="id14" x="-300" y="200">
 <name>F2T0</name>
-<label kind="invariant">t&lt;=59</label>
+<label kind="invariant">t&lt;=30</label>
 </location>
 <location id="id15" x="-150" y="200">
 <name>F2T1</name>
@@ -778,7 +778,7 @@ updateIteration(),idle[id]=true</label>
 </location>
 <location id="id20" x="-300" y="350">
 <name>F3T0</name>
-<label kind="invariant">t&lt;=43</label>
+<label kind="invariant">t&lt;=40</label>
 </location>
 <location id="id21" x="-150" y="350">
 <name>F3T1</name>
@@ -801,7 +801,7 @@ updateIteration(),idle[id]=true</label>
 </location>
 <location id="id26" x="-300" y="500">
 <name>F4T0</name>
-<label kind="invariant">t&lt;=82</label>
+<label kind="invariant">t&lt;=66</label>
 </location>
 <location id="id27" x="-150" y="500">
 <name>F4T1</name>
@@ -824,7 +824,7 @@ updateIteration(),idle[id]=true</label>
 </location>
 <location id="id32" x="-300" y="650">
 <name>F5T0</name>
-<label kind="invariant">t&lt;=73</label>
+<label kind="invariant">t&lt;=63</label>
 </location>
 <location id="id33" x="-150" y="650">
 <name>F5T1</name>
@@ -858,7 +858,7 @@ updateIteration(),idle[id]=true</label>
 <source ref="id2"/>
 <target ref="id7"/>
 <label kind="assignment">t=0,position[id][1]=true,idle[id]=true</label>
-<label kind="guard">t&gt;=154</label>
+<label kind="guard">t&gt;=165</label>
 </transition>
 <transition>
 <source ref="id1"/>
@@ -870,7 +870,7 @@ updateIteration(),idle[id]=true</label>
 <source ref="id3"/>
 <target ref="id13"/>
 <label kind="assignment">t=0,position[id][2]=true,idle[id]=true</label>
-<label kind="guard">t&gt;=59</label>
+<label kind="guard">t&gt;=30</label>
 </transition>
 <transition>
 <source ref="id1"/>
@@ -882,7 +882,7 @@ updateIteration(),idle[id]=true</label>
 <source ref="id4"/>
 <target ref="id19"/>
 <label kind="assignment">t=0,position[id][3]=true,idle[id]=true</label>
-<label kind="guard">t&gt;=43</label>
+<label kind="guard">t&gt;=40</label>
 </transition>
 <transition>
 <source ref="id1"/>
@@ -894,7 +894,7 @@ updateIteration(),idle[id]=true</label>
 <source ref="id5"/>
 <target ref="id25"/>
 <label kind="assignment">t=0,position[id][4]=true,idle[id]=true</label>
-<label kind="guard">t&gt;=82</label>
+<label kind="guard">t&gt;=66</label>
 </transition>
 <transition>
 <source ref="id1"/>
@@ -906,7 +906,7 @@ updateIteration(),idle[id]=true</label>
 <source ref="id6"/>
 <target ref="id31"/>
 <label kind="assignment">t=0,position[id][5]=true,idle[id]=true</label>
-<label kind="guard">t&gt;=73</label>
+<label kind="guard">t&gt;=63</label>
 </transition>
 <transition>
 <source ref="id7"/>
@@ -918,7 +918,7 @@ updateIteration(),idle[id]=true</label>
 <source ref="id8"/>
 <target ref="id1"/>
 <label kind="assignment">t=0,position[id][0]=true,idle[id]=true</label>
-<label kind="guard">t&gt;=154</label>
+<label kind="guard">t&gt;=165</label>
 </transition>
 <transition>
 <source ref="id7"/>
@@ -978,7 +978,7 @@ updateIteration(),idle[id]=true</label>
 <source ref="id14"/>
 <target ref="id1"/>
 <label kind="assignment">t=0,position[id][0]=true,idle[id]=true</label>
-<label kind="guard">t&gt;=59</label>
+<label kind="guard">t&gt;=30</label>
 </transition>
 <transition>
 <source ref="id13"/>
@@ -1038,7 +1038,7 @@ updateIteration(),idle[id]=true</label>
 <source ref="id20"/>
 <target ref="id1"/>
 <label kind="assignment">t=0,position[id][0]=true,idle[id]=true</label>
-<label kind="guard">t&gt;=43</label>
+<label kind="guard">t&gt;=40</label>
 </transition>
 <transition>
 <source ref="id19"/>
@@ -1098,7 +1098,7 @@ updateIteration(),idle[id]=true</label>
 <source ref="id26"/>
 <target ref="id1"/>
 <label kind="assignment">t=0,position[id][0]=true,idle[id]=true</label>
-<label kind="guard">t&gt;=82</label>
+<label kind="guard">t&gt;=66</label>
 </transition>
 <transition>
 <source ref="id25"/>
@@ -1158,7 +1158,7 @@ updateIteration(),idle[id]=true</label>
 <source ref="id32"/>
 <target ref="id1"/>
 <label kind="assignment">t=0,position[id][0]=true,idle[id]=true</label>
-<label kind="guard">t&gt;=73</label>
+<label kind="guard">t&gt;=63</label>
 </transition>
 <transition>
 <source ref="id31"/>
@@ -1336,30 +1336,30 @@ updateIteration(),idle[id]=true</label>
 <committed/></location>
 <location id="id2" x="-150" y="-100">
 <name>F0T1</name>
-<label kind="invariant">t&lt;=171</label>
+<label kind="invariant">t&lt;=169</label>
 </location>
 <location id="id3" x="0" y="-100">
 <name>F0T2</name>
-<label kind="invariant">t&lt;=12</label>
+<label kind="invariant">t&lt;=23</label>
 </location>
 <location id="id4" x="150" y="-100">
 <name>F0T3</name>
-<label kind="invariant">t&lt;=28</label>
+<label kind="invariant">t&lt;=7</label>
 </location>
 <location id="id5" x="300" y="-100">
 <name>F0T4</name>
-<label kind="invariant">t&lt;=48</label>
+<label kind="invariant">t&lt;=45</label>
 </location>
 <location id="id6" x="450" y="-100">
 <name>F0T5</name>
-<label kind="invariant">t&lt;=46</label>
+<label kind="invariant">t&lt;=35</label>
 </location>
 <location id="id7" x="-250" y="-50">
 <name>P1</name>
 </location>
 <location id="id8" x="-300" y="50">
 <name>F1T0</name>
-<label kind="invariant">t&lt;=171</label>
+<label kind="invariant">t&lt;=169</label>
 </location>
 <location id="id9" x="0" y="50">
 <name>F1T2</name>
@@ -1382,7 +1382,7 @@ updateIteration(),idle[id]=true</label>
 </location>
 <location id="id14" x="-300" y="200">
 <name>F2T0</name>
-<label kind="invariant">t&lt;=12</label>
+<label kind="invariant">t&lt;=23</label>
 </location>
 <location id="id15" x="-150" y="200">
 <name>F2T1</name>
@@ -1405,7 +1405,7 @@ updateIteration(),idle[id]=true</label>
 </location>
 <location id="id20" x="-300" y="350">
 <name>F3T0</name>
-<label kind="invariant">t&lt;=28</label>
+<label kind="invariant">t&lt;=7</label>
 </location>
 <location id="id21" x="-150" y="350">
 <name>F3T1</name>
@@ -1428,7 +1428,7 @@ updateIteration(),idle[id]=true</label>
 </location>
 <location id="id26" x="-300" y="500">
 <name>F4T0</name>
-<label kind="invariant">t&lt;=48</label>
+<label kind="invariant">t&lt;=45</label>
 </location>
 <location id="id27" x="-150" y="500">
 <name>F4T1</name>
@@ -1451,7 +1451,7 @@ updateIteration(),idle[id]=true</label>
 </location>
 <location id="id32" x="-300" y="650">
 <name>F5T0</name>
-<label kind="invariant">t&lt;=46</label>
+<label kind="invariant">t&lt;=35</label>
 </location>
 <location id="id33" x="-150" y="650">
 <name>F5T1</name>
@@ -1485,7 +1485,7 @@ updateIteration(),idle[id]=true</label>
 <source ref="id2"/>
 <target ref="id7"/>
 <label kind="assignment">t=0,position[id][1]=true,idle[id]=true</label>
-<label kind="guard">t&gt;=171</label>
+<label kind="guard">t&gt;=169</label>
 </transition>
 <transition>
 <source ref="id1"/>
@@ -1497,7 +1497,7 @@ updateIteration(),idle[id]=true</label>
 <source ref="id3"/>
 <target ref="id13"/>
 <label kind="assignment">t=0,position[id][2]=true,idle[id]=true</label>
-<label kind="guard">t&gt;=12</label>
+<label kind="guard">t&gt;=23</label>
 </transition>
 <transition>
 <source ref="id1"/>
@@ -1509,7 +1509,7 @@ updateIteration(),idle[id]=true</label>
 <source ref="id4"/>
 <target ref="id19"/>
 <label kind="assignment">t=0,position[id][3]=true,idle[id]=true</label>
-<label kind="guard">t&gt;=28</label>
+<label kind="guard">t&gt;=7</label>
 </transition>
 <transition>
 <source ref="id1"/>
@@ -1521,7 +1521,7 @@ updateIteration(),idle[id]=true</label>
 <source ref="id5"/>
 <target ref="id25"/>
 <label kind="assignment">t=0,position[id][4]=true,idle[id]=true</label>
-<label kind="guard">t&gt;=48</label>
+<label kind="guard">t&gt;=45</label>
 </transition>
 <transition>
 <source ref="id1"/>
@@ -1533,7 +1533,7 @@ updateIteration(),idle[id]=true</label>
 <source ref="id6"/>
 <target ref="id31"/>
 <label kind="assignment">t=0,position[id][5]=true,idle[id]=true</label>
-<label kind="guard">t&gt;=46</label>
+<label kind="guard">t&gt;=35</label>
 </transition>
 <transition>
 <source ref="id7"/>
@@ -1545,7 +1545,7 @@ updateIteration(),idle[id]=true</label>
 <source ref="id8"/>
 <target ref="id1"/>
 <label kind="assignment">t=0,position[id][0]=true,idle[id]=true</label>
-<label kind="guard">t&gt;=171</label>
+<label kind="guard">t&gt;=169</label>
 </transition>
 <transition>
 <source ref="id7"/>
@@ -1605,7 +1605,7 @@ updateIteration(),idle[id]=true</label>
 <source ref="id14"/>
 <target ref="id1"/>
 <label kind="assignment">t=0,position[id][0]=true,idle[id]=true</label>
-<label kind="guard">t&gt;=12</label>
+<label kind="guard">t&gt;=23</label>
 </transition>
 <transition>
 <source ref="id13"/>
@@ -1665,7 +1665,7 @@ updateIteration(),idle[id]=true</label>
 <source ref="id20"/>
 <target ref="id1"/>
 <label kind="assignment">t=0,position[id][0]=true,idle[id]=true</label>
-<label kind="guard">t&gt;=28</label>
+<label kind="guard">t&gt;=7</label>
 </transition>
 <transition>
 <source ref="id19"/>
@@ -1725,7 +1725,7 @@ updateIteration(),idle[id]=true</label>
 <source ref="id26"/>
 <target ref="id1"/>
 <label kind="assignment">t=0,position[id][0]=true,idle[id]=true</label>
-<label kind="guard">t&gt;=48</label>
+<label kind="guard">t&gt;=45</label>
 </transition>
 <transition>
 <source ref="id25"/>
@@ -1785,7 +1785,7 @@ updateIteration(),idle[id]=true</label>
 <source ref="id32"/>
 <target ref="id1"/>
 <label kind="assignment">t=0,position[id][0]=true,idle[id]=true</label>
-<label kind="guard">t&gt;=46</label>
+<label kind="guard">t&gt;=35</label>
 </transition>
 <transition>
 <source ref="id31"/>

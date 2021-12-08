@@ -20,7 +20,7 @@ public class UPPAgentStaticMap extends UppaalAutomaton {
 	 */
 	public String mParameters = "const AgentScale id";
 	private static int x = -400, y = -200;
-	public int Scale = 50;
+	public int Size = 50;
 	public int map[][];
 	private UPPAgentVehicle agent;
 
@@ -42,8 +42,8 @@ public class UPPAgentStaticMap extends UppaalAutomaton {
 				positionsList.add(milestone);
 			}
 		}
-		Scale = positionsList.size();
-		map = new int[Scale][Scale];
+		Size = positionsList.size();
+		map = new int[Size][Size];
 		positionsArray = new Node[positionsList.size()];
 		for (Node position : positionsList) {
 			positionsArray[position.id] = position;
@@ -63,7 +63,11 @@ public class UPPAgentStaticMap extends UppaalAutomaton {
 					{
 						
 					}
-					map[start.id][end.id] = (int) (p.length() / this.agent.vehicle.maxSpeed);
+					/*double path_length = p.length();
+					double vehicle_speed = this.agent.vehicle.maxSpeed;
+					double traveling_time = path_length / vehicle_speed;
+					int estimation = (int) (100 * traveling_time); //scale the number to estimate more accurately*/
+					map[start.id][end.id] = this.agent.getTravelingTime(p.length());
 				}
 			}
 		}
@@ -83,14 +87,14 @@ public class UPPAgentStaticMap extends UppaalAutomaton {
 		this.addOrReplaceLocation(initial);
 		this.setInitialLocation("initial");
 
-		for (int i = 0; i < Scale; i++) {
+		for (int i = 0; i < Size; i++) {
 			p = new UppaalLocation();
 			p.setName("P" + i);
 			p.setId("P" + i);
 			setLocationCorrdinates(p, x + i * 150, y + i * 150);
 			this.addOrReplaceLocation(p);
 
-			for (int j = 0; j < Scale; j++) {
+			for (int j = 0; j < Size; j++) {
 				if (map[i][j] > 0) {
 					p = new UppaalLocation();
 					p.setName("F" + i + "T" + j);
@@ -123,8 +127,8 @@ public class UPPAgentStaticMap extends UppaalAutomaton {
 		transition.addOrReplaceLabel(label);
 		this.addOrReplaceTransition(transition);
 
-		for (int i = 0; i < Scale; i++) {
-			for (int j = 0; j < Scale; j++) {
+		for (int i = 0; i < Size; i++) {
+			for (int j = 0; j < Size; j++) {
 				if (map[i][j] > 0) {
 					transition = new UppaalTransition();
 					transition.setSourceLocationId("P" + i);

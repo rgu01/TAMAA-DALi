@@ -4,12 +4,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.afarcloud.thrift.Task;
+import com.afarcloud.thrift.TaskTemplate;
 
 import edu.collaboration.pathplanning.Node;
 
 public class UPPAgentMission {
 	public int ID;
-	public Task task;
+	private Task task;
 	private List<Node> milestones = new ArrayList<Node>();
 	public boolean regularTask = true;
 	// private List<Integer> events_trigger; //The event triggering this task
@@ -31,6 +32,21 @@ public class UPPAgentMission {
 		this.addMilestone(milestone);
 	}
 
+	public int getTaskWCET()
+	{
+		return this.task.wcet * UPPAgentFleet.Scale;
+	}
+
+	public int getTaskBCET()
+	{
+		return this.task.bcet * UPPAgentFleet.Scale;
+	}
+	
+	public TaskTemplate getTaskTemplate()
+	{
+		return this.task.taskTemplate;
+	}
+	
 	public void addMilestone(Node milestone) {
 		this.milestones.add(milestone);
 	}

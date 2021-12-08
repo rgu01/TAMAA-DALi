@@ -10,6 +10,8 @@ import org.dom4j.DocumentException;
 import org.dom4j.Element;
 import org.dom4j.io.SAXReader;
 
+import edu.collaboration.model.structure.UPPAgentFleet;
+
 public class TaskScheduleParser
 {
 	public static String planPath = "./results/plan.xml";
@@ -58,7 +60,8 @@ public class TaskScheduleParser
 		}
 		else if(name.equals("Time"))
 		{
-			action.time = Double.parseDouble(text);
+			double time = Double.parseDouble(text);
+			action.time = time / UPPAgentFleet.Scale;
 		}
 	}
 	

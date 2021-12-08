@@ -17,6 +17,25 @@ public class UPPAgentVehicle {
 	public Vehicle vehicle;
 	public List<Path> paths = new ArrayList<Path>();
 	public List<UPPAgentMission> missions = new ArrayList<UPPAgentMission>();
+	
+	public int getTravelingTime(double path_length)
+	{
+		int result = 0;
+		double traveling_time = path_length / this.vehicle.maxSpeed;
+		
+		/*if(traveling_time < UPPAgentFleet.Scale)
+		{
+			traveling_time = traveling_time * UPPAgentFleet.Scale;
+		}
+		else
+		{
+			UPPAgentFleet.Scale = 1; // the traveling time is large enough, do not need to scale0
+		}*/
+		
+		result = (int) (traveling_time  * UPPAgentFleet.Scale);
+		
+		return result;
+	}
 
 	public UPPAgentVehicle(int id) {
 		this.ID = id;
@@ -81,8 +100,8 @@ public class UPPAgentVehicle {
 			for (UPPAgentMission mission : this.missions) {
 				// if the tasks' types and their required equipment are the same
 				// they are grouped in the same group, but only located at different positions
-				if ((mission.task.taskTemplate.equals(milestone.task.taskTemplate))
-						&& (mission.task.getTaskTemplate().requiredTypes.get(0)
+				if ((mission.getTaskTemplate().equals(milestone.task.taskTemplate))
+						&& (mission.getTaskTemplate().requiredTypes.get(0)
 								.equals(milestone.task.getTaskTemplate().requiredTypes.get(0)))) {
 					mission.addMilestone(milestone);
 					tag = false;

@@ -68,7 +68,7 @@ public class UPPAgentMissionPlan extends UppaalAutomaton {
 			label = new UppaalLabel();
 			label.setKind("invariant");
 			//label.setValue("t<=" + "WCET[id]["+id+"]");
-			label.setValue("t<=" + um.task.wcet);
+			label.setValue("t<=" + um.getTaskWCET());
 			m.addOrReplaceLabel(label);
 			this.addOrReplaceLocation(m);
 		}
@@ -171,7 +171,7 @@ public class UPPAgentMissionPlan extends UppaalAutomaton {
 			label = new UppaalLabel();
 			label.setKind("guard");
 			//label.setValue("t>=" + "BCET[id]["+id+"]");
-			label.setValue("t>=" + um.task.bcet);
+			label.setValue("t>=" + um.getTaskBCET());
 			label.setCoordinate("x", nx+"");
 			label.setCoordinate("y", ny+"");
 			transition.addOrReplaceLabel(label);

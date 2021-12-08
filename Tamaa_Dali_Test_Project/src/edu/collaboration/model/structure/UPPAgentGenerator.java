@@ -67,7 +67,7 @@ public class UPPAgentGenerator {
 			JOptionPane.showMessageDialog(null, show, "Error", JOptionPane.PLAIN_MESSAGE);
 		}
 
-		int mapScale = 0, agentNum = 0;
+		int mapSize = 0, agentNum = 0;
 		int eventNum = 0, missionNum = 0;
 		UPPAgentFleet fleet = new UPPAgentFleet(agents);
 		UPPAgentMission m = null;
@@ -102,12 +102,13 @@ public class UPPAgentGenerator {
 		rulesString = rulesString.substring(0, rulesString.length() - 1) + "};\n";
 
 		for (UPPAgentVehicle agent : fleet.agents) {
+			// Movement UTA and the lengths of paths are in this function
 			UPPAgentStaticMap map = new UPPAgentStaticMap(agent);
 			monitor = new UPPAgentEventMonitor(agent);
 			UPPAgentMissionPlan missionPlan = new UPPAgentMissionPlan(agent, monitor);
 
 			monitor.setDeclaration();
-			mapScale = map.Scale;
+			mapSize = map.Size;
 
 			/*
 			 * for (int i = 0; i < agent.missions.size(); i++) { m = agent.missions.get(i);
@@ -172,7 +173,7 @@ public class UPPAgentGenerator {
 		system_declaration = system_declaration.substring(0, system_declaration.lastIndexOf(",")) + ";";
 		try {
 			gResetString = "";
-			global_declaration += addDeclaration(mapScale, missionNum, eventNum, agentNum) + rulesString /*
+			global_declaration += addDeclaration(mapSize, missionNum, eventNum, agentNum) + rulesString /*
 																											 * +
 																											 * constBcet
 																											 * +
@@ -189,7 +190,7 @@ public class UPPAgentGenerator {
 		doc.addOrReplaceChildElement(queries);
 		doc.saveToFile(outputXML);
 
-		show = "Model for " + fleet.agents.size() + " agents has built! MapScale: " + mapScale + ", taskNum: "
+		show = "Model for " + fleet.agents.size() + " agents has built! MapScale: " + mapSize + ", taskNum: "
 				+ missionNum + ", eventNum: " + eventNum + ".";
 
 		// MCRL

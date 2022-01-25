@@ -89,7 +89,9 @@ public class Information {
 		JButton btnExit = new JButton("Exit");
 		btnExit.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				planner.exit();
+				if(planner != null) {
+					planner.exit();
+				}
 				System.exit(0);
 			}
 		});

@@ -9,12 +9,15 @@ import javax.swing.JButton;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 import java.awt.Color;
+import javax.swing.JCheckBox;
+import javax.swing.JTextField;
 
 public class Information {
 
 	private JFrame frmMiddlewareOfMalta;
-	UPlanner planner = new UPlanner();
+	UPlanner planner;
 	private String title = "Middleware of MALTA";
+	private JTextField txtmodelspecialUseCase;
 
 	/**
 	 * Launch the application.
@@ -37,7 +40,6 @@ public class Information {
 	 */
 	public Information() {
 		initialize();
-		planner.start();
 	}
 
 	/**
@@ -47,7 +49,7 @@ public class Information {
 		frmMiddlewareOfMalta = new JFrame();
 		frmMiddlewareOfMalta.setResizable(false);
 		frmMiddlewareOfMalta.setTitle("Middleware of MALTA");
-		frmMiddlewareOfMalta.setBounds(100, 100, 343, 267);
+		frmMiddlewareOfMalta.setBounds(100, 100, 442, 283);
 		frmMiddlewareOfMalta.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frmMiddlewareOfMalta.getContentPane().setLayout(null);
 		
@@ -64,6 +66,26 @@ public class Information {
 		
 		JButton btnStart = new JButton("Start");
 		JButton btnStop = new JButton("Stop");
+		
+		JCheckBox chckbxNewCheckBox = new JCheckBox("Use you own model?");
+		chckbxNewCheckBox.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				if(chckbxNewCheckBox.isSelected()) {
+					btnStop.doClick();
+					btnStart.doClick();
+					txtmodelspecialUseCase.setEnabled(true);
+				}
+				else {
+					btnStop.doClick();
+					btnStart.doClick();
+					txtmodelspecialUseCase.setEnabled(false);
+				}
+			}
+		});
+		chckbxNewCheckBox.setFont(new Font("Tahoma", Font.PLAIN, 15));
+		chckbxNewCheckBox.setBounds(10, 113, 295, 21);
+		frmMiddlewareOfMalta.getContentPane().add(chckbxNewCheckBox);
+		btnStop.setEnabled(false);
 		JButton btnExit = new JButton("Exit");
 		btnExit.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -71,16 +93,15 @@ public class Information {
 				System.exit(0);
 			}
 		});
-		btnStart.setEnabled(false);
-		btnStart.setBounds(130, 182, 85, 21);
-		btnStop.setBounds(35, 182, 85, 21);
+		btnStart.setBounds(162, 208, 85, 21);
+		btnStop.setBounds(35, 208, 85, 21);
 		frmMiddlewareOfMalta.getContentPane().add(btnStop);
-		btnExit.setBounds(220, 182, 85, 21);
+		btnExit.setBounds(293, 208, 85, 21);
 		frmMiddlewareOfMalta.getContentPane().add(btnExit);
 		
 		btnStart.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				planner = new UPlanner();
+				planner = new UPlanner(chckbxNewCheckBox.isSelected(), txtmodelspecialUseCase.getText());
 				planner.start();
 				btnStart.setEnabled(false);
 				btnStop.setEnabled(true);
@@ -90,6 +111,19 @@ public class Information {
 			}
 		});
 		frmMiddlewareOfMalta.getContentPane().add(btnStart);
+		
+		txtmodelspecialUseCase = new JTextField();
+		txtmodelspecialUseCase.setEnabled(false);
+		txtmodelspecialUseCase.setText("./model/special use case - no monitors.xml");
+		txtmodelspecialUseCase.setFont(new Font("Tahoma", Font.PLAIN, 15));
+		txtmodelspecialUseCase.setBounds(83, 152, 295, 19);
+		frmMiddlewareOfMalta.getContentPane().add(txtmodelspecialUseCase);
+		txtmodelspecialUseCase.setColumns(10);
+		
+		JLabel lblNewLabel_1 = new JLabel("Directory: ");
+		lblNewLabel_1.setFont(new Font("Tahoma", Font.PLAIN, 15));
+		lblNewLabel_1.setBounds(10, 155, 79, 13);
+		frmMiddlewareOfMalta.getContentPane().add(lblNewLabel_1);
 		btnStop.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				planner.exit();
@@ -100,5 +134,6 @@ public class Information {
 				lblStatus.setBackground(Color.red);
 			}
 		});
+		
 	}
 }

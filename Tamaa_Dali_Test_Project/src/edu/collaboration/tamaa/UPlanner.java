@@ -40,7 +40,14 @@ public class UPlanner extends Thread {
 	public int tamaaPort;
 	public String uppaalAddress;
 	public int uppaalPort;
+	public boolean ownModel = false;
+	public String ownModelAddress = "";
 	TServer server;
+	
+	public UPlanner(boolean ownModel, String ownModelAddress) {
+		this.ownModel = ownModel;
+		this.ownModelAddress = ownModelAddress;
+	}
 	
 	public void run()
 	{
@@ -48,7 +55,7 @@ public class UPlanner extends Thread {
 		this.logtoText();
 		System.out.println("============" + new Date().toString() + "============");
 		this.StartServer(new PlannerService.Processor<PlannerServiceHandler>(
-				new PlannerServiceHandler(this.mmtAddress, this.mmtPort, this.uppaalAddress, this.uppaalPort)));
+				new PlannerServiceHandler(this.mmtAddress, this.mmtPort, this.uppaalAddress, this.uppaalPort, this.ownModel, this.ownModelAddress)));
 		//The following is for experiments
 //		this.StartServerTest(new PlannerService.Processor<PlannerServiceHandlerTestVersion>(
 //				new PlannerServiceHandlerTestVersion(this.mmtAddress, this.mmtPort, this.uppaalAddress, this.uppaalPort)));

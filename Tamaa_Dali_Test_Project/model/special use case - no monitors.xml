@@ -12,18 +12,42 @@ const int MaxIteration = 1;
 bool position[AgentNum][MilestoneNum]={{false,false,false,false,false,false},{false,false,false,false,false,false},{false,false,false,false,false,false}};
 bool tf[AgentNum][TaskNum]={{true,false,false,false},{true,false,false,false},{true,false,false,false}};
 bool ts[AgentNum][TaskNum]={{true,false,false,false},{true,false,false,false},{true,false,false,false}};
+const int rules[AgentNum][MilestoneNum] = {{0,3,1,1,2,2},{0,3,1,1,2,2},{0,3,1,1,2,2}};
 
-
-const int rules[MilestoneNum]={0,3,1,1,2,2};
 const int RegularTaskNum[AgentNum] = {3,3,3};
 chan move[AgentNum], initialize;
 
-int stone = 100;
-const int load = 13;
+//int iteration[AgentNum] = {0,0,0,0,0,0};
+int stone = 90;
+const int load = 30;
+int battery[AgentNum] =  {2000, 2000, 2000};
+const int consumingRate[AgentNum] = {1, 1, 1};
+const int fullfil[AgentNum] = {500, 500, 500}; 
 
 int PCQueue = 0;
-
 clock globalTime;
+const int MAXTIME = 3000;
+
+bool jobsDone()
+{
+    return stone == 0;
+}
+
+bool enoughBattery(int agentID)
+{
+    return battery[agentID] &gt; 0;
+}
+
+bool shouldGo(int agentID, int currentPosition, int targetPosition)
+{
+    int currentTask = rules[agentID][currentPosition];
+    int targetTask = rules[agentID][targetPosition];
+    bool currentFinished = tf[agentID][currentTask];
+    bool targetFinished = tf[agentID][targetTask];
+    bool go = currentFinished &amp;&amp; (!targetFinished);
+
+    return go;
+}
 
 </declaration>
 	<template>
@@ -31,13 +55,23 @@ clock globalTime;
 		<parameter>const AgentScale id</parameter>
 		<declaration>clock t;
 
+void refresh()
+{
+    battery[id] += fullfil[id];
+}
+
+void consume(int consumption)
+{
+    battery[id] -= consumption * consumingRate[id];
+}
+
 void updateIteration()
 {
 	int i=0;
 
 	if(tf[id][3])
 	{
-		for(i=1;i&lt;=RegularTaskNum[id];i++)
+		for(i=1;i&lt;=RegularTaskNum[id]-1;i++)
 		{
 			tf[id][i]=false;
 		}
@@ -58,6 +92,8 @@ bool isBusy(int taskID)
     bool busy = false;
     int other_id = 0, other_position = -1, position_id = 0;
 
+    if(jobsDone()) return true;
+
     for(other_id = 0; other_id &lt; AgentNum; other_id++)
     {
         if(other_id != id &amp;&amp; ts[other_id][taskID])
@@ -72,18 +108,19 @@ bool isBusy(int taskID)
             if(position[id][other_position])
             {
                 busy = true;
+                return busy;
             }
             else
             {
                 busy = false;
             }
-
-            return busy;
         }
     }
 
     return busy;
 }
+
+
 
 </declaration>
 		<location id="id0" x="-68" y="-204">
@@ -99,7 +136,7 @@ bool isBusy(int taskID)
 		</location>
 		<location id="id3" x="-399" y="-501">
 			<name x="-409" y="-531">T1</name>
-			<label kind="invariant" x="-409" y="-486">t&lt;=300</label>
+			<label kind="invariant" x="-409" y="-486">t&lt;=30</label>
 		</location>
 		<location id="id4" x="-722" y="-204">
 			<name x="-732" y="-234">T2_1</name>
@@ -109,22 +146,26 @@ bool isBusy(int taskID)
 		<transition>
 			<source ref="id0"/>
 			<target ref="id1"/>
-			<label kind="guard" x="-314" y="-153">t&gt;=100</label>
+			<label kind="guard" x="-314" y="-153">t&gt;=10</label>
 			<label kind="assignment" x="-314" y="-136">t=0,ts[id][2]=false,tf[id][2]=true,
-updateIteration()</label>
+updateIteration(), consume(100)</label>
 			<nail x="-229" y="-136"/>
 		</transition>
 		<transition>
 			<source ref="id1"/>
 			<target ref="id0"/>
-			<label kind="guard" x="-331" y="-280">!tf[id][2]&amp;&amp;
-(!isBusy(2) &amp;&amp; PCQueue&gt;2)&amp;&amp;
-(position[id][5])</label>
+			<label kind="guard" x="-331" y="-297">!tf[id][2]&amp;&amp;
+(!isBusy(2) &amp;&amp; PCQueue&gt;=2)&amp;&amp;
+(position[id][5])&amp;&amp;
+globalTime&lt;=MAXTIME</label>
 			<label kind="assignment" x="-331" y="-221">t=0,ts[id][2]=true,tf[id][2]=false</label>
 		</transition>
 		<transition>
 			<source ref="id1"/>
 			<target ref="id1"/>
+			<label kind="guard" x="-493" y="-323">!jobsDone()&amp;&amp;
+enoughBattery(id)&amp;&amp;
+globalTime&lt;=MAXTIME</label>
 			<label kind="synchronisation" x="-450" y="-263">move[id]!</label>
 			<label kind="assignment" x="-450" y="-246">t=0</label>
 			<nail x="-430" y="-230"/>
@@ -133,49 +174,52 @@ updateIteration()</label>
 		<transition>
 			<source ref="id1"/>
 			<target ref="id2"/>
-			<label kind="guard" x="-569" y="-68">!tf[id][3]&amp;&amp;
+			<label kind="guard" x="-561" y="-85">!tf[id][3]&amp;&amp;
 (!isBusy(3)&amp;&amp;
-tf[id][2])&amp;&amp;(position[id][1])</label>
-			<label kind="assignment" x="-612" y="-8">t=0,ts[id][3]=true,tf[id][3]=false</label>
+tf[id][2])&amp;&amp;(position[id][1])&amp;&amp;
+globalTime&lt;=MAXTIME</label>
+			<label kind="assignment" x="-561" y="-8">t=0,ts[id][3]=true,tf[id][3]=false</label>
 		</transition>
 		<transition>
 			<source ref="id2"/>
 			<target ref="id1"/>
-			<label kind="guard" x="-357" y="-42">t&gt;=100</label>
+			<label kind="guard" x="-357" y="-42">t&gt;=10</label>
 			<label kind="assignment" x="-357" y="-25">t=0,ts[id][3]=false,tf[id][3]=true,
-updateIteration()</label>
+updateIteration(), consume(100)</label>
 			<nail x="-340" y="-51"/>
 		</transition>
 		<transition>
 			<source ref="id1"/>
 			<target ref="id3"/>
-			<label kind="guard" x="-595" y="-416">!tf[id][1]&amp;&amp;
+			<label kind="guard" x="-595" y="-433">!tf[id][1]&amp;&amp;
 !isBusy(1)&amp;&amp;
-(position[id][2]||position[id][3])</label>
+(position[id][2]||position[id][3])&amp;&amp;
+globalTime&lt;=MAXTIME</label>
 			<label kind="assignment" x="-595" y="-357">t=0,ts[id][1]=true,tf[id][1]=false</label>
 		</transition>
 		<transition>
 			<source ref="id3"/>
 			<target ref="id1"/>
-			<label kind="guard" x="-357" y="-365">t&gt;=300</label>
+			<label kind="guard" x="-357" y="-365">t&gt;=30</label>
 			<label kind="assignment" x="-357" y="-348">t=0,ts[id][1]=false,tf[id][1]=true,
-updateIteration()</label>
+updateIteration(),refresh()</label>
 			<nail x="-340" y="-348"/>
 		</transition>
 		<transition>
 			<source ref="id1"/>
 			<target ref="id4"/>
-			<label kind="guard" x="-680" y="-280">!tf[id][2]&amp;&amp;
+			<label kind="guard" x="-680" y="-297">!tf[id][2]&amp;&amp;
 (!isBusy(2))&amp;&amp;
-(position[id][4])</label>
+(position[id][4])&amp;&amp;
+globalTime&lt;=MAXTIME</label>
 			<label kind="assignment" x="-680" y="-221">t=0,ts[id][2]=true,tf[id][2]=false</label>
 		</transition>
 		<transition>
 			<source ref="id4"/>
 			<target ref="id1"/>
-			<label kind="guard" x="-663" y="-144">t&gt;=600</label>
+			<label kind="guard" x="-663" y="-144">t&gt;=60</label>
 			<label kind="assignment" x="-663" y="-127">t=0,ts[id][2]=false,tf[id][2]=true,
-updateIteration()</label>
+updateIteration(), consume(600)</label>
 			<nail x="-578" y="-127"/>
 		</transition>
 	</template>
@@ -183,7 +227,11 @@ updateIteration()</label>
 		<name>Movement0</name>
 		<parameter>const AgentScale id</parameter>
 		<declaration>clock t;
-</declaration>
+
+void consume(int consumption)
+{
+    battery[id] -= consumption * consumingRate[id];
+}</declaration>
 		<location id="id5" x="-500" y="-300">
 			<name x="-510" y="-330">initial</name>
 			<committed/>
@@ -193,11 +241,11 @@ updateIteration()</label>
 		</location>
 		<location id="id7" x="0" y="-100">
 			<name x="-10" y="-130">F0T2</name>
-			<label kind="invariant" x="-10" y="-85">t&lt;=34</label>
+			<label kind="invariant" x="-10" y="-85">t&lt;=45</label>
 		</location>
 		<location id="id8" x="150" y="-100">
 			<name x="140" y="-130">F0T3</name>
-			<label kind="invariant" x="140" y="-85">t&lt;=18</label>
+			<label kind="invariant" x="140" y="-85">t&lt;=51</label>
 		</location>
 		<location id="id9" x="-250" y="-50">
 			<name x="-272" y="-85">P1</name>
@@ -277,8 +325,8 @@ updateIteration()</label>
 		<transition>
 			<source ref="id7"/>
 			<target ref="id12"/>
-			<label kind="guard" x="-110" y="-30">t&gt;=34</label>
-			<label kind="assignment" x="-110" y="0">t=0,position[id][2]=true</label>
+			<label kind="guard" x="-110" y="-30">t&gt;=45</label>
+			<label kind="assignment" x="-110" y="0">t=0,position[id][2]=true,consume(45)</label>
 		</transition>
 		<transition>
 			<source ref="id6"/>
@@ -289,37 +337,39 @@ updateIteration()</label>
 		<transition>
 			<source ref="id8"/>
 			<target ref="id16"/>
-			<label kind="guard" x="40" y="45">t&gt;=18</label>
-			<label kind="assignment" x="40" y="75">t=0,position[id][3]=true</label>
+			<label kind="guard" x="40" y="45">t&gt;=51</label>
+			<label kind="assignment" x="40" y="75">t=0,position[id][3]=true,consume(51)</label>
 		</transition>
 		<transition>
 			<source ref="id9"/>
 			<target ref="id10"/>
+			<label kind="guard" x="-232" y="-34">shouldGo(id,1,2)</label>
 			<label kind="synchronisation" x="-185" y="-15">move[id]?</label>
-			<label kind="assignment" x="-185" y="0">t=0,position[id][1]=false</label>
+			<label kind="assignment" x="-185" y="0">t=0,position[id][1]=false,tf[id][3]=false</label>
 		</transition>
 		<transition>
 			<source ref="id10"/>
 			<target ref="id12"/>
 			<label kind="guard" x="-110" y="45">t&gt;=177</label>
-			<label kind="assignment" x="-110" y="75">t=0,position[id][2]=true</label>
+			<label kind="assignment" x="-110" y="75">t=0,position[id][2]=true,consume(177)</label>
 		</transition>
 		<transition>
 			<source ref="id9"/>
 			<target ref="id11"/>
+			<label kind="guard" x="-232" y="-34">shouldGo(id,1,3)</label>
 			<label kind="synchronisation" x="-110" y="-15">move[id]?</label>
-			<label kind="assignment" x="-110" y="0">t=0,position[id][1]=false</label>
+			<label kind="assignment" x="-110" y="0">t=0,position[id][1]=false,tf[id][3]=false</label>
 		</transition>
 		<transition>
 			<source ref="id11"/>
 			<target ref="id16"/>
 			<label kind="guard" x="40" y="120">t&gt;=170</label>
-			<label kind="assignment" x="40" y="150">t=0,position[id][3]=true</label>
+			<label kind="assignment" x="40" y="150">t=0,position[id][3]=true,consume(170)</label>
 		</transition>
 		<transition>
 			<source ref="id12"/>
 			<target ref="id13"/>
-			<label kind="guard" x="-125" y="116">tf[id][1]</label>
+			<label kind="guard" x="-125" y="116">shouldGo(id,2,1)</label>
 			<label kind="synchronisation" x="-185" y="135">move[id]?</label>
 			<label kind="assignment" x="-185" y="150">t=0,position[id][2]=false,tf[id][1]=false</label>
 		</transition>
@@ -327,12 +377,12 @@ updateIteration()</label>
 			<source ref="id13"/>
 			<target ref="id9"/>
 			<label kind="guard" x="-260" y="45">t&gt;=177</label>
-			<label kind="assignment" x="-260" y="75">t=0,position[id][1]=true</label>
+			<label kind="assignment" x="-260" y="75">t=0,position[id][1]=true,consume(177)</label>
 		</transition>
 		<transition>
 			<source ref="id12"/>
 			<target ref="id14"/>
-			<label kind="guard" x="-82" y="116">tf[id][1]</label>
+			<label kind="guard" x="-82" y="116">shouldGo(id,2,4)</label>
 			<label kind="synchronisation" x="40" y="135">move[id]?</label>
 			<label kind="assignment" x="40" y="150">t=0,position[id][2]=false,tf[id][1]=false</label>
 		</transition>
@@ -340,12 +390,12 @@ updateIteration()</label>
 			<source ref="id14"/>
 			<target ref="id20"/>
 			<label kind="guard" x="190" y="270">t&gt;=36</label>
-			<label kind="assignment" x="190" y="300">t=0,position[id][4]=true,PCQueue++</label>
+			<label kind="assignment" x="190" y="300">t=0,position[id][4]=true,PCQueue++,consume(36)</label>
 		</transition>
 		<transition>
 			<source ref="id12"/>
 			<target ref="id15"/>
-			<label kind="guard" x="-82" y="116">tf[id][1]</label>
+			<label kind="guard" x="-82" y="116">shouldGo(id,2,5)</label>
 			<label kind="synchronisation" x="115" y="135">move[id]?</label>
 			<label kind="assignment" x="115" y="150">t=0,position[id][2]=false,tf[id][1]=false</label>
 		</transition>
@@ -353,12 +403,12 @@ updateIteration()</label>
 			<source ref="id15"/>
 			<target ref="id23"/>
 			<label kind="guard" x="340" y="345">t&gt;=33</label>
-			<label kind="assignment" x="340" y="375">t=0,position[id][5]=true</label>
+			<label kind="assignment" x="340" y="375">t=0,position[id][5]=true,consume(33)</label>
 		</transition>
 		<transition>
 			<source ref="id16"/>
 			<target ref="id17"/>
-			<label kind="guard" x="-132" y="266">tf[id][1]</label>
+			<label kind="guard" x="-132" y="266">shouldGo(id,3,1)</label>
 			<label kind="synchronisation" x="-110" y="285">move[id]?</label>
 			<label kind="assignment" x="-110" y="300">t=0,position[id][3]=false,tf[id][1]=false</label>
 		</transition>
@@ -366,12 +416,12 @@ updateIteration()</label>
 			<source ref="id17"/>
 			<target ref="id9"/>
 			<label kind="guard" x="-260" y="120">t&gt;=170</label>
-			<label kind="assignment" x="-260" y="150">t=0,position[id][1]=true</label>
+			<label kind="assignment" x="-260" y="150">t=0,position[id][1]=true,consume(170)</label>
 		</transition>
 		<transition>
 			<source ref="id16"/>
 			<target ref="id18"/>
-			<label kind="guard" x="68" y="266">tf[id][1]</label>
+			<label kind="guard" x="68" y="266">shouldGo(id,3,4)</label>
 			<label kind="synchronisation" x="115" y="285">move[id]?</label>
 			<label kind="assignment" x="115" y="300">t=0,position[id][3]=false,tf[id][1]=false</label>
 		</transition>
@@ -379,12 +429,12 @@ updateIteration()</label>
 			<source ref="id18"/>
 			<target ref="id20"/>
 			<label kind="guard" x="190" y="345">t&gt;=42</label>
-			<label kind="assignment" x="190" y="375">t=0,position[id][4]=true,PCQueue++</label>
+			<label kind="assignment" x="190" y="375">t=0,position[id][4]=true,PCQueue++,consume(42)</label>
 		</transition>
 		<transition>
 			<source ref="id16"/>
 			<target ref="id19"/>
-			<label kind="guard" x="68" y="266">tf[id][1]</label>
+			<label kind="guard" x="68" y="266">shouldGo(id,3,5)</label>
 			<label kind="synchronisation" x="190" y="285">move[id]?</label>
 			<label kind="assignment" x="190" y="300">t=0,position[id][3]=false,tf[id][1]=false</label>
 		</transition>
@@ -392,11 +442,12 @@ updateIteration()</label>
 			<source ref="id19"/>
 			<target ref="id23"/>
 			<label kind="guard" x="340" y="420">t&gt;=33</label>
-			<label kind="assignment" x="340" y="450">t=0,position[id][5]=true</label>
+			<label kind="assignment" x="340" y="450">t=0,position[id][5]=true,consume(33)</label>
 		</transition>
 		<transition>
 			<source ref="id20"/>
 			<target ref="id21"/>
+			<label kind="guard" x="18" y="416">shouldGo(id,4,2)</label>
 			<label kind="synchronisation" x="40" y="435">move[id]?</label>
 			<label kind="assignment" x="40" y="450">t=0,position[id][4]=false,PCQueue--</label>
 		</transition>
@@ -404,11 +455,12 @@ updateIteration()</label>
 			<source ref="id21"/>
 			<target ref="id12"/>
 			<label kind="guard" x="-110" y="270">t&gt;=36</label>
-			<label kind="assignment" x="-110" y="300">t=0,position[id][2]=true</label>
+			<label kind="assignment" x="-110" y="300">t=0,position[id][2]=true,consume(36)</label>
 		</transition>
 		<transition>
 			<source ref="id20"/>
 			<target ref="id22"/>
+			<label kind="guard" x="175" y="416">shouldGo(id,4,3)</label>
 			<label kind="synchronisation" x="115" y="435">move[id]?</label>
 			<label kind="assignment" x="115" y="450">t=0,position[id][4]=false,PCQueue--</label>
 		</transition>
@@ -416,11 +468,12 @@ updateIteration()</label>
 			<source ref="id22"/>
 			<target ref="id16"/>
 			<label kind="guard" x="40" y="345">t&gt;=42</label>
-			<label kind="assignment" x="40" y="375">t=0,position[id][3]=true</label>
+			<label kind="assignment" x="40" y="375">t=0,position[id][3]=true,consume(42)</label>
 		</transition>
 		<transition>
 			<source ref="id23"/>
 			<target ref="id24"/>
+			<label kind="guard" x="18" y="566">shouldGo(id,5,2)</label>
 			<label kind="synchronisation" x="115" y="585">move[id]?</label>
 			<label kind="assignment" x="115" y="600">t=0,position[id][5]=false</label>
 		</transition>
@@ -428,11 +481,12 @@ updateIteration()</label>
 			<source ref="id24"/>
 			<target ref="id12"/>
 			<label kind="guard" x="-110" y="345">t&gt;=33</label>
-			<label kind="assignment" x="-110" y="375">t=0,position[id][2]=true</label>
+			<label kind="assignment" x="-110" y="375">t=0,position[id][2]=true,consume(33)</label>
 		</transition>
 		<transition>
 			<source ref="id23"/>
 			<target ref="id25"/>
+			<label kind="guard" x="168" y="566">shouldGo(id,5,3)</label>
 			<label kind="synchronisation" x="190" y="585">move[id]?</label>
 			<label kind="assignment" x="190" y="600">t=0,position[id][5]=false</label>
 		</transition>
@@ -440,13 +494,18 @@ updateIteration()</label>
 			<source ref="id25"/>
 			<target ref="id16"/>
 			<label kind="guard" x="40" y="420">t&gt;=33</label>
-			<label kind="assignment" x="40" y="450">t=0,position[id][3]=true</label>
+			<label kind="assignment" x="40" y="450">t=0,position[id][3]=true,consume(33)</label>
 		</transition>
 	</template>
 	<template>
 		<name>Movement1</name>
 		<parameter>const AgentScale id</parameter>
 		<declaration>clock t;
+
+void consume(int consumption)
+{
+    battery[id] -= consumption * consumingRate[id];
+}
 </declaration>
 		<location id="id26" x="-500" y="-300">
 			<name x="-510" y="-330">initial</name>
@@ -457,11 +516,11 @@ updateIteration()</label>
 		</location>
 		<location id="id28" x="0" y="-100">
 			<name x="-10" y="-130">F0T2</name>
-			<label kind="invariant" x="-10" y="-85">t&lt;=59</label>
+			<label kind="invariant" x="-10" y="-85">t&lt;=30</label>
 		</location>
 		<location id="id29" x="150" y="-100">
 			<name x="140" y="-130">F0T3</name>
-			<label kind="invariant" x="140" y="-85">t&lt;=43</label>
+			<label kind="invariant" x="140" y="-85">t&lt;=40</label>
 		</location>
 		<location id="id30" x="-250" y="-50">
 			<name x="-272" y="-85">P1</name>
@@ -541,8 +600,8 @@ updateIteration()</label>
 		<transition>
 			<source ref="id28"/>
 			<target ref="id33"/>
-			<label kind="guard" x="-110" y="-30">t&gt;=59</label>
-			<label kind="assignment" x="-110" y="0">t=0,position[id][2]=true</label>
+			<label kind="guard" x="-110" y="-30">t&gt;=30</label>
+			<label kind="assignment" x="-110" y="0">t=0,position[id][2]=true,consume(30)</label>
 		</transition>
 		<transition>
 			<source ref="id27"/>
@@ -553,37 +612,39 @@ updateIteration()</label>
 		<transition>
 			<source ref="id29"/>
 			<target ref="id37"/>
-			<label kind="guard" x="40" y="45">t&gt;=43</label>
-			<label kind="assignment" x="40" y="75">t=0,position[id][3]=true</label>
+			<label kind="guard" x="40" y="45">t&gt;=40</label>
+			<label kind="assignment" x="40" y="75">t=0,position[id][3]=true,consume(40)</label>
 		</transition>
 		<transition>
 			<source ref="id30"/>
 			<target ref="id31"/>
+			<label kind="guard" x="-232" y="-34">shouldGo(id,1,2)</label>
 			<label kind="synchronisation" x="-185" y="-15">move[id]?</label>
-			<label kind="assignment" x="-185" y="0">t=0,position[id][1]=false</label>
+			<label kind="assignment" x="-185" y="0">t=0,position[id][1]=false,tf[id][3]=false</label>
 		</transition>
 		<transition>
 			<source ref="id31"/>
 			<target ref="id33"/>
 			<label kind="guard" x="-110" y="45">t&gt;=177</label>
-			<label kind="assignment" x="-110" y="75">t=0,position[id][2]=true</label>
+			<label kind="assignment" x="-110" y="75">t=0,position[id][2]=true,consume(177)</label>
 		</transition>
 		<transition>
 			<source ref="id30"/>
 			<target ref="id32"/>
+			<label kind="guard" x="-232" y="-34">shouldGo(id,1,3)</label>
 			<label kind="synchronisation" x="-110" y="-15">move[id]?</label>
-			<label kind="assignment" x="-110" y="0">t=0,position[id][1]=false</label>
+			<label kind="assignment" x="-110" y="0">t=0,position[id][1]=false,tf[id][3]=false</label>
 		</transition>
 		<transition>
 			<source ref="id32"/>
 			<target ref="id37"/>
 			<label kind="guard" x="40" y="120">t&gt;=170</label>
-			<label kind="assignment" x="40" y="150">t=0,position[id][3]=true</label>
+			<label kind="assignment" x="40" y="150">t=0,position[id][3]=true,consume(170)</label>
 		</transition>
 		<transition>
 			<source ref="id33"/>
 			<target ref="id34"/>
-			<label kind="guard" x="-125" y="116">tf[id][1]</label>
+			<label kind="guard" x="-125" y="116">shouldGo(id,2,1)</label>
 			<label kind="synchronisation" x="-185" y="135">move[id]?</label>
 			<label kind="assignment" x="-185" y="150">t=0,position[id][2]=false,tf[id][1]=false</label>
 		</transition>
@@ -591,12 +652,12 @@ updateIteration()</label>
 			<source ref="id34"/>
 			<target ref="id30"/>
 			<label kind="guard" x="-260" y="45">t&gt;=177</label>
-			<label kind="assignment" x="-260" y="75">t=0,position[id][1]=true</label>
+			<label kind="assignment" x="-260" y="75">t=0,position[id][1]=true,consume(177)</label>
 		</transition>
 		<transition>
 			<source ref="id33"/>
 			<target ref="id35"/>
-			<label kind="guard" x="-82" y="116">tf[id][1]</label>
+			<label kind="guard" x="-82" y="116">shouldGo(id,2,4)</label>
 			<label kind="synchronisation" x="40" y="135">move[id]?</label>
 			<label kind="assignment" x="40" y="150">t=0,position[id][2]=false,tf[id][1]=false</label>
 		</transition>
@@ -604,12 +665,12 @@ updateIteration()</label>
 			<source ref="id35"/>
 			<target ref="id41"/>
 			<label kind="guard" x="190" y="270">t&gt;=36</label>
-			<label kind="assignment" x="190" y="300">t=0,position[id][4]=true,PCQueue++</label>
+			<label kind="assignment" x="190" y="300">t=0,position[id][4]=true,PCQueue++,consume(36)</label>
 		</transition>
 		<transition>
 			<source ref="id33"/>
 			<target ref="id36"/>
-			<label kind="guard" x="-82" y="116">tf[id][1]</label>
+			<label kind="guard" x="-82" y="116">shouldGo(id,2,5)</label>
 			<label kind="synchronisation" x="115" y="135">move[id]?</label>
 			<label kind="assignment" x="115" y="150">t=0,position[id][2]=false,tf[id][1]=false</label>
 		</transition>
@@ -617,12 +678,12 @@ updateIteration()</label>
 			<source ref="id36"/>
 			<target ref="id44"/>
 			<label kind="guard" x="340" y="345">t&gt;=33</label>
-			<label kind="assignment" x="340" y="375">t=0,position[id][5]=true</label>
+			<label kind="assignment" x="340" y="375">t=0,position[id][5]=true,consume(33)</label>
 		</transition>
 		<transition>
 			<source ref="id37"/>
 			<target ref="id38"/>
-			<label kind="guard" x="-132" y="266">tf[id][1]</label>
+			<label kind="guard" x="-132" y="266">shouldGo(id,3,1)</label>
 			<label kind="synchronisation" x="-110" y="285">move[id]?</label>
 			<label kind="assignment" x="-110" y="300">t=0,position[id][3]=false,tf[id][1]=false</label>
 		</transition>
@@ -630,12 +691,12 @@ updateIteration()</label>
 			<source ref="id38"/>
 			<target ref="id30"/>
 			<label kind="guard" x="-260" y="120">t&gt;=170</label>
-			<label kind="assignment" x="-260" y="150">t=0,position[id][1]=true</label>
+			<label kind="assignment" x="-260" y="150">t=0,position[id][1]=true,consume(170)</label>
 		</transition>
 		<transition>
 			<source ref="id37"/>
 			<target ref="id39"/>
-			<label kind="guard" x="68" y="266">tf[id][1]</label>
+			<label kind="guard" x="68" y="266">shouldGo(id,3,4)</label>
 			<label kind="synchronisation" x="115" y="285">move[id]?</label>
 			<label kind="assignment" x="115" y="300">t=0,position[id][3]=false,tf[id][1]=false</label>
 		</transition>
@@ -643,12 +704,12 @@ updateIteration()</label>
 			<source ref="id39"/>
 			<target ref="id41"/>
 			<label kind="guard" x="190" y="345">t&gt;=42</label>
-			<label kind="assignment" x="190" y="375">t=0,position[id][4]=true,PCQueue++</label>
+			<label kind="assignment" x="190" y="375">t=0,position[id][4]=true,PCQueue++,consume(42)</label>
 		</transition>
 		<transition>
 			<source ref="id37"/>
 			<target ref="id40"/>
-			<label kind="guard" x="68" y="266">tf[id][1]</label>
+			<label kind="guard" x="68" y="266">shouldGo(id,3,5)</label>
 			<label kind="synchronisation" x="190" y="285">move[id]?</label>
 			<label kind="assignment" x="190" y="300">t=0,position[id][3]=false,tf[id][1]=false</label>
 		</transition>
@@ -656,11 +717,12 @@ updateIteration()</label>
 			<source ref="id40"/>
 			<target ref="id44"/>
 			<label kind="guard" x="340" y="420">t&gt;=33</label>
-			<label kind="assignment" x="340" y="450">t=0,position[id][5]=true</label>
+			<label kind="assignment" x="340" y="450">t=0,position[id][5]=true,consume(33)</label>
 		</transition>
 		<transition>
 			<source ref="id41"/>
 			<target ref="id42"/>
+			<label kind="guard" x="18" y="416">shouldGo(id,4,2)</label>
 			<label kind="synchronisation" x="40" y="435">move[id]?</label>
 			<label kind="assignment" x="40" y="450">t=0,position[id][4]=false,PCQueue--</label>
 		</transition>
@@ -668,11 +730,12 @@ updateIteration()</label>
 			<source ref="id42"/>
 			<target ref="id33"/>
 			<label kind="guard" x="-110" y="270">t&gt;=36</label>
-			<label kind="assignment" x="-110" y="300">t=0,position[id][2]=true</label>
+			<label kind="assignment" x="-110" y="300">t=0,position[id][2]=true,consume(36)</label>
 		</transition>
 		<transition>
 			<source ref="id41"/>
 			<target ref="id43"/>
+			<label kind="guard" x="175" y="416">shouldGo(id,4,3)</label>
 			<label kind="synchronisation" x="115" y="435">move[id]?</label>
 			<label kind="assignment" x="115" y="450">t=0,position[id][4]=false,PCQueue--</label>
 		</transition>
@@ -680,11 +743,12 @@ updateIteration()</label>
 			<source ref="id43"/>
 			<target ref="id37"/>
 			<label kind="guard" x="40" y="345">t&gt;=42</label>
-			<label kind="assignment" x="40" y="375">t=0,position[id][3]=true</label>
+			<label kind="assignment" x="40" y="375">t=0,position[id][3]=true,consume(42)</label>
 		</transition>
 		<transition>
 			<source ref="id44"/>
 			<target ref="id45"/>
+			<label kind="guard" x="18" y="566">shouldGo(id,5,2)</label>
 			<label kind="synchronisation" x="115" y="585">move[id]?</label>
 			<label kind="assignment" x="115" y="600">t=0,position[id][5]=false</label>
 		</transition>
@@ -692,11 +756,12 @@ updateIteration()</label>
 			<source ref="id45"/>
 			<target ref="id33"/>
 			<label kind="guard" x="-110" y="345">t&gt;=33</label>
-			<label kind="assignment" x="-110" y="375">t=0,position[id][2]=true</label>
+			<label kind="assignment" x="-110" y="375">t=0,position[id][2]=true,consume(33)</label>
 		</transition>
 		<transition>
 			<source ref="id44"/>
 			<target ref="id46"/>
+			<label kind="guard" x="168" y="566">shouldGo(id,5,3)</label>
 			<label kind="synchronisation" x="190" y="585">move[id]?</label>
 			<label kind="assignment" x="190" y="600">t=0,position[id][5]=false</label>
 		</transition>
@@ -704,13 +769,19 @@ updateIteration()</label>
 			<source ref="id46"/>
 			<target ref="id37"/>
 			<label kind="guard" x="40" y="420">t&gt;=33</label>
-			<label kind="assignment" x="40" y="450">t=0,position[id][3]=true</label>
+			<label kind="assignment" x="40" y="450">t=0,position[id][3]=true,consume(33)</label>
 		</transition>
 	</template>
 	<template>
 		<name>Movement2</name>
 		<parameter>const AgentScale id</parameter>
-		<declaration>clock t;</declaration>
+		<declaration>clock t;
+
+void consume(int consumption)
+{
+    battery[id] -= consumption * consumingRate[id];
+}
+</declaration>
 		<location id="id47" x="-500" y="-300">
 			<name x="-510" y="-330">initial</name>
 			<committed/>
@@ -724,7 +795,7 @@ updateIteration()</label>
 		</location>
 		<location id="id50" x="150" y="-100">
 			<name x="140" y="-130">F0T3</name>
-			<label kind="invariant" x="140" y="-85">t&lt;=39</label>
+			<label kind="invariant" x="140" y="-85">t&lt;=7</label>
 		</location>
 		<location id="id51" x="-250" y="-50">
 			<name x="-272" y="-85">P1</name>
@@ -805,7 +876,7 @@ updateIteration()</label>
 			<source ref="id49"/>
 			<target ref="id54"/>
 			<label kind="guard" x="-110" y="-30">t&gt;=23</label>
-			<label kind="assignment" x="-110" y="0">t=0,position[id][2]=true</label>
+			<label kind="assignment" x="-110" y="0">t=0,position[id][2]=true,consume(23)</label>
 		</transition>
 		<transition>
 			<source ref="id48"/>
@@ -816,37 +887,39 @@ updateIteration()</label>
 		<transition>
 			<source ref="id50"/>
 			<target ref="id58"/>
-			<label kind="guard" x="40" y="45">t&gt;=39</label>
-			<label kind="assignment" x="40" y="75">t=0,position[id][3]=true</label>
+			<label kind="guard" x="40" y="45">t&gt;=7</label>
+			<label kind="assignment" x="40" y="75">t=0,position[id][3]=true,consume(7)</label>
 		</transition>
 		<transition>
 			<source ref="id51"/>
 			<target ref="id52"/>
+			<label kind="guard" x="-232" y="-34">shouldGo(id,1,2)</label>
 			<label kind="synchronisation" x="-185" y="-15">move[id]?</label>
-			<label kind="assignment" x="-185" y="0">t=0,position[id][1]=false</label>
+			<label kind="assignment" x="-185" y="0">t=0,position[id][1]=false,tf[id][3]=false</label>
 		</transition>
 		<transition>
 			<source ref="id52"/>
 			<target ref="id54"/>
 			<label kind="guard" x="-110" y="45">t&gt;=177</label>
-			<label kind="assignment" x="-110" y="75">t=0,position[id][2]=true</label>
+			<label kind="assignment" x="-110" y="75">t=0,position[id][2]=true,consume(177)</label>
 		</transition>
 		<transition>
 			<source ref="id51"/>
 			<target ref="id53"/>
+			<label kind="guard" x="-232" y="-34">shouldGo(id,1,3)</label>
 			<label kind="synchronisation" x="-110" y="-15">move[id]?</label>
-			<label kind="assignment" x="-110" y="0">t=0,position[id][1]=false</label>
+			<label kind="assignment" x="-110" y="0">t=0,position[id][1]=false,tf[id][3]=false</label>
 		</transition>
 		<transition>
 			<source ref="id53"/>
 			<target ref="id58"/>
 			<label kind="guard" x="40" y="120">t&gt;=170</label>
-			<label kind="assignment" x="40" y="150">t=0,position[id][3]=true</label>
+			<label kind="assignment" x="40" y="150">t=0,position[id][3]=true,consume(170)</label>
 		</transition>
 		<transition>
 			<source ref="id54"/>
 			<target ref="id55"/>
-			<label kind="guard" x="-125" y="116">tf[id][1]</label>
+			<label kind="guard" x="-125" y="116">shouldGo(id,2,1)</label>
 			<label kind="synchronisation" x="-185" y="135">move[id]?</label>
 			<label kind="assignment" x="-185" y="150">t=0,position[id][2]=false,tf[id][1]=false</label>
 		</transition>
@@ -854,12 +927,12 @@ updateIteration()</label>
 			<source ref="id55"/>
 			<target ref="id51"/>
 			<label kind="guard" x="-260" y="45">t&gt;=177</label>
-			<label kind="assignment" x="-260" y="75">t=0,position[id][1]=true</label>
+			<label kind="assignment" x="-260" y="75">t=0,position[id][1]=true,consume(177)</label>
 		</transition>
 		<transition>
 			<source ref="id54"/>
 			<target ref="id56"/>
-			<label kind="guard" x="-82" y="116">tf[id][1]</label>
+			<label kind="guard" x="-82" y="116">shouldGo(id,2,4)</label>
 			<label kind="synchronisation" x="40" y="135">move[id]?</label>
 			<label kind="assignment" x="40" y="150">t=0,position[id][2]=false,tf[id][1]=false</label>
 		</transition>
@@ -867,12 +940,12 @@ updateIteration()</label>
 			<source ref="id56"/>
 			<target ref="id62"/>
 			<label kind="guard" x="190" y="270">t&gt;=36</label>
-			<label kind="assignment" x="190" y="300">t=0,position[id][4]=true,PCQueue++</label>
+			<label kind="assignment" x="190" y="300">t=0,position[id][4]=true,PCQueue++,consume(36)</label>
 		</transition>
 		<transition>
 			<source ref="id54"/>
 			<target ref="id57"/>
-			<label kind="guard" x="-82" y="116">tf[id][1]</label>
+			<label kind="guard" x="-82" y="116">shouldGo(id,2,5)</label>
 			<label kind="synchronisation" x="115" y="135">move[id]?</label>
 			<label kind="assignment" x="115" y="150">t=0,position[id][2]=false,tf[id][1]=false</label>
 		</transition>
@@ -880,12 +953,12 @@ updateIteration()</label>
 			<source ref="id57"/>
 			<target ref="id65"/>
 			<label kind="guard" x="340" y="345">t&gt;=33</label>
-			<label kind="assignment" x="340" y="375">t=0,position[id][5]=true</label>
+			<label kind="assignment" x="340" y="375">t=0,position[id][5]=true,consume(33)</label>
 		</transition>
 		<transition>
 			<source ref="id58"/>
 			<target ref="id59"/>
-			<label kind="guard" x="-132" y="266">tf[id][1]</label>
+			<label kind="guard" x="-132" y="266">shouldGo(id,3,1)</label>
 			<label kind="synchronisation" x="-110" y="285">move[id]?</label>
 			<label kind="assignment" x="-110" y="300">t=0,position[id][3]=false,tf[id][1]=false</label>
 		</transition>
@@ -893,12 +966,12 @@ updateIteration()</label>
 			<source ref="id59"/>
 			<target ref="id51"/>
 			<label kind="guard" x="-260" y="120">t&gt;=170</label>
-			<label kind="assignment" x="-260" y="150">t=0,position[id][1]=true</label>
+			<label kind="assignment" x="-260" y="150">t=0,position[id][1]=true,consume(170)</label>
 		</transition>
 		<transition>
 			<source ref="id58"/>
 			<target ref="id60"/>
-			<label kind="guard" x="68" y="266">tf[id][1]</label>
+			<label kind="guard" x="68" y="266">shouldGo(id,3,4)</label>
 			<label kind="synchronisation" x="115" y="285">move[id]?</label>
 			<label kind="assignment" x="115" y="300">t=0,position[id][3]=false,tf[id][1]=false</label>
 		</transition>
@@ -906,12 +979,12 @@ updateIteration()</label>
 			<source ref="id60"/>
 			<target ref="id62"/>
 			<label kind="guard" x="190" y="345">t&gt;=42</label>
-			<label kind="assignment" x="190" y="375">t=0,position[id][4]=true,PCQueue++</label>
+			<label kind="assignment" x="190" y="375">t=0,position[id][4]=true,PCQueue++,consume(42)</label>
 		</transition>
 		<transition>
 			<source ref="id58"/>
 			<target ref="id61"/>
-			<label kind="guard" x="68" y="266">tf[id][1]</label>
+			<label kind="guard" x="68" y="266">shouldGo(id,3,5)</label>
 			<label kind="synchronisation" x="190" y="285">move[id]?</label>
 			<label kind="assignment" x="190" y="300">t=0,position[id][3]=false,tf[id][1]=false</label>
 		</transition>
@@ -919,11 +992,12 @@ updateIteration()</label>
 			<source ref="id61"/>
 			<target ref="id65"/>
 			<label kind="guard" x="340" y="420">t&gt;=33</label>
-			<label kind="assignment" x="340" y="450">t=0,position[id][5]=true</label>
+			<label kind="assignment" x="340" y="450">t=0,position[id][5]=true,consume(33)</label>
 		</transition>
 		<transition>
 			<source ref="id62"/>
 			<target ref="id63"/>
+			<label kind="guard" x="18" y="416">shouldGo(id,4,2)</label>
 			<label kind="synchronisation" x="40" y="435">move[id]?</label>
 			<label kind="assignment" x="40" y="450">t=0,position[id][4]=false,PCQueue--</label>
 		</transition>
@@ -931,11 +1005,12 @@ updateIteration()</label>
 			<source ref="id63"/>
 			<target ref="id54"/>
 			<label kind="guard" x="-110" y="270">t&gt;=36</label>
-			<label kind="assignment" x="-110" y="300">t=0,position[id][2]=true</label>
+			<label kind="assignment" x="-110" y="300">t=0,position[id][2]=true,consume(36)</label>
 		</transition>
 		<transition>
 			<source ref="id62"/>
 			<target ref="id64"/>
+			<label kind="guard" x="175" y="416">shouldGo(id,4,3)</label>
 			<label kind="synchronisation" x="115" y="435">move[id]?</label>
 			<label kind="assignment" x="115" y="450">t=0,position[id][4]=false,PCQueue--</label>
 		</transition>
@@ -943,11 +1018,12 @@ updateIteration()</label>
 			<source ref="id64"/>
 			<target ref="id58"/>
 			<label kind="guard" x="40" y="345">t&gt;=42</label>
-			<label kind="assignment" x="40" y="375">t=0,position[id][3]=true</label>
+			<label kind="assignment" x="40" y="375">t=0,position[id][3]=true,consume(42)</label>
 		</transition>
 		<transition>
 			<source ref="id65"/>
 			<target ref="id66"/>
+			<label kind="guard" x="18" y="566">shouldGo(id,5,2)</label>
 			<label kind="synchronisation" x="115" y="585">move[id]?</label>
 			<label kind="assignment" x="115" y="600">t=0,position[id][5]=false</label>
 		</transition>
@@ -955,11 +1031,12 @@ updateIteration()</label>
 			<source ref="id66"/>
 			<target ref="id54"/>
 			<label kind="guard" x="-110" y="345">t&gt;=33</label>
-			<label kind="assignment" x="-110" y="375">t=0,position[id][2]=true</label>
+			<label kind="assignment" x="-110" y="375">t=0,position[id][2]=true,consume(33)</label>
 		</transition>
 		<transition>
 			<source ref="id65"/>
 			<target ref="id67"/>
+			<label kind="guard" x="168" y="566">shouldGo(id,5,3)</label>
 			<label kind="synchronisation" x="190" y="585">move[id]?</label>
 			<label kind="assignment" x="190" y="600">t=0,position[id][5]=false</label>
 		</transition>
@@ -967,33 +1044,23 @@ updateIteration()</label>
 			<source ref="id67"/>
 			<target ref="id58"/>
 			<label kind="guard" x="40" y="420">t&gt;=33</label>
-			<label kind="assignment" x="40" y="450">t=0,position[id][3]=true</label>
+			<label kind="assignment" x="40" y="450">t=0,position[id][3]=true,consume(33)</label>
 		</transition>
 	</template>
 	<system>movement0 = Movement0(0);
 taskExe0 = TaskExecution(0);
+
 movement1 = Movement1(1);
 taskExe1 = TaskExecution(1);
+
 movement2 = Movement1(2);
 taskExe2 = TaskExecution(2);
 
 system movement0, taskExe0, movement1, taskExe1, movement2, taskExe2;</system>
 	<queries>
 		<query>
-			<formula></formula>
-			<comment>Error verification
-A[] !monitor0.Error1 &amp;&amp; !monitor0.Error2 &amp;&amp; !monitor1.Error1 &amp;&amp; !monitor1.Error2 &amp;&amp; !monitor2.Error1 &amp;&amp; !monitor2.Error2
-A[] forall(i:int[0,AgentNum-1]) battery[i] &gt;= 0</comment>
-		</query>
-		<query>
-			<formula></formula>
-			<comment>PC priority verificaiton
-A[] PCQueue &lt;= 2 imply !(taskExe0.T2_2 || taskExe1.T2_2 || taskExe2.T2_2)</comment>
-		</query>
-		<query>
 			<formula>E&lt;&gt;  stone == 0</formula>
-			<comment>Task coverage
-</comment>
+			<comment>Task coverage</comment>
 		</query>
 	</queries>
 </nta>

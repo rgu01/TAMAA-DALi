@@ -54,6 +54,8 @@ public class PlannerServiceHandler implements PlannerService.Iface {
 	public static String logFileDaliStar = "./results/dalistar.log";
 	private ArrayList<Long> execTimes = new ArrayList<Long>();
 	private Boolean UseMultiTargetPathPlanning = false;
+	private boolean ownModel;
+	private String ownModelAddress;
 
 	public enum Algo {
 		AStar, Dali, DaliStar, AStar2
@@ -68,11 +70,13 @@ public class PlannerServiceHandler implements PlannerService.Iface {
 	public PlannerServiceHandler() {
 	}
 
-	public PlannerServiceHandler(String mmtAddress, int mmtPort, String uppaalAddress, int uppaalPort) {
+	public PlannerServiceHandler(String mmtAddress, int mmtPort, String uppaalAddress, int uppaalPort, boolean ownModel, String ownModelAddress) {
 		this.mmtAddress = mmtAddress;
 		this.mmtPort = mmtPort;
 		this.uppaalAddress = uppaalAddress;
 		this.uppaalPort = uppaalPort;
+		this.ownModel = ownModel;
+		this.ownModelAddress = ownModelAddress;
 	}
 
 	@Override
@@ -291,8 +295,8 @@ public class PlannerServiceHandler implements PlannerService.Iface {
 
 	private boolean generatePlan(Mission plan, PathPlanningAlgorithm as, List<Path> passAnomalyPaths,
 			List<Integer> passAnomalyPathsTime) throws Exception {
-		boolean success = callUppaal();
 		//boolean success = true;
+		boolean success = callUppaal();
 		if (!success) {
 			String show = "Time out: server does not respond!";
 			// JOptionPane.showMessageDialog(null, show, "Error: Time Out",
@@ -453,8 +457,13 @@ public class PlannerServiceHandler implements PlannerService.Iface {
 		boolean result = true;
 		UPPAgentGenerator.run(this.agents); // call UPPAAL in the server side to synthesize a mission plan
 		TransferFile trans = new TransferFile(this.uppaalAddress, this.uppaalPort);
-		trans.sendFile(UPPAgentGenerator.outputXML);
-		//trans.sendFile("./model/special use case - no monitors.xml");
+		if(!this.ownModel) {
+			trans.sendFile(UPPAgentGenerator.outputXML);
+		}
+		else {
+			trans.sendFile(this.ownModelAddress);
+			//trans.sendFile("./model/special use case - no monitors.xml");
+		}
 		trans.close();
 		trans = new TransferFile(this.uppaalAddress, this.uppaalPort);
 		trans.receiveFile(TaskScheduleParser.planPath);

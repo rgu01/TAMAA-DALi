@@ -8,7 +8,7 @@ import java.util.List;
 import java.util.Scanner;
 
 public class UPPAgentFleet {
-	public static int Scale = 100; //a constant number for scaling the integer traveling times 
+	public static int Scale = 1; //a constant number for scaling the integer traveling times 
 	public List<UPPAgentVehicle> agents;
 	
 	public UPPAgentFleet(List<UPPAgentVehicle> agents)

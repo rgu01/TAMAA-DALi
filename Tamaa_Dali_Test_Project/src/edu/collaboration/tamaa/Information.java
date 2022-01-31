@@ -59,7 +59,8 @@ public class Information {
 		lblNewLabel.setBounds(10, 10, 350, 50);
 		frmMiddlewareOfMalta.getContentPane().add(lblNewLabel);
 		
-		JLabel lblStatus = new JLabel("started! ");
+		JLabel lblStatus = new JLabel("stopped! ");
+		lblStatus.setForeground(Color.RED);
 		lblStatus.setFont(new Font("Tahoma", Font.PLAIN, 15));
 		lblStatus.setBounds(10, 60, 205, 50);
 		frmMiddlewareOfMalta.getContentPane().add(lblStatus);
@@ -103,13 +104,13 @@ public class Information {
 		
 		btnStart.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				planner = new UPlanner(chckbxNewCheckBox.isSelected(), txtmodelspecialUseCase.getText());
-				planner.start();
-				btnStart.setEnabled(false);
 				btnStop.setEnabled(true);
 				frmMiddlewareOfMalta.setTitle(title + " - started....");
 				lblStatus.setText("started!");
-				lblStatus.setBackground(Color.green);
+				lblStatus.setForeground(Color.green);
+				btnStart.setEnabled(false);
+				planner = new UPlanner(chckbxNewCheckBox.isSelected(), txtmodelspecialUseCase.getText());
+				planner.start();
 			}
 		});
 		frmMiddlewareOfMalta.getContentPane().add(btnStart);
@@ -128,12 +129,12 @@ public class Information {
 		frmMiddlewareOfMalta.getContentPane().add(lblNewLabel_1);
 		btnStop.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				planner.exit();
-				btnStart.setEnabled(true);
-				btnStop.setEnabled(false);
 				frmMiddlewareOfMalta.setTitle(title + " - stopped....");
 				lblStatus.setText("stopped!");
-				lblStatus.setBackground(Color.red);
+				lblStatus.setForeground(Color.red);
+				btnStart.setEnabled(true);
+				btnStop.setEnabled(false);
+				planner.exit();
 			}
 		});
 		

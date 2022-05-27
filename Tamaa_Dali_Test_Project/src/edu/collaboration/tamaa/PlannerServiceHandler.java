@@ -82,15 +82,11 @@ public class PlannerServiceHandler implements PlannerService.Iface {
 
 	@Override
 	public void computePlan(int requestId, Mission plan) throws TException {
-		// boolean pathExist = false;
 		// Communication with MMT
 		TTransport transport = null;
 		TProtocol protocol = null;
 		MmtService.Client client = null;
 		PathPlanningAlgorithm as = null;
-		// double top_left_lon = 0, top_left_lat = 0, top_right_lon = 0, top_right_lat =
-		// 0, bot_right_lon = 0,
-		// bot_right_lat = 0, bot_left_lon = 0, bot_left_lat = 0;
 		double lat[] = { 0.0, 0.0, 0.0, 0.0 }, lon[] = { 0.0, 0.0, 0.0, 0.0 };
 		SphericalMercator sphericalMercator = new SphericalMercator();
 
@@ -106,10 +102,6 @@ public class PlannerServiceHandler implements PlannerService.Iface {
 			nArea = new NavigationArea(plan);
 			// Get the number of tasks
 			int NTasks = plan.getTasksSize();
-			/*
-			 * nArea.boundry.add(top_left); nArea.boundry.add(bot_left);
-			 * nArea.boundry.add(bot_right); nArea.boundry.add(top_right);
-			 */
 			// Obtain the coordinates of the verdices of special areas, such as forbidden areas.
 			List<Node> obsVertices = new ArrayList<Node>();
 			// Obtain the special areas that Dali can cope with
@@ -341,6 +333,14 @@ public class PlannerServiceHandler implements PlannerService.Iface {
 		return maxID + 1;
 	}
 	
+	/**
+	 * This function parses the resulting XML file of the mission plan. 
+	 * @param plan
+	 * @param as
+	 * @param passAnomalyPaths
+	 * @param passAnomalyPathsTime
+	 * @return
+	 */
 
 	private boolean parseXML(Mission plan, PathPlanningAlgorithm as, List<Path> passAnomalyPaths,
 			List<Integer> passAnomalyPathsTime) {
@@ -460,7 +460,10 @@ public class PlannerServiceHandler implements PlannerService.Iface {
 	
 	private boolean callUppaal() throws Exception {
 		boolean result = true;
-		UPPAgentGenerator.run(this.agents); // call UPPAAL in the server side to synthesize a mission plan
+		// Generate the UPPAAL model for generating mission plans
+		// @Claire, this function will be replaced by your function of generating the new UPPAAL models
+		UPPAgentGenerator.run(this.agents);
+		// Send the UPPAAL model to the server
 		TransferFile trans = new TransferFile(this.uppaalAddress, this.uppaalPort);
 		if (!this.ownModel) {
 			trans.sendFile(UPPAgentGenerator.outputXML);
@@ -468,9 +471,12 @@ public class PlannerServiceHandler implements PlannerService.Iface {
 			trans.sendFile(this.ownModelAddress);
 			// trans.sendFile("./model/special use case - no monitors.xml");
 		}
+		// The model is transferred
 		trans.close();
+		// Receive the result of mission planning from the server
 		trans = new TransferFile(this.uppaalAddress, this.uppaalPort);
 		trans.receiveFile(TaskScheduleParser.planPath);
+		// An XML file that stores resulting mission plan is received
 		if (trans.isClosed() && trans.timeOut) {
 			result = false;
 		}

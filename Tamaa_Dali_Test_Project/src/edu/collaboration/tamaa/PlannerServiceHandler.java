@@ -41,7 +41,7 @@ public class PlannerServiceHandler implements PlannerService.Iface {
 	// public static final String SERVER_IP = "192.168.56.1";
 	// public static final String SERVER_IP = "127.0.0.1";
 	// public static final int SERVER_PORT = 9779;
-	//public String mmtAddress = "192.168.1.2";
+	// public String mmtAddress = "192.168.1.2";
 	public String mmtAddress = "127.0.0.1";
 	public int mmtPort = 9096;
 	private String uppaalAddress;
@@ -62,7 +62,7 @@ public class PlannerServiceHandler implements PlannerService.Iface {
 	}
 
 	public Algo algo = Algo.DaliStar;
-	//public Algo algo = Algo.AStar;
+	// public Algo algo = Algo.AStar;
 
 	private int NbRecomputeUnsuccess = 1;
 	private int NbRecomputeTimedAnomalies = 5;
@@ -70,7 +70,8 @@ public class PlannerServiceHandler implements PlannerService.Iface {
 	public PlannerServiceHandler() {
 	}
 
-	public PlannerServiceHandler(String mmtAddress, int mmtPort, String uppaalAddress, int uppaalPort, boolean ownModel, String ownModelAddress) {
+	public PlannerServiceHandler(String mmtAddress, int mmtPort, String uppaalAddress, int uppaalPort, boolean ownModel,
+			String ownModelAddress) {
 		this.mmtAddress = mmtAddress;
 		this.mmtPort = mmtPort;
 		this.uppaalAddress = uppaalAddress;
@@ -94,21 +95,26 @@ public class PlannerServiceHandler implements PlannerService.Iface {
 		SphericalMercator sphericalMercator = new SphericalMercator();
 
 		try {
+			// initialize the connection to MMT
 			transport = new TSocket(this.mmtAddress, this.mmtPort);
 			transport.open();
 			protocol = new TBinaryProtocol(transport);
 			client = new MmtService.Client(protocol);
 			System.out.println("msg from MMT: " + client.ping());
+			// The information from MMT is stored in "plan".
+			// Obtain the navigation area
 			nArea = new NavigationArea(plan);
-
+			// Get the number of tasks
 			int NTasks = plan.getTasksSize();
 			/*
 			 * nArea.boundry.add(top_left); nArea.boundry.add(bot_left);
 			 * nArea.boundry.add(bot_right); nArea.boundry.add(top_right);
 			 */
-			// Obstacles
+			// Obtain the coordinates of the verdices of special areas, such as forbidden areas.
 			List<Node> obsVertices = new ArrayList<Node>();
+			// Obtain the special areas that Dali can cope with
 			List<DaliRegionConstraint> regionPreferences = new ArrayList<DaliRegionConstraint>();
+			// Iterate the list of forbidden areas, which actually includes all kinds of special areas
 			for (Region forbidden : plan.getForbiddenArea()) {
 				lon[3] = sphericalMercator.xAxisProjection(forbidden.getArea().get(3).longitude);
 				lat[3] = sphericalMercator.yAxisProjection(forbidden.getArea().get(3).latitude);
@@ -122,6 +128,7 @@ public class PlannerServiceHandler implements PlannerService.Iface {
 				obsVertices.add(new Node(lat[1], lon[1]));
 				obsVertices.add(new Node(lat[2], lon[2]));
 				obsVertices.add(new Node(lat[3], lon[3]));
+				// Put each of the special areas into the corresponding list.
 				switch (forbidden.regionType) {
 				case FORBIDDEN:
 					nArea.obstacles
@@ -144,6 +151,7 @@ public class PlannerServiceHandler implements PlannerService.Iface {
 				obsVertices.clear();
 			}
 
+			// Choosing a pathfinding algorithm
 			switch (this.algo) {
 			case AStar:
 				as = new AStar(nArea);
@@ -158,19 +166,21 @@ public class PlannerServiceHandler implements PlannerService.Iface {
 				as = new AStar2(nArea);
 				break;
 			}
-
+			// The the start time of the mission
 			long startTime = System.nanoTime();
-
+			// Compute the paths by calling the chosen pathfinding algorithm
 			computePaths(plan, as);
 
 			/*****************************************************************
-			 * If no server is running, and only path planning is needed, 
-			 * please comment the code below
+			 * If no server is running, and only path planning is needed, please comment the
+			 * code below
 			 *****************************************************************/
 			List<Path> passAnomalyPaths = new ArrayList<Path>();
 			List<Integer> passAnomalyPathsTime = new ArrayList<Integer>();
+			// Calculating a mission plan that includes paths and task schedule
 			boolean success = generatePlan(plan, as, passAnomalyPaths, passAnomalyPathsTime);
-
+			// If the calculation fails, we recompute by considering the temporary obstacles (a.k.a., anomalies) and 
+			// the users' preference (a.k.a., preferred locations)
 			while ((!success && NbRecomputeUnsuccess > 0)
 					|| (passAnomalyPaths.size() != 0 && NbRecomputeTimedAnomalies > 0)) {
 				if (passAnomalyPaths.size() != 0 && NbRecomputeTimedAnomalies > 0)
@@ -178,7 +188,9 @@ public class PlannerServiceHandler implements PlannerService.Iface {
 				else
 					success = recomputeWithoutPreferedLocations(plan, as, passAnomalyPaths, passAnomalyPathsTime);
 			}
-
+			
+			//-------------------------------------------------------------------------------------------------------------
+			// Start to write logs. This is only for experiments
 			if (success && passAnomalyPaths.size() == 0) {
 				long stopTime = System.nanoTime();
 
@@ -189,9 +201,6 @@ public class PlannerServiceHandler implements PlannerService.Iface {
 							+ String.valueOf(NTasks) + " Forbidden " + String.valueOf(plan.getForbiddenArea().size())
 							+ "\n";
 					fw.write(log);
-					// for (Long l : execTimes) {
-					// fw.write(String.valueOf(l / 1000000) + '\n');
-					// }
 					fw.close();
 				} catch (Exception e) {
 				}
@@ -213,16 +222,13 @@ public class PlannerServiceHandler implements PlannerService.Iface {
 						i = i + 0;
 					}
 					commandsLog += plan.getCommands().get(i).endTime + ": " + new Node(ppp1).toString() + "\r\n";
-					// commandsLog += plan.getCommands().get(i+1).endTime + ": " + new
-					// Node(ppp2).toString() + "\r\n";
 				}
 				System.out.println(commandsLog);
+				//End of writing logs. This is only for experiments
+				//-------------------------------------------------------------------------------------------------------------
 
+				// Send the mission plan to MMT
 				client.sendPlan(requestId, plan);
-				// System.out.println("Mission Plan Sent!");
-				//String show = "A plan with " + plan.tasks.size() + " tasks, and " + plan.commands.size()
-				//		+ " commands has been sent!";
-				//JOptionPane.showMessageDialog(null, show, "Done", JOptionPane.PLAIN_MESSAGE);
 			} else {
 				String show = "No mission plan is found! Recomputation limit is reached";
 				JOptionPane.showMessageDialog(null, show, "Warning: Dissatisfied", JOptionPane.PLAIN_MESSAGE);
@@ -242,8 +248,6 @@ public class PlannerServiceHandler implements PlannerService.Iface {
 		} finally {
 			transport.close();
 			this.agents.clear();
-			//exit:
-			//System.exit(0);
 		}
 	}
 
@@ -293,45 +297,50 @@ public class PlannerServiceHandler implements PlannerService.Iface {
 		return generatePlan(plan, as, passAnomalyPaths, passAnomalyPathsTime);
 	}
 
+	
 	private boolean generatePlan(Mission plan, PathPlanningAlgorithm as, List<Path> passAnomalyPaths,
 			List<Integer> passAnomalyPathsTime) throws Exception {
-		//boolean success = true;
+		// boolean success = true;
+		// Call uppaal to generate mission plans
 		boolean success = callUppaal();
 		if (!success) {
-			String show = "Time out: server does not respond!";
+			// String show = "Time out: server does not respond!";
 			// JOptionPane.showMessageDialog(null, show, "Error: Time Out",
 			// JOptionPane.PLAIN_MESSAGE);
 		} else {
+			// A mission plan is successfully generated and stored in an XML file
 			passAnomalyPaths.clear();
 			passAnomalyPathsTime.clear();
+			// Parse the XML file of the mission plan
 			success = parseXML(plan, as, passAnomalyPaths, passAnomalyPathsTime);
 			if (!success) {
-				String show = "No mission plan is found!";
+				// String show = "No mission plan is found!";
 				// JOptionPane.showMessageDialog(null, show, "Warning: Dissatisfied",
 				// JOptionPane.PLAIN_MESSAGE);
 			}
 		}
 		return success;
 	}
+	
 
 	private void cleanPlan(Mission plan) {
 		plan.commands.clear();
 		plan.tasks.removeIf(x -> x.getTaskTemplate().getTaskType().name() == "TRANSIT");
 	}
 	
-	private int newTaskID(Mission plan)
-	{
+
+	private int newTaskID(Mission plan) {
 		int maxID = 0;
-		
+
 		for (Task task : plan.tasks) {
-			if(maxID < task.id)
-			{
+			if (maxID < task.id) {
 				maxID = task.id;
 			}
 		}
-		
+
 		return maxID + 1;
 	}
+	
 
 	private boolean parseXML(Mission plan, PathPlanningAlgorithm as, List<Path> passAnomalyPaths,
 			List<Integer> passAnomalyPathsTime) {
@@ -341,7 +350,7 @@ public class PlannerServiceHandler implements PlannerService.Iface {
 		TaskScheduleAction action;
 		// multiple vehicles
 		Task[] movement = new Task[this.agents.size()];
-		//Task[] execution = new Task[this.agents.size()];
+		// Task[] execution = new Task[this.agents.size()];
 		List<Command>[] segments = new ArrayList[this.agents.size()];
 		Integer[] startTime = new Integer[this.agents.size()];
 		Node[] currentNode = new Node[this.agents.size()];
@@ -382,7 +391,7 @@ public class PlannerServiceHandler implements PlannerService.Iface {
 									passAnomalyPaths.add(currentPath);
 									passAnomalyPathsTime.add(lastPostionTime[agent.ID]);
 								}
-								
+
 							}
 							segments[agent.ID] = this.finishMove(movement[agent.ID], agent, targetNode[agent.ID],
 									(int) action.time, as);
@@ -396,17 +405,14 @@ public class PlannerServiceHandler implements PlannerService.Iface {
 								waypoint[agent.ID] = new Node(task.getArea().area.get(0));
 								if (task.taskTemplate.taskType.equals(TaskType.INSPECT)
 										&& waypoint[agent.ID].equals(currentNode[agent.ID])) {
-									if(task.endTime == 0)
-									{
-										//this task is not assigned yet
+									if (task.endTime == 0) {
+										// this task is not assigned yet
 										task.assignedVehicleId = agent.vehicle.id;
 										task.startTime = startTime[agent.ID];
 										movement[agent.ID].parentTaskId = task.id;
-										//execution[agent.ID] = task;
+										// execution[agent.ID] = task;
 										break;
-									}
-									else
-									{
+									} else {
 										newTask = task.deepCopy();
 										newTask.id = this.newTaskID(plan);
 										newTask.assignedVehicleId = agent.vehicle.id;
@@ -417,8 +423,7 @@ public class PlannerServiceHandler implements PlannerService.Iface {
 									}
 								}
 							}
-							if(newTask != null)
-							{
+							if (newTask != null) {
 								plan.addToTasks(newTask);
 							}
 							// add movement going to this task's milestone
@@ -430,15 +435,14 @@ public class PlannerServiceHandler implements PlannerService.Iface {
 						// finish an execution
 						else if (action.type.equals(TaskScheduleAction.StrTaskFinish)) {
 							currentNode[agent.ID] = agent.getMilestone(agentState.currentPosition);
-							//execution[agent.ID].assignedVehicleId = agent.vehicle.id;
-							//execution[agent.ID].endTime = startTime[agent.ID] + (int) action.time;
-							//newly added
+							// execution[agent.ID].assignedVehicleId = agent.vehicle.id;
+							// execution[agent.ID].endTime = startTime[agent.ID] + (int) action.time;
+							// newly added
 							for (Task task : plan.tasks) {
 								waypoint[agent.ID] = new Node(task.getArea().area.get(0));
 								if (task.assignedVehicleId == agent.vehicle.id
 										&& task.taskTemplate.taskType.equals(TaskType.INSPECT)
-										&& waypoint[agent.ID].equals(currentNode[agent.ID])
-										&& task.endTime == 0) {
+										&& waypoint[agent.ID].equals(currentNode[agent.ID]) && task.endTime == 0) {
 									task.endTime = startTime[agent.ID] + (int) action.time;
 									startTime[agent.ID] = (int) task.endTime;
 									break;
@@ -453,16 +457,16 @@ public class PlannerServiceHandler implements PlannerService.Iface {
 		return taskPlan.satisfied;
 	}
 
+	
 	private boolean callUppaal() throws Exception {
 		boolean result = true;
 		UPPAgentGenerator.run(this.agents); // call UPPAAL in the server side to synthesize a mission plan
 		TransferFile trans = new TransferFile(this.uppaalAddress, this.uppaalPort);
-		if(!this.ownModel) {
+		if (!this.ownModel) {
 			trans.sendFile(UPPAgentGenerator.outputXML);
-		}
-		else {
+		} else {
 			trans.sendFile(this.ownModelAddress);
-			//trans.sendFile("./model/special use case - no monitors.xml");
+			// trans.sendFile("./model/special use case - no monitors.xml");
 		}
 		trans.close();
 		trans = new TransferFile(this.uppaalAddress, this.uppaalPort);
@@ -474,13 +478,15 @@ public class PlannerServiceHandler implements PlannerService.Iface {
 		return result;
 	}
 	
+
 	private void computePaths(Mission plan, PathPlanningAlgorithm as) {
 		if (this.UseMultiTargetPathPlanning && ((this.algo == Algo.Dali || this.algo == Algo.DaliStar))) {
 			computePathsMultiTarget(plan, as);
 		} else {
 			computePathsSingleTarget(plan, as);
-		}		
+		}
 	}
+	
 
 	private void computePathsSingleTarget(Mission plan, PathPlanningAlgorithm as) {
 		int agentID = 0, milestoneID = 1;// 0 is for the starting position
@@ -536,6 +542,7 @@ public class PlannerServiceHandler implements PlannerService.Iface {
 		}
 	}
 	
+
 	private void computePathsMultiTarget(Mission plan, PathPlanningAlgorithm as) {
 		int agentID = 0, milestoneID = 1;// 0 is for the starting position
 		HashMap<Node, HashMap<Node, Path>> computedPaths = new HashMap<Node, HashMap<Node, Path>>();
@@ -580,7 +587,7 @@ public class PlannerServiceHandler implements PlannerService.Iface {
 				}
 				if (destinations.size() != 0) {
 					long startTime1 = System.nanoTime();
-					List<Path> pathsFromN = ((Dali)as).calculateSingleSource(n1, destinations, v.maxSpeed);
+					List<Path> pathsFromN = ((Dali) as).calculateSingleSource(n1, destinations, v.maxSpeed);
 					execTimes.add(System.nanoTime() - startTime1);
 					if (!computedPaths.containsKey(n1)) {
 						computedPaths.put(n1, new HashMap<Node, Path>());
@@ -597,17 +604,18 @@ public class PlannerServiceHandler implements PlannerService.Iface {
 			this.agents.add(agent);
 		}
 	}
+	
 
 	@Override
 	public String ping() throws TException {
 		// TODO Auto-generated method stub
 		return "SOME TEST";
 	}
+	
 
 	private Task startMove(Node node, UPPAgentVehicle agent, long startTime) {
 		int taskID = InitialTaskID++;
-		if(taskID == 25)
-		{
+		if (taskID == 25) {
 			taskID = 25;
 		}
 		Task transit = new Task();
@@ -639,10 +647,12 @@ public class PlannerServiceHandler implements PlannerService.Iface {
 
 		return transit;
 	}
+	
 
 	private static int moveID = 0;
 
-	private List<Command> finishMove(Task transit, UPPAgentVehicle agent, Node endPoint, int duration, PathPlanningAlgorithm as) {
+	private List<Command> finishMove(Task transit, UPPAgentVehicle agent, Node endPoint, int duration,
+			PathPlanningAlgorithm as) {
 		Position startPoint = transit.area.area.get(0);
 		Path path = agent.findPath(startPoint, endPoint.getPosition());
 		Node start = path.start;
@@ -655,7 +665,7 @@ public class PlannerServiceHandler implements PlannerService.Iface {
 		transit.area.area.add(endPoint.getPosition());
 		transit.endTime = transit.startTime + duration;
 		for (Node end : segments) {
-		//for (Node end : path.segments) {
+			// for (Node end : path.segments) {
 			if (!end.equals(start)) {
 				Command move = new PathSegment(start, end).createNewMove(moveID++, agent, startTime);
 				move.setRelatedTask(transit);

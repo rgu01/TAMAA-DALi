@@ -17,7 +17,7 @@ By looking at step 1 and step 7, one can tell that an important work of TAMAA-DA
 Specifically, TAMAA-DALi runs as a server that waits for a client, that is, MMT, to connect to it and send the information of environment and agents. Here, we need to distinguish the *server of MALTA* and the *server of MMT*. The former is running in Linux, which calls UPPAAL and generates mission plans. The latter (step 1 and step 7 of TAMAA-DALi) is running in Windows. If we stand in MALTA's point of view, the entire TAMAA-DALi (all 7 steps) is the middleware. For the brievity of description, we also call TAMAA-DALi the *server of MMT*, which in fact only refers to step 1 and step 7.
 
 # edu.collaboration.tamaa.UPlanner.java
-Now, let's look closely at UPlanner.java. This class extends Thread, because we want the server of MMT runs as a thread so that the GUI of TAMAA-DALi keeps responding to the users' operations. When the server of MMT is implemented by PlannerServiceHandler.java.
+Now, let's look closely at UPlanner.java. This class extends Thread, because we want the server of MMT runs as a thread so that the GUI of TAMAA-DALi keeps responding to the users' operations. Concretely, the server of MMT is implemented by PlannerServiceHandler.java.
 
 # edu.collaboration.tamaa.PlannerServiceHandler.java
 In this class, we override two functions that are exposed to MMT, that is, computePlan and ping. The C# code of MMT callback these two functions written in Java just like calling two C# funtions that are written in its own program. This is the trick played by Thrift.

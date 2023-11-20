@@ -36,6 +36,11 @@ public class Dali implements PathPlanningAlgorithm {
 	boolean checkAnomalies = false;
 	boolean usePreferedAreas = true; 
 	
+	public void SetUseDaliFeatures(boolean val) {
+		this.checkAnomalies = val;
+		this.usePreferedAreas = val;
+	}
+	
 	public Dali(NavigationArea nArea) {
 		generateGraph(nArea);
 		updateHeatMap();

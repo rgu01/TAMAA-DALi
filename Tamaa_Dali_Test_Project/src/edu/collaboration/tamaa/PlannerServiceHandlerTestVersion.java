@@ -51,7 +51,7 @@ public class PlannerServiceHandlerTestVersion implements PlannerService.Iface {
 	private long uppTime =0;
 	private Boolean UseMultiTargetPathPlanning = true;
 	
-	public static String timeLogFile = "./results/testtime.log";
+	public static String timeLogFile = "./results/results_new.log";
 	public static String logFileDali = "./results/dali.log";
 	public static String logFileDaliStar = "./results/dalistar.log";
 	private ArrayList<Long> execTimes = new ArrayList<Long>(); 
@@ -92,16 +92,27 @@ public class PlannerServiceHandlerTestVersion implements PlannerService.Iface {
 			protocol = new TBinaryProtocol(transport);
 			client = new MmtService.Client(protocol);
 			System.out.println("msg from MMT: " + client.ping());
+
 			
+			//group 1
+			int group =1;
+			int nRounds = 50;
 			double[] steps = {10,9,8,7,6,5,4,3,2}; 
-			//double[] steps = {2}; 
 			int[] tasks = {1,2,3,4,5,6,7,8,9,10};
-			//int[] tasks = {10};
-			//int[] obstacles = {1,2,3,4,5,6,7,8,9,10};
-			int[] obstacles = {10};
-			//int[] heatmaps = {0,1,2,3,4,5};
+			int[] obstacles = {1,2,3,4,5,6,7,8,9,10};
 			int[] heatmaps = {0};
-			for(int round = 0; round < 1; round++)
+			int[] taskorder = {2,3,9,0,1,8,6,7,4,5};
+			
+			//group 2
+			//int group =2;
+			//int nRounds = 50;
+			//double[] steps = {10,9,8,7,6,5,4,3,2}; 
+			//int[] tasks = {1,2,3,4,5,6,7,8,9,10};
+			//int[] obstacles = {10};
+			//int[] heatmaps = {0,1,2,3,4,5};
+			//int[] taskorder = {6,3,4,8,0,1,2,9,7,5}; // exp1 {2,3,9,0,1,8,6,7,4,5};
+			
+			for(int round = 0; round < nRounds; round++)
 			{
 				for (double i : steps) {
 					for (int j : tasks) {
@@ -114,13 +125,15 @@ public class PlannerServiceHandlerTestVersion implements PlannerService.Iface {
 								//runTest(requestId, plan.deepCopy(), client, sphericalMercator, i,j,k,l);	
 								resetVars();
 								algo = Algo.Dali;
-								runTest(requestId, plan.deepCopy(), client, sphericalMercator, i,j,k,l);	
-								//resetVars();
-								//algo = Algo.DaliStar;
-								//runTest(requestId, plan.deepCopy(), client, sphericalMercator, i,j,k,l);	
+								runTest(requestId, plan.deepCopy(), client, sphericalMercator, i,j,k,l, taskorder, group);	
 								resetVars();
-								algo = Algo.AStar2;
-								runTest(requestId, plan.deepCopy(), client, sphericalMercator, i,j,k,l);			
+								algo = Algo.DaliStar;
+								runTest(requestId, plan.deepCopy(), client, sphericalMercator, i,j,k,l, taskorder, group);	
+								if (group == 1 ){
+									resetVars();
+									algo = Algo.AStar2;
+									runTest(requestId, plan.deepCopy(), client, sphericalMercator, i,j,k,l, taskorder, group);	
+								}
 								//}
 							}
 						}
@@ -158,7 +171,7 @@ public class PlannerServiceHandlerTestVersion implements PlannerService.Iface {
 	}
 	
 	private void runTest(int requestId, Mission plan, MmtService.Client client,
-			SphericalMercator sphericalMercator, double step, int tasks, int obsts, int heat) throws Exception, TException {
+			SphericalMercator sphericalMercator, double step, int tasks, int obsts, int heat, int[] taskorder, int group) throws Exception, TException {
 		
 		PathPlanningAlgorithm as = null;
 		double top_left_lon = 0, top_left_lat = 0, top_right_lon = 0, top_right_lat = 0, bot_right_lon = 0,
@@ -213,7 +226,7 @@ public class PlannerServiceHandlerTestVersion implements PlannerService.Iface {
 			obsVertices.clear();
 		}
 		
-		int[] taskorder = {6,3,4,8,0,1,2,9,7,5}; // exp1 {2,3,9,0,1,8,6,7,4,5};
+		
 		List<Task> tlist = new ArrayList<Task>();
 		for (int i = 0; i<tasks; i++) {
 			tlist.add(plan.getTasks().get(taskorder[i]));
@@ -229,9 +242,11 @@ public class PlannerServiceHandlerTestVersion implements PlannerService.Iface {
 				break;
 			case Dali:
 				as = new Dali(nArea, regionPreferences);
+				((Dali)as).SetUseDaliFeatures(group ==2);
 				break;
 			case DaliStar:
 				as = new DaliStar(nArea, regionPreferences);
+				((DaliStar)as).SetUseDaliFeatures(group ==2);
 				break;
 			case AStar2:
 				as = new AStar2(nArea);
@@ -265,7 +280,8 @@ public class PlannerServiceHandlerTestVersion implements PlannerService.Iface {
 			try {
 				FileWriter fw = new FileWriter(timeLogFile, true);
 				String log = String.valueOf((stopTime - startTime) / 1000000)+ ' ' + algo.toString() +
-						" Threshold " + String.valueOf(step) + " Tasks " + String.valueOf(tasks) + 
+						" Threshold " + String.valueOf(step) + 
+						" Group " + String.valueOf(group) +  " Tasks " + String.valueOf(tasks) + 
 						" Forbidden " + String.valueOf(nArea.obstacles.size()) + " GenTime " +  
 						String.valueOf(genTime / 1000000) + " UppCalls " + String.valueOf(this.uppCalls) + 
 						" AlgCalls " + String.valueOf(this.algCalls) + " UppTime " + 

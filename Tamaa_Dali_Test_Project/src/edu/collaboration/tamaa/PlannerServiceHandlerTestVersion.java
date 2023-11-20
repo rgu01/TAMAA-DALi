@@ -96,7 +96,7 @@ public class PlannerServiceHandlerTestVersion implements PlannerService.Iface {
 			
 			//group 1
 			int group =1;
-			int nRounds = 50;
+			int nRounds = 1;
 			double[] steps = {10,9,8,7,6,5,4,3,2}; 
 			int[] tasks = {1,2,3,4,5,6,7,8,9,10};
 			int[] obstacles = {1,2,3,4,5,6,7,8,9,10};

@@ -118,34 +118,34 @@ public class PlannerServiceHandlerTestVersion implements PlannerService.Iface {
 			//int[] taskorder = { 2, 3, 9, 0, 1, 8, 6, 7, 4, 5 };
 			
 			//todo2 
-			int group =0;
-			int nRounds =5;
-			double[] steps = {2,3,4,5,6,7,8,9,10};
-			int[] tasks = {1,2,3,4,5,6,7,8,9,10};
-			int[] obstacles  = {10};
-			int[] heatmaps = { 0 };
-			int[] taskorder = { 2, 3, 9, 0, 1, 8, 6, 7, 4, 5 };
-			this.UseMultiTargetPathPlanning = true;
+//			int group =0;
+//			int nRounds =5;
+//			double[] steps = {2,3,4,5,6,7,8,9,10};
+//			int[] tasks = {1,2,3,4,5,6,7,8,9,10};
+//			int[] obstacles  = {10};
+//			int[] heatmaps = { 0 };
+//			int[] taskorder = { 2, 3, 9, 0, 1, 8, 6, 7, 4, 5 };
+//			this.UseMultiTargetPathPlanning = true;
 			
 			//todo3
 			// need mission with 2,3,4 vehicles
-			/*int group =3;
+			int group =3;
 			int nRounds=1;
 			double[] steps = {4};
 			int[] obstacles  = {10};
 			int[] heatmaps = { 0 };
-			int[] tasks = {1,2,3,4};
-			int[] taskorder = {2,3,0,1};*/
+			//int[] tasks = {1,2,3,4};
+			//int[] taskorder = {2,3,0,1};
+			int[] tasks = {1,2,3,4,5,6,7,8,9,10};
+			int[] taskorder = { 2, 3, 9, 0, 1, 8, 6, 7, 4, 5 };
 			//create multiple vehicles
-			/*int nVehicles = 4;
+			int nVehicles = 4;
 			for(int i = 1; i < nVehicles; i++) {
 				Vehicle v = plan.vehicles.get(0).deepCopy();
 				v.id = v.id + i;
 				v.name = "AT" + v.id;
 				plan.addToVehicles(v);
-			}*/
-			//int[] tasks = {1,2,3,4,5,6,7,8,9,10};
-			//int[] taskorder = { 2, 3, 9, 0, 1, 8, 6, 7, 4, 5 };
+			}
 			
 			// group 2
 			 //int group =2;

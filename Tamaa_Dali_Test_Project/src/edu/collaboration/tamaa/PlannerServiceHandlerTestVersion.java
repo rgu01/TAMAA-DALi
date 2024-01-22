@@ -140,6 +140,7 @@ public class PlannerServiceHandlerTestVersion implements PlannerService.Iface {
 			//for 4 vehicles
 			//int[] tasks = {2};
 			//int[] taskorder = {0,1};
+			//for 2 vehicles
 			int[] tasks = {10};
 			int[] taskorder = { 2, 3, 9, 0, 1, 8, 6, 7, 4, 5 };
 			//create multiple vehicles

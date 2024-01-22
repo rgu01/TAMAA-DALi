@@ -189,8 +189,8 @@ public class PlannerServiceHandlerTestVersion implements PlannerService.Iface {
 								    runTest(requestId, plan.deepCopy(), client, sphericalMercator, i, j, k, l, taskorder,
 										group, dtf.format(timeround));
 								}
-								if (group == 1 || group ==3) {
-									resetVars();
+								resetVars();
+								if (group == 1 || group ==3) {									
 									algo = Algo.AStar2;
 									runTest(requestId, plan.deepCopy(), client, sphericalMercator, i, j, k, l,
 											taskorder, group, dtf.format(timeround));
@@ -262,7 +262,7 @@ public class PlannerServiceHandlerTestVersion implements PlannerService.Iface {
 			case FORBIDDEN:
 				if (obsts > 0) {
 						nArea.obstacles
-							.add(new Obstacle(obsVertices, (double) forbidden.startTime, (group == 1) ? 0.0 : (double) forbidden.endTime));
+							.add(new Obstacle(obsVertices, (double) forbidden.startTime, (group != 2) ? 0.0 : (double) forbidden.endTime));
 					obsts--;					
 				}
 				break;

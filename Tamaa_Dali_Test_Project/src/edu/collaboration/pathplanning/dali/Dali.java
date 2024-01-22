@@ -33,7 +33,8 @@ public class Dali implements PathPlanningAlgorithm {
 	
 	//public double vehicleSpeed = 1;
 	//double startTime =0;
-	boolean checkAnomalies = false;
+	boolean checkAnomalies = false; //during path generation
+	boolean checkPathAnomalies = true;
 	boolean usePreferedAreas = true; 
 	
 	public void SetUseDaliFeatures(boolean val) {
@@ -326,14 +327,14 @@ public class Dali implements PathPlanningAlgorithm {
 			path.add(0, source);
 			p_result.segments = path;
 			p_result.setLength(totalLength);
-			System.out.println("Done");
+			//System.out.println("Done");
 			
-			try {
-				FileWriter fw = new FileWriter(PlannerServiceHandler.logFileDali, true);
-				String log = String.valueOf(distances.size())+ "\n";
-				fw.write(log);
-				fw.close();
-			}catch (Exception ex) {}
+			//try {
+			//	FileWriter fw = new FileWriter(PlannerServiceHandler.logFileDali, true);
+			//	String log = String.valueOf(distances.size())+ "\n";
+			//	fw.write(log);
+			//	fw.close();
+			//}catch (Exception ex) {}
 			
 			return p_result;
 		}
@@ -429,6 +430,11 @@ public class Dali implements PathPlanningAlgorithm {
 	public boolean pathEntersAnomaly(Path path, double startTime, double speed) {
 		int i =0;
 		double time = startTime;
+		
+		if(!checkPathAnomalies) {
+			return false;
+		}
+		
 		while (i!= path.segments.size() -1) {
 			DaliNode cur = (DaliNode)path.segments.get(i);
 			DaliNode nxt = (DaliNode)path.segments.get(i+1);

@@ -56,7 +56,14 @@ public class AStar2 extends Dali{
 			double currentDistance = current.currentDistance;
 			for (DaliEdge e : current.edges) {	
 				if (distances.containsKey(e.dest)) continue;
-				double edist = currentDistance + e.length;
+				double segmentDist = e.length;
+				if (current ==source) {
+					segmentDist = e.dest.distanceToPoint(start.lat, start.lon);
+				}
+				if (e.dest == target) {
+					segmentDist = current.distanceToPoint(destination.lat, destination.lon);
+				}
+				double edist = currentDistance + segmentDist;
 				if (!processing.contains(e.dest) || e.dest.currentDistance > edist || 
 						(current != source && e.dest.currentDistance == edist && sameDirection(e.dest, current))) {
 					processing.remove(e.dest);
@@ -69,6 +76,7 @@ public class AStar2 extends Dali{
 			distances.put(current, currentDistance);
 		}
 		clearNodes();
+
 		if (distances.containsKey(target)) {
 			double totalLength = 0;
 			List<Node> path = new ArrayList<Node>();
@@ -76,7 +84,12 @@ public class AStar2 extends Dali{
 			path.add(target);
 			while (current.previous != source) {
 				DaliEdge e = current.previous.findOutEdge(current);
-				totalLength += e.length; 
+				//totalLength += e.length; 
+				if (current ==target) {
+					totalLength += current.previous.distanceToPoint(destination.lat, destination.lon);
+				} else {
+					totalLength += current.distanceToPoint(start.lat, start.lon);//e.length;
+				} 
 				current = current.previous;
 				path.add(0, current);
 			}

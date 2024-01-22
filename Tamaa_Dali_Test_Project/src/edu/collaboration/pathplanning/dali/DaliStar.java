@@ -103,14 +103,13 @@ public class DaliStar extends Dali{
 			path.add(0, source);
 			p_result.segments = path;
 			p_result.setLength(totalLength);
-			System.out.println("Done");
-			try {
-				FileWriter fw = new FileWriter(PlannerServiceHandler.logFileDaliStar, true);
-				String log = String.valueOf(distances.size())+ "\n";
-				fw.write(log);
-				fw.close();
-			}catch (Exception ex) {}
-			
+			//System.out.println("Done");
+			//try {
+			//	FileWriter fw = new FileWriter(PlannerServiceHandler.logFileDaliStar, true);
+			//	String log = String.valueOf(distances.size())+ "\n";
+			//	fw.write(log);
+			//	fw.close();
+			//}catch (Exception ex) {}
 			return p_result;
 		}
 		else

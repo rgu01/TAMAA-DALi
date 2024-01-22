@@ -135,13 +135,13 @@ public class PlannerServiceHandlerTestVersion implements PlannerService.Iface {
 			int[] obstacles  = {10};
 			int[] heatmaps = { 0 };
 			//for 3 vehicles
-			//int[] tasks = {4};
+			//int[] tasks = {1,2,3,4};
 			//int[] taskorder = {2,3,0,1};
 			//for 4 vehicles
-			//int[] tasks = {2};
+			//int[] tasks = {1,2};
 			//int[] taskorder = {0,1};
 			//for 2 vehicles
-			int[] tasks = {10};
+			int[] tasks = {1,2,3,4,5,6,7,8,9,10};
 			int[] taskorder = { 2, 3, 9, 0, 1, 8, 6, 7, 4, 5 };
 			//create multiple vehicles
 			int nVehicles = 4;

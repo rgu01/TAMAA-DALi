@@ -168,37 +168,37 @@ public class PlannerServiceHandlerTestVersion implements PlannerService.Iface {
 			 //int[] taskorder = {6,3,4,8,0,1,2,9,7,5}; // exp1 {2,3,9,0,1,8,6,7,4,5};
 			
 			// group 5 (new group 1)
-			int group = 5;
-			int nRounds = 5;
-			double[] steps = { 10, 9, 8, 7, 6, 5, 4, 3 };
-			int[] tasks = { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
-			int[] obstacles = { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
-			int[] heatmaps = { 0 };
-			int[] taskorder = { 2, 3, 9, 0, 1, 8, 6, 7, 4, 5 };
+//			int group = 5;
+//			int nRounds = 5;
+//			double[] steps = { 10, 9, 8, 7, 6, 5, 4, 3 };
+//			int[] tasks = { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
+//			int[] obstacles = { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
+//			int[] heatmaps = { 0 };
+//			int[] taskorder = { 2, 3, 9, 0, 1, 8, 6, 7, 4, 5 };
 			 
 			
-			//int group = 6;
-			//int nRounds = 5;
-			//double[] steps = {4};
-			//int[] obstacles  = {10};
-			//int[] heatmaps = { 0 };
+			int group = 6;
+			int nRounds = 5;
+			double[] steps = {4};
+			int[] obstacles  = {10};
+			int[] heatmaps = { 0 };
 			//for 2 vehicles
-			//int[] tasks = {1,2,3,4,5,6,7,8,9,10};
-			//int[] taskorder = { 2, 3, 9, 0, 1, 8, 6, 7, 4, 5 };
-			//for 3 vehicles
-			//int[] tasks = {1,2,3,4};
-			//int[] taskorder = {2,3,0,1};
-			//for 4 vehicles
-			//int[] tasks = {1,2};
-			//int[] taskorder = {0,1};
+			int[] tasks = {1,2,3,4,5,6,7,8,9,10};
+			int[] taskorder = { 2, 3, 9, 0, 1, 8, 6, 7, 4, 5 };
+//			for 3 vehicles
+//			int[] tasks = {1,2,3,4};
+//			int[] taskorder = {2,3,0,1};
+//			for 4 vehicles
+//			int[] tasks = {1,2};
+//			int[] taskorder = {0,1};
 			//create multiple vehicles
-//			int nVehicles = 3;
-//			for(int i = 1; i < nVehicles; i++) {
-//				Vehicle v = plan.vehicles.get(0).deepCopy();
-//				v.id = v.id + i;
-//				v.name = "AT" + v.id;
-//				plan.addToVehicles(v);
-//			}
+			int nVehicles = 2;
+			for(int i = 1; i < nVehicles; i++) {
+				Vehicle v = plan.vehicles.get(0).deepCopy();
+				v.id = v.id + i;
+				v.name = "AT" + v.id;
+				plan.addToVehicles(v);
+			}
 			 
 			for (int round = 0; round < nRounds; round++) {
 				LocalDateTime timeround = LocalDateTime.now();

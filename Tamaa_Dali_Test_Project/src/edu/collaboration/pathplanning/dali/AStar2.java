@@ -88,7 +88,8 @@ public class AStar2 extends Dali{
 				if (current ==target) {
 					totalLength += current.previous.distanceToPoint(destination.lat, destination.lon);
 				} else {
-					totalLength += current.distanceToPoint(start.lat, start.lon);//e.length;
+					//totalLength += current.distanceToPoint(start.lat, start.lon);//e.length;
+					totalLength += e.length;
 				} 
 				current = current.previous;
 				path.add(0, current);

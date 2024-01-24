@@ -176,6 +176,29 @@ public class PlannerServiceHandlerTestVersion implements PlannerService.Iface {
 			int[] heatmaps = { 0 };
 			int[] taskorder = { 2, 3, 9, 0, 1, 8, 6, 7, 4, 5 };
 			 
+			
+			//int group = 6;
+			//int nRounds = 5;
+			//double[] steps = {4};
+			//int[] obstacles  = {10};
+			//int[] heatmaps = { 0 };
+			//for 2 vehicles
+			//int[] tasks = {1,2,3,4,5,6,7,8,9,10};
+			//int[] taskorder = { 2, 3, 9, 0, 1, 8, 6, 7, 4, 5 };
+			//for 3 vehicles
+			//int[] tasks = {1,2,3,4};
+			//int[] taskorder = {2,3,0,1};
+			//for 4 vehicles
+			//int[] tasks = {1,2};
+			//int[] taskorder = {0,1};
+			//create multiple vehicles
+//			int nVehicles = 3;
+//			for(int i = 1; i < nVehicles; i++) {
+//				Vehicle v = plan.vehicles.get(0).deepCopy();
+//				v.id = v.id + i;
+//				v.name = "AT" + v.id;
+//				plan.addToVehicles(v);
+//			}
 			 
 			for (int round = 0; round < nRounds; round++) {
 				LocalDateTime timeround = LocalDateTime.now();
@@ -201,7 +224,7 @@ public class PlannerServiceHandlerTestVersion implements PlannerService.Iface {
 										group, dtf.format(timeround));
 								}
 								resetVars();
-								if (group == 1 || group ==3 || group == 5) {									
+								if (group == 1 || group ==3 || group == 5 || group==6) {									
 									algo = Algo.AStar2;
 									runTest(requestId, plan.deepCopy(), client, sphericalMercator, i, j, k, l,
 											taskorder, group, dtf.format(timeround));

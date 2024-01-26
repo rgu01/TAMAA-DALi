@@ -119,14 +119,14 @@ public class PlannerServiceHandlerTestVersion implements PlannerService.Iface {
 //			int[] taskorder = { 2, 3, 9, 0, 1, 8, 6, 7, 4, 5 };
 			
 			//todo2 
-//			int group =0;
-//			int nRounds =5;
-//			double[] steps = {2,3,4,5,6,7,8,9,10};
-//			int[] tasks = {1,2,3,4,5,6,7,8,9,10};
-//			int[] obstacles  = {10};
-//			int[] heatmaps = { 0 };
-//			int[] taskorder = { 2, 3, 9, 0, 1, 8, 6, 7, 4, 5 };
-//			this.UseMultiTargetPathPlanning = true;
+			int group =0;
+			int nRounds =4;
+			double[] steps = {2,3,4,5,6,7,8,9,10};
+			int[] tasks = {1,2,3,4,5,6,7,8,9,10};
+			int[] obstacles  = {10};
+			int[] heatmaps = { 0 };
+			int[] taskorder = { 2, 3, 9, 0, 1, 8, 6, 7, 4, 5 };
+			this.UseMultiTargetPathPlanning = true;
 			
 			//todo3
 			// need mission with 2,3,4 vehicles
@@ -167,24 +167,17 @@ public class PlannerServiceHandlerTestVersion implements PlannerService.Iface {
 			 //int[] heatmaps = {0,1,2,3,4,5};
 			 //int[] taskorder = {6,3,4,8,0,1,2,9,7,5}; // exp1 {2,3,9,0,1,8,6,7,4,5};
 			
-			// group 5 (new group 1)
-//			int group = 5;
-//			int nRounds = 5;
-//			double[] steps = { 10, 9, 8, 7, 6, 5, 4, 3 };
-//			int[] tasks = { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
-//			int[] obstacles = { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
-//			int[] heatmaps = { 0 };
-//			int[] taskorder = { 2, 3, 9, 0, 1, 8, 6, 7, 4, 5 };
+
 			 
 			
-			int group = 6;
-			int nRounds = 5;
-			double[] steps = {4};
-			int[] obstacles  = {10};
-			int[] heatmaps = { 0 };
+//			int group = 6;
+//			int nRounds = 5;
+//			double[] steps = {4};
+//			int[] obstacles  = {10};
+//			int[] heatmaps = { 0 };
 			//for 2 vehicles
-			int[] tasks = {1,2,3,4,5,6,7,8,9,10};
-			int[] taskorder = { 2, 3, 9, 0, 1, 8, 6, 7, 4, 5 };
+			//int[] tasks = {1,2,3,4,5,6,7,8,9,10};
+			//int[] taskorder = { 2, 3, 9, 0, 1, 8, 6, 7, 4, 5 };
 //			for 3 vehicles
 //			int[] tasks = {1,2,3,4};
 //			int[] taskorder = {2,3,0,1};
@@ -192,13 +185,32 @@ public class PlannerServiceHandlerTestVersion implements PlannerService.Iface {
 //			int[] tasks = {1,2};
 //			int[] taskorder = {0,1};
 			//create multiple vehicles
-			int nVehicles = 2;
-			for(int i = 1; i < nVehicles; i++) {
-				Vehicle v = plan.vehicles.get(0).deepCopy();
-				v.id = v.id + i;
-				v.name = "AT" + v.id;
-				plan.addToVehicles(v);
-			}
+//			int nVehicles = 4;
+//			for(int i = 1; i < nVehicles; i++) {
+//				Vehicle v = plan.vehicles.get(0).deepCopy();
+//				v.id = v.id + i;
+//				v.name = "AT" + v.id;
+//				plan.addToVehicles(v);
+//			}
+			
+			// group 5 (new group 1)
+//			int group = 5;
+//			int nRounds = 45;
+//			double[] steps = { 10, 9, 8, 7, 6, 5, 4, 3 };
+//			int[] tasks = { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
+//			int[] obstacles = { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
+//			int[] heatmaps = { 0 };
+//			int[] taskorder = { 2, 3, 9, 0, 1, 8, 6, 7, 4, 5 };
+			
+			//todo4
+//			int group = 5;
+//			int nRounds = 50;
+//			double[] steps = { 2.5, 2, 1.5};
+//			int[] tasks = { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
+//			int[] obstacles = {10 };
+//			int[] heatmaps = { 0 };
+//			int[] taskorder = { 2, 3, 9, 0, 1, 8, 6, 7, 4, 5 }; 
+
 			 
 			for (int round = 0; round < nRounds; round++) {
 				LocalDateTime timeround = LocalDateTime.now();

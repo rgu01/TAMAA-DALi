@@ -57,8 +57,8 @@ public class PlannerServiceHandlerTestVersion implements PlannerService.Iface {
 	public static String logFileDali = "./results/dali.log";
 	public static String logFileDaliStar = "./results/dalistar.log";
 	private ArrayList<Long> execTimes = new ArrayList<Long>();
-	
-	DateTimeFormatter dtf = DateTimeFormatter.ofPattern("MMddHH"); //.ISO_LOCAL_DATE_TIME;
+
+	DateTimeFormatter dtf = DateTimeFormatter.ofPattern("MMddHH"); // .ISO_LOCAL_DATE_TIME;
 
 	public enum Algo {
 		AStar, Dali, DaliStar, AStar2
@@ -96,59 +96,59 @@ public class PlannerServiceHandlerTestVersion implements PlannerService.Iface {
 			System.out.println("msg from MMT: " + client.ping());
 
 			// group 1
-			//int group = 1;
-			//int nRounds = 5;
-			//double[] steps = { 10, 9, 8, 7, 6, 5, 4, 3 };
-			//int[] tasks = { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
-			//int[] obstacles = { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
-			//int[] heatmaps = { 0 };
-			//int[] taskorder = { 2, 3, 9, 0, 1, 8, 6, 7, 4, 5 };
+			// int group = 1;
+			// int nRounds = 5;
+			// double[] steps = { 10, 9, 8, 7, 6, 5, 4, 3 };
+			// int[] tasks = { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
+			// int[] obstacles = { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
+			// int[] heatmaps = { 0 };
+			// int[] taskorder = { 2, 3, 9, 0, 1, 8, 6, 7, 4, 5 };
 
-			//group 1.5
-			//double[] steps = {2.5,2,1.5};
-			//int[] obstacles = {10};
+			// group 1.5
+			// double[] steps = {2.5,2,1.5};
+			// int[] obstacles = {10};
 
-			//todo1
+			// todo1
 //			int group =1;
 //			int nRounds =1;
-			//double[] steps = {1.5};
+			// double[] steps = {1.5};
 //			double[] steps = {4};
 //			int[] tasks = {10};
 //			int[] obstacles  = {10};
 //			int[] heatmaps = { 0 };
 //			int[] taskorder = { 2, 3, 9, 0, 1, 8, 6, 7, 4, 5 };
-			
-			//todo2 
-			int group =0;
-			int nRounds =4;
-			double[] steps = {2,3,4,5,6,7,8,9,10};
-			int[] tasks = {1,2,3,4,5,6,7,8,9,10};
-			int[] obstacles  = {10};
+
+			// todo2
+			int group = 0;
+			int nRounds = 4;
+			double[] steps = { 2, 3, 4, 5, 6, 7, 8, 9, 10 };
+			int[] tasks = { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
+			int[] obstacles = { 10 };
 			int[] heatmaps = { 0 };
 			int[] taskorder = { 2, 3, 9, 0, 1, 8, 6, 7, 4, 5 };
 			this.UseMultiTargetPathPlanning = true;
-			
-			//todo3
+
+			// todo3
 			// need mission with 2,3,4 vehicles
 //			int group =3;
 //			int nRounds=1;
 //			double[] steps = {4};
 //			int[] obstacles  = {10};
 //			int[] heatmaps = { 0 };
-			//for 2 vehicles
-			//int[] tasks = {1,2,3,4,5,6,7,8,9,10};
-			//int[] taskorder = { 2, 3, 9, 0, 1, 8, 6, 7, 4, 5 };
-			//for 3 vehicles
-			//int[] tasks = {1,2,3,4};
-			//int[] taskorder = {2,3,0,1};
-			//for 4 vehicles
-			//int[] tasks = {1,2};
-			//int[] taskorder = {0,1};
-			
+			// for 2 vehicles
+			// int[] tasks = {1,2,3,4,5,6,7,8,9,10};
+			// int[] taskorder = { 2, 3, 9, 0, 1, 8, 6, 7, 4, 5 };
+			// for 3 vehicles
+			// int[] tasks = {1,2,3,4};
+			// int[] taskorder = {2,3,0,1};
+			// for 4 vehicles
+			// int[] tasks = {1,2};
+			// int[] taskorder = {0,1};
+
 //			int[] tasks = {4};
 //			int[] taskorder = {2,3,0,1};
-			
-			//create multiple vehicles
+
+			// create multiple vehicles
 //			int nVehicles = 3;
 //			for(int i = 1; i < nVehicles; i++) {
 //				Vehicle v = plan.vehicles.get(0).deepCopy();
@@ -156,35 +156,32 @@ public class PlannerServiceHandlerTestVersion implements PlannerService.Iface {
 //				v.name = "AT" + v.id;
 //				plan.addToVehicles(v);
 //			}
-			
-			 //group 2
-			 //int group =2;
-			 //int nRounds = 1;
-			 //double[] steps = {10,9,8,7,6,5,4,3};
-			 //double[] steps = {2};
-			 //int[] tasks = {1,2,3,4,5,6,7,8,9,10};
-			 //int[] obstacles = {10};
-			 //int[] heatmaps = {0,1,2,3,4,5};
-			 //int[] taskorder = {6,3,4,8,0,1,2,9,7,5}; // exp1 {2,3,9,0,1,8,6,7,4,5};
-			
 
-			 
-			
+			// group 2
+			// int group =2;
+			// int nRounds = 1;
+			// double[] steps = {10,9,8,7,6,5,4,3};
+			// double[] steps = {2};
+			// int[] tasks = {1,2,3,4,5,6,7,8,9,10};
+			// int[] obstacles = {10};
+			// int[] heatmaps = {0,1,2,3,4,5};
+			// int[] taskorder = {6,3,4,8,0,1,2,9,7,5}; // exp1 {2,3,9,0,1,8,6,7,4,5};
+
 //			int group = 6;
 //			int nRounds = 5;
 //			double[] steps = {4};
 //			int[] obstacles  = {10};
 //			int[] heatmaps = { 0 };
-			//for 2 vehicles
-			//int[] tasks = {1,2,3,4,5,6,7,8,9,10};
-			//int[] taskorder = { 2, 3, 9, 0, 1, 8, 6, 7, 4, 5 };
+			// for 2 vehicles
+			// int[] tasks = {1,2,3,4,5,6,7,8,9,10};
+			// int[] taskorder = { 2, 3, 9, 0, 1, 8, 6, 7, 4, 5 };
 //			for 3 vehicles
 //			int[] tasks = {1,2,3,4};
 //			int[] taskorder = {2,3,0,1};
 //			for 4 vehicles
 //			int[] tasks = {1,2};
 //			int[] taskorder = {0,1};
-			//create multiple vehicles
+			// create multiple vehicles
 //			int nVehicles = 4;
 //			for(int i = 1; i < nVehicles; i++) {
 //				Vehicle v = plan.vehicles.get(0).deepCopy();
@@ -192,7 +189,7 @@ public class PlannerServiceHandlerTestVersion implements PlannerService.Iface {
 //				v.name = "AT" + v.id;
 //				plan.addToVehicles(v);
 //			}
-			
+
 			// group 5 (new group 1)
 //			int group = 5;
 //			int nRounds = 45;
@@ -201,8 +198,8 @@ public class PlannerServiceHandlerTestVersion implements PlannerService.Iface {
 //			int[] obstacles = { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
 //			int[] heatmaps = { 0 };
 //			int[] taskorder = { 2, 3, 9, 0, 1, 8, 6, 7, 4, 5 };
-			
-			//todo4
+
+			// todo4
 //			int group = 5;
 //			int nRounds = 50;
 //			double[] steps = { 2.5, 2, 1.5};
@@ -211,7 +208,6 @@ public class PlannerServiceHandlerTestVersion implements PlannerService.Iface {
 //			int[] heatmaps = { 0 };
 //			int[] taskorder = { 2, 3, 9, 0, 1, 8, 6, 7, 4, 5 }; 
 
-			 
 			for (int round = 0; round < nRounds; round++) {
 				LocalDateTime timeround = LocalDateTime.now();
 				for (double i : steps) {
@@ -224,19 +220,19 @@ public class PlannerServiceHandlerTestVersion implements PlannerService.Iface {
 								// resetVars();
 								// runTest(requestId, plan.deepCopy(), client, sphericalMercator, i,j,k,l);
 								resetVars();
-								if (group <3) {
-								   algo = Algo.Dali;
-								   runTest(requestId, plan.deepCopy(), client, sphericalMercator, i, j, k, l, taskorder,
-										   group, dtf.format(timeround));
+								if (group < 3) {
+									algo = Algo.Dali;
+									runTest(requestId, plan.deepCopy(), client, sphericalMercator, i, j, k, l,
+											taskorder, group, dtf.format(timeround));
 								}
 								resetVars();
-								if (group >0 && group < 5) {
-								    algo = Algo.DaliStar;
-								    runTest(requestId, plan.deepCopy(), client, sphericalMercator, i, j, k, l, taskorder,
-										group, dtf.format(timeround));
+								if (group > 0 && group < 5) {
+									algo = Algo.DaliStar;
+									runTest(requestId, plan.deepCopy(), client, sphericalMercator, i, j, k, l,
+											taskorder, group, dtf.format(timeround));
 								}
 								resetVars();
-								if (group == 1 || group ==3 || group == 5 || group==6) {									
+								if (group == 1 || group == 3 || group == 5 || group == 6) {
 									algo = Algo.AStar2;
 									runTest(requestId, plan.deepCopy(), client, sphericalMercator, i, j, k, l,
 											taskorder, group, dtf.format(timeround));
@@ -277,13 +273,17 @@ public class PlannerServiceHandlerTestVersion implements PlannerService.Iface {
 	}
 
 	private void runTest(int requestId, Mission plan, MmtService.Client client, SphericalMercator sphericalMercator,
-			double step, int tasks, int obsts, int heat, int[] taskorder, int group, String timestamp) throws Exception, TException {
+			double step, int tasks, int obsts, int heat, int[] taskorder, int group, String timestamp)
+			throws Exception, TException {
 
 		PathPlanningAlgorithm as = null;
 		double top_left_lon = 0, top_left_lat = 0, top_right_lon = 0, top_right_lat = 0, bot_right_lon = 0,
 				bot_right_lat = 0, bot_left_lon = 0, bot_left_lat = 0;
 		nArea = new NavigationArea(plan);
-
+		PathSegment sides[] = nArea.sides();
+		System.out.println("Lengths of map sides: " + sides[0].directLength() + ", " + sides[1].directLength() + ", "
+				+ sides[2].directLength() + ", " + sides[3].directLength());
+		System.out.println("Map size: " + sides[0].directLength() * sides[1].directLength());
 		/*
 		 * nArea.boundry.add(top_left); nArea.boundry.add(bot_left);
 		 * nArea.boundry.add(bot_right); nArea.boundry.add(top_right);
@@ -307,29 +307,30 @@ public class PlannerServiceHandlerTestVersion implements PlannerService.Iface {
 			switch (forbidden.regionType) {
 			case FORBIDDEN:
 				if (obsts > 0) {
-						nArea.obstacles
-							.add(new Obstacle(obsVertices, (double) forbidden.startTime, (group != 2) ? 0.0 : (double) forbidden.endTime));
-					obsts--;					
+					nArea.obstacles.add(new Obstacle(obsVertices, (double) forbidden.startTime,
+							(group != 2) ? 0.0 : (double) forbidden.endTime));
+					obsts--;
 				}
 				break;
 			case PREFERRED:
-				if (group ==2) {
-					regionPreferences.add(new DaliRegionConstraint(obsVertices, forbidden.intensity, RegionType.PREFERRED));
+				if (group == 2) {
+					regionPreferences
+							.add(new DaliRegionConstraint(obsVertices, forbidden.intensity, RegionType.PREFERRED));
 				}
 				break;
 			case LESS_PREFERRED:
-				if (group ==2) {
-				regionPreferences
-						.add(new DaliRegionConstraint(obsVertices, forbidden.intensity, RegionType.LESS_PREFERRED));
+				if (group == 2) {
+					regionPreferences
+							.add(new DaliRegionConstraint(obsVertices, forbidden.intensity, RegionType.LESS_PREFERRED));
 				}
 				break;
 			case HEAT_REGION:
-				if (group ==2) {
-				if (heat > 0) {
-					regionPreferences
-							.add(new DaliRegionConstraint(obsVertices, forbidden.intensity, RegionType.HEAT_REGION));
-					heat--;
-				}
+				if (group == 2) {
+					if (heat > 0) {
+						regionPreferences.add(
+								new DaliRegionConstraint(obsVertices, forbidden.intensity, RegionType.HEAT_REGION));
+						heat--;
+					}
 				}
 				break;
 			default:
@@ -340,7 +341,7 @@ public class PlannerServiceHandlerTestVersion implements PlannerService.Iface {
 		List<Task> tlist = new ArrayList<Task>();
 		HashMap<Integer, Task> taskids = new HashMap<>();
 		for (int i = 0; i < plan.getTasks().size(); i++) {
-			taskids.put((int)plan.getTasks().get(i).altitude, plan.getTasks().get(i));
+			taskids.put((int) plan.getTasks().get(i).altitude, plan.getTasks().get(i));
 		}
 		for (int i = 0; i < tasks; i++) {
 			tlist.add(taskids.get(i + 1));
@@ -357,11 +358,11 @@ public class PlannerServiceHandlerTestVersion implements PlannerService.Iface {
 			break;
 		case Dali:
 			as = new Dali(nArea, regionPreferences);
-			//((Dali) as).SetUseDaliFeatures(group == 2);
+			// ((Dali) as).SetUseDaliFeatures(group == 2);
 			break;
 		case DaliStar:
 			as = new DaliStar(nArea, regionPreferences);
-			//((DaliStar) as).SetUseDaliFeatures(group == 2);
+			// ((DaliStar) as).SetUseDaliFeatures(group == 2);
 			break;
 		case AStar2:
 			as = new AStar2(nArea);
@@ -384,13 +385,12 @@ public class PlannerServiceHandlerTestVersion implements PlannerService.Iface {
 		while ((!success && NbRecomputeUnsuccess > 0)
 				|| (passAnomalyPaths.size() != 0 && NbRecomputeTimedAnomalies > 0)) {
 			if (passAnomalyPaths.size() != 0 && NbRecomputeTimedAnomalies > 0) {
-				//pause the execution for 100 mili-second
-				//Thread.sleep(100);
+				// pause the execution for 100 mili-second
+				// Thread.sleep(100);
 				success = recomputePlan(plan, as, passAnomalyPaths, passAnomalyPathsTime);
-			}
-			else {
-				//pause the execution for 100 mili-second
-				//Thread.sleep(100);
+			} else {
+				// pause the execution for 100 mili-second
+				// Thread.sleep(100);
 				success = recomputeWithoutPreferedLocations(plan, as, passAnomalyPaths, passAnomalyPathsTime);
 			}
 		}
@@ -398,7 +398,8 @@ public class PlannerServiceHandlerTestVersion implements PlannerService.Iface {
 		if (success && passAnomalyPaths.size() == 0) {
 			long stopTime = System.nanoTime();
 			try {
-				FileWriter fw = new FileWriter(timeLogFile + "_" + String.valueOf(group) + "_" + timestamp + ".log", true);
+				FileWriter fw = new FileWriter(timeLogFile + "_" + String.valueOf(group) + "_" + timestamp + ".log",
+						true);
 				String log = String.valueOf((stopTime - startTime) / 1000000) + ' ' + algo.toString() + " Threshold "
 						+ String.valueOf(step) + " Group " + String.valueOf(group) + " Tasks " + String.valueOf(tasks)
 						+ " Forbidden " + String.valueOf(nArea.obstacles.size()) + " GenTime "

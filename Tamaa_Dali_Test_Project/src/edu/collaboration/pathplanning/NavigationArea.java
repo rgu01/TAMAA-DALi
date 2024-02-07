@@ -80,6 +80,15 @@ public class NavigationArea {
 		int end = plan.getNavigationArea().endTime;
 		this.missionTimeLimit = end - start;
 	}
+	
+	public PathSegment[] sides() {
+		PathSegment side1 = new PathSegment(this.boundry.get(0), this.boundry.get(1));
+		PathSegment side2 = new PathSegment(this.boundry.get(1), this.boundry.get(2));
+		PathSegment side3 = new PathSegment(this.boundry.get(2), this.boundry.get(3));
+		PathSegment side4 = new PathSegment(this.boundry.get(3), this.boundry.get(0));
+		
+		return new PathSegment[] {side1, side2, side3, side4};
+	}
 
 	public boolean contains(Node n) {
 		Node topRight = this.boundry.get(3);

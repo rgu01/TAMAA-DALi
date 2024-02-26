@@ -119,14 +119,24 @@ public class PlannerServiceHandlerTestVersion implements PlannerService.Iface {
 //			int[] taskorder = { 2, 3, 9, 0, 1, 8, 6, 7, 4, 5 };
 
 			// todo2
-			int group = 0;
-			int nRounds = 4;
-			double[] steps = { 2, 3, 4, 5, 6, 7, 8, 9, 10 };
-			int[] tasks = { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
-			int[] obstacles = { 10 };
-			int[] heatmaps = { 0 };
-			int[] taskorder = { 2, 3, 9, 0, 1, 8, 6, 7, 4, 5 };
-			this.UseMultiTargetPathPlanning = true;
+//			int group = 0;
+//			int nRounds = 4;
+//			double[] steps = { 2, 3, 4, 5, 6, 7, 8, 9, 10 };
+//			int[] tasks = { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
+//			int[] obstacles = { 10 };
+//			int[] heatmaps = { 0 };
+//			int[] taskorder = { 2, 3, 9, 0, 1, 8, 6, 7, 4, 5 };
+//			this.UseMultiTargetPathPlanning = true;
+			
+			// group 2 - test
+//			 int group =2;
+//			 int nRounds = 1;
+//			 //double[] steps = {10,9,8,7,6,5,4,3};
+//			 double[] steps = {10};
+//			 int[] tasks = {9};
+//			 int[] obstacles = {10};
+//			 int[] heatmaps = {5};
+//			 int[] taskorder = {6,3,4,8,0,1,2,9,7,5}; // exp1 {2,3,9,0,1,8,6,7,4,5};
 
 			// todo3
 			// need mission with 2,3,4 vehicles
@@ -158,14 +168,13 @@ public class PlannerServiceHandlerTestVersion implements PlannerService.Iface {
 //			}
 
 			// group 2
-			// int group =2;
-			// int nRounds = 1;
-			// double[] steps = {10,9,8,7,6,5,4,3};
-			// double[] steps = {2};
-			// int[] tasks = {1,2,3,4,5,6,7,8,9,10};
-			// int[] obstacles = {10};
-			// int[] heatmaps = {0,1,2,3,4,5};
-			// int[] taskorder = {6,3,4,8,0,1,2,9,7,5}; // exp1 {2,3,9,0,1,8,6,7,4,5};
+			 int group =2;
+			 int nRounds = 7;
+			 double[] steps = {10,9,8,7,6,5,4,3};
+			 int[] tasks = {1,2,3,4,5,6,7,8,9,10};
+			 int[] obstacles = {10};
+			 int[] heatmaps = {0,1,2,3,4,5};
+			 int[] taskorder = {6,3,4,8,0,1,2,9,7,5}; // exp1 {2,3,9,0,1,8,6,7,4,5};
 
 //			int group = 6;
 //			int nRounds = 5;
@@ -280,10 +289,14 @@ public class PlannerServiceHandlerTestVersion implements PlannerService.Iface {
 		double top_left_lon = 0, top_left_lat = 0, top_right_lon = 0, top_right_lat = 0, bot_right_lon = 0,
 				bot_right_lat = 0, bot_left_lon = 0, bot_left_lat = 0;
 		nArea = new NavigationArea(plan);
-		PathSegment sides[] = nArea.sides();
+		System.out.println(plan.navigationArea.getArea().get(0).longitude + ", " + plan.navigationArea.getArea().get(0).latitude);
+		System.out.println(plan.navigationArea.getArea().get(1).longitude + ", " + plan.navigationArea.getArea().get(1).latitude);
+		System.out.println(plan.navigationArea.getArea().get(2).longitude + ", " + plan.navigationArea.getArea().get(2).latitude);
+		System.out.println(plan.navigationArea.getArea().get(3).longitude + ", " + plan.navigationArea.getArea().get(3).latitude);
+		/*PathSegment sides[] = nArea.sides();
 		System.out.println("Lengths of map sides: " + sides[0].directLength() + ", " + sides[1].directLength() + ", "
 				+ sides[2].directLength() + ", " + sides[3].directLength());
-		System.out.println("Map size: " + sides[0].directLength() * sides[1].directLength());
+		System.out.println("Map size: " + sides[0].directLength() * sides[1].directLength());*/
 		/*
 		 * nArea.boundry.add(top_left); nArea.boundry.add(bot_left);
 		 * nArea.boundry.add(bot_right); nArea.boundry.add(top_right);
@@ -304,12 +317,15 @@ public class PlannerServiceHandlerTestVersion implements PlannerService.Iface {
 			obsVertices.add(new Node(bot_left_lat, bot_left_lon));
 			obsVertices.add(new Node(top_left_lat, top_left_lon));
 			obsVertices.add(new Node(bot_right_lat, bot_right_lon));
+			
 			switch (forbidden.regionType) {
 			case FORBIDDEN:
 				if (obsts > 0) {
 					nArea.obstacles.add(new Obstacle(obsVertices, (double) forbidden.startTime,
 							(group != 2) ? 0.0 : (double) forbidden.endTime));
-					obsts--;
+					if(group == 2 && ((double) forbidden.endTime) == 0.0) {
+						obsts--;
+					}
 				}
 				break;
 			case PREFERRED:

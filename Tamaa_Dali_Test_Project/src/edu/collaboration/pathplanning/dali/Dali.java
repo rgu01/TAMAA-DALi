@@ -123,6 +123,14 @@ public class Dali implements PathPlanningAlgorithm {
 		//processAnomalies(nArea);
 		anomalies = nArea.obstacles.stream().filter(obs -> (obs.endTime >0)).
 														map(obs -> new DaliAnomaly(obs)).collect(Collectors.toList());
+		
+		//test
+		/*DaliAnomaly temp = anomalies.get(1);
+		Node node1 = temp.vertices.get(1);
+		Node node3 = temp.vertices.get(3);
+		node1.lon = node1.lon - 100;
+		node3.lon = node3.lon - 100;*/
+		
 		permanentObstacles = nArea.obstacles.stream().filter(obs -> (obs.endTime <=0)).collect(Collectors.toList());
 		DaliNode topLeft = new DaliNode(0, nArea.boundry.get(0).lat - NavigationArea.threshold / 2 , 
 											nArea.boundry.get(0).lon + NavigationArea.threshold / 2 );

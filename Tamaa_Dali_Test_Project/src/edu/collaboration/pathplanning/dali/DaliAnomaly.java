@@ -11,7 +11,8 @@ public class DaliAnomaly {
 	private HashSet<Integer> nodeIDs = new HashSet<Integer>();
 	public final double startTime;
 	public final double endTime;
-	private final List<Node> vertices;
+	//private final List<Node> vertices;
+	public List<Node> vertices;
 	
 	public DaliAnomaly(Obstacle obs) {
 		this.vertices = obs.vertices;
@@ -30,4 +31,6 @@ public class DaliAnomaly {
 	public boolean isBlocking(int id, double currentTime) {
 		return nodeIDs.contains(id) && startTime < currentTime && currentTime < endTime;
 	}
+	
+	
 }

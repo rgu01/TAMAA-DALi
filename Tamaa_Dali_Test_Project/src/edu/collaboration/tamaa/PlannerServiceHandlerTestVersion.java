@@ -67,7 +67,7 @@ public class PlannerServiceHandlerTestVersion implements PlannerService.Iface {
 	public Algo algo = Algo.DaliStar;
 
 	private int NbRecomputeUnsuccess = 1;
-	private int NbRecomputeTimedAnomalies = 5;
+	private int NbRecomputeTimedAnomalies = 10;
 
 	public PlannerServiceHandlerTestVersion() {
 	}
@@ -169,9 +169,11 @@ public class PlannerServiceHandlerTestVersion implements PlannerService.Iface {
 
 			// group 2
 			 int group =2;
-			 int nRounds = 7;
-			 double[] steps = {10,9,8,7,6,5,4,3};
-			 int[] tasks = {1,2,3,4,5,6,7,8,9,10};
+			 int nRounds = 49;
+			 //double[] steps = {10,9,8,7,6,5,4,3};
+			 //int[] tasks = {1,2,3,4,5,6,7,8,9,10};
+			 double[] steps = {6,8,10};
+			 int[] tasks = {9,10};
 			 int[] obstacles = {10};
 			 int[] heatmaps = {0,1,2,3,4,5};
 			 int[] taskorder = {6,3,4,8,0,1,2,9,7,5}; // exp1 {2,3,9,0,1,8,6,7,4,5};
@@ -273,7 +275,7 @@ public class PlannerServiceHandlerTestVersion implements PlannerService.Iface {
 	private void resetVars() {
 		NbRecomputeUnsuccess = 1;
 		InitialTaskID = 21;
-		NbRecomputeTimedAnomalies = 5;
+		NbRecomputeTimedAnomalies = 10;
 		agents.clear();
 		this.uppCalls = 0;
 		this.algCalls = 0;
@@ -431,16 +433,17 @@ public class PlannerServiceHandlerTestVersion implements PlannerService.Iface {
 			} catch (Exception e) {
 			}
 		} else {
-			// String show = "No mission plan is found! Recomputation limit is reached";
-			// JOptionPane.showMessageDialog(null, show, "Warning: Dissatisfied",
-			// JOptionPane.PLAIN_MESSAGE);
+			String show = "No mission plan is found! Recomputation limit is reached.\n (passAnomalyPaths.size = "
+							+ passAnomalyPaths.size() + ". NbRecomputeTimedAnomalies = " + NbRecomputeTimedAnomalies + ").";
+			JOptionPane.showMessageDialog(null, show, "Warning: Dissatisfied",
+			JOptionPane.PLAIN_MESSAGE);
 		}
 	}
 
 	private boolean recomputeWithoutPreferedLocations(Mission plan, PathPlanningAlgorithm as,
 			List<Path> passAnomalyPaths, List<Integer> passAnomalyPathsTime) throws Exception {
 		NbRecomputeUnsuccess--;
-		NbRecomputeTimedAnomalies = 5;
+		NbRecomputeTimedAnomalies = 10;
 		if (this.algo == Algo.AStar || this.algo == Algo.AStar2) {
 			return false;
 		}

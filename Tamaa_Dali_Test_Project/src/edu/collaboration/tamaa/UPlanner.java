@@ -52,14 +52,14 @@ public class UPlanner extends Thread {
 	public void run()
 	{
 		this.readConfig();
-		System.out.println("Experiments!");
 		this.logtoText();
 		System.out.println("============" + new Date().toString() + "============");
-		//this.StartServer(new PlannerService.Processor<PlannerServiceHandler>(
-		//		new PlannerServiceHandler(this.mmtAddress, this.mmtPort, this.uppaalAddress, this.uppaalPort, this.ownModel, this.ownModelAddress)));
+		this.StartServer(new PlannerService.Processor<PlannerServiceHandler>(
+				new PlannerServiceHandler(this.mmtAddress, this.mmtPort, this.uppaalAddress, this.uppaalPort, this.ownModel, this.ownModelAddress)));
 		//The following is for experiments
-		this.StartServerTest(new PlannerService.Processor<PlannerServiceHandlerTestVersion>(
-				new PlannerServiceHandlerTestVersion(this.mmtAddress, this.mmtPort, this.uppaalAddress, this.uppaalPort)));
+		//System.out.println("Experiments!");
+		//this.StartServerTest(new PlannerService.Processor<PlannerServiceHandlerTestVersion>(
+		//		new PlannerServiceHandlerTestVersion(this.mmtAddress, this.mmtPort, this.uppaalAddress, this.uppaalPort)));
 	}
 	
 	public void exit()

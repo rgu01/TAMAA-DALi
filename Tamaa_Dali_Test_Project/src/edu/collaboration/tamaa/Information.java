@@ -16,7 +16,7 @@ public class Information {
 
 	private JFrame frmMiddlewareOfMalta;
 	UPlanner planner;
-	private String title = "Middleware of MALTA - V2.0";
+	private String title = "Middleware of MALTA-V2.0";
 	private JTextField txtmodelspecialUseCase;
 
 	/**
